@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/auth_service.dart';
+import 'features/auth/presentation/bloc/auth_bloc_exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,13 +34,23 @@ class StayMateApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'StayMate',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.system,
-      routerConfig: AppRouter.router,
+    return MultiBlocProvider(
+      providers: [
+        // Provide AuthBloc to the entire app
+        BlocProvider<AuthBloc>(
+          create: (context) =>
+              AuthBloc(authService: AuthService())
+                ..add(CheckAuthStatus()), // Check initial auth status
+        ),
+      ],
+      child: MaterialApp.router(
+        title: 'StayMate',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: ThemeMode.system,
+        routerConfig: AppRouter.router,
+      ),
     );
   }
 }
