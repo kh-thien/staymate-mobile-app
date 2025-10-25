@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -7,14 +8,12 @@ class AuthService {
   /// TODO: update the Web client ID with your own.
   ///
   /// Web Client ID that you registered with Google Cloud.
-  final webClientId =
-      '813920614773-nhmiiclsdkgn0jg7f4o9j7tlgvukup81.apps.googleusercontent.com';
+  final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID']!;
 
   /// TODO: update the iOS client ID with your own.
   ///
   /// iOS Client ID that you registered with Google Cloud.
-  final iosClientId =
-      '813920614773-orvqh39ie44ptdp8gloc0j7pgtv7cd2d.apps.googleusercontent.com';
+  final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID']!;
 
   // Google sign in on Android will work without providing the Android
   // Client ID registered on Google Cloud.
