@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -8,6 +9,7 @@ import 'features/auth/presentation/bloc/auth_bloc_exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
 
   // Suppress app_links plugin errors
   FlutterError.onError = (FlutterErrorDetails details) {
@@ -18,9 +20,8 @@ void main() async {
   };
 
   await Supabase.initialize(
-    url: 'https://detjjoponbvlgzeglkty.supabase.co',
-    anonKey:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRldGpqb3BvbmJ2bGd6ZWdsa3R5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY3NTQzNTQsImV4cCI6MjA3MjMzMDM1NH0.lqxIYETnfPdIwunjRF_vYa1SgKqRct-j_M83jamcoDM',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     authOptions: const FlutterAuthClientOptions(
       authFlowType: AuthFlowType.pkce,
     ),
