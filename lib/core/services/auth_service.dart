@@ -9,11 +9,13 @@ class AuthService {
   ///
   /// Web Client ID that you registered with Google Cloud.
   final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID']!;
+     
 
   /// TODO: update the iOS client ID with your own.
   ///
   /// iOS Client ID that you registered with Google Cloud.
   final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID']!;
+      
 
   // Google sign in on Android will work without providing the Android
   // Client ID registered on Google Cloud.
@@ -44,39 +46,41 @@ class AuthService {
     return await _supabase.auth.signUp(
       email: email,
       password: password,
-      data: {
-        'full_name': fullName,
-      },
+      data: {'full_name': fullName},
     );
   }
 
   // Đăng nhập bằng Google
   Future<AuthResponse> signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn(
-      clientId: webClientId,
+    final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+
+    // Initialize with client IDs
+    await googleSignIn.initialize(
+      clientId: iosClientId,
       serverClientId: webClientId,
     );
 
-    final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-    if (googleUser == null) {
-      throw AuthException('Google sign in cancelled');
+    final googleUser = await googleSignIn.authenticate();
+    final googleAuth = googleUser.authentication;
+    final idToken = googleAuth.idToken;
+
+    if (idToken == null) {
+      throw 'No ID Token found.';
     }
 
-    final GoogleSignInAuthentication googleAuth =
-        await googleUser.authentication;
-
-    return await _supabase.auth.signInWithIdToken(
+    return _supabase.auth.signInWithIdToken(
       provider: OAuthProvider.google,
-      idToken: googleAuth.idToken!,
-      accessToken: googleAuth.accessToken,
+      idToken: idToken,
     );
   }
 
   // Đăng xuất
   Future<void> signOut() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn.instance;
+    await googleSignIn.signOut();
     await _supabase.auth.signOut();
   }
 
-  // Lắng nghe thay đổi trạng thái đăng nhập
+  // Stream để lắng nghe thay đổi trạng thái đăng nhập
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 }
