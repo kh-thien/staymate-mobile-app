@@ -8,7 +8,7 @@ class CustomBottomNav extends StatelessWidget {
   Widget build(BuildContext context) {
     final currentLocation = GoRouterState.of(context).uri.path;
     return Container(
-      margin: const EdgeInsets.fromLTRB(50, 0,50, 12),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
@@ -29,13 +29,23 @@ class CustomBottomNav extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                // Theo dõi
+                // Hợp đồng
                 _buildNavItem(
-                  icon: Icons.home_work_rounded,
-                  label: 'Theo dõi',
-                  isSelected: currentLocation == '/tracking',
+                  icon: Icons.description_rounded,
+                  label: 'Hợp đồng',
+                  isSelected: currentLocation == '/contract',
                   onTap: () {
-                    context.go('/tracking');
+                    context.go('/contract');
+                  },
+                ),
+
+                // Hóa đơn
+                _buildNavItem(
+                  icon: Icons.receipt_rounded,
+                  label: 'Hóa đơn',
+                  isSelected: currentLocation == '/invoices',
+                  onTap: () {
+                    context.go('/invoices');
                   },
                 ),
 
@@ -49,6 +59,16 @@ class CustomBottomNav extends StatelessWidget {
                   isSelected: currentLocation == '/chat',
                   onTap: () {
                     context.go('/chat');
+                  },
+                ),
+
+                // Báo cáo sự cố
+                _buildNavItem(
+                  icon: Icons.report_problem_rounded,
+                  label: 'Sự cố',
+                  isSelected: currentLocation == '/reports',
+                  onTap: () {
+                    context.go('/reports');
                   },
                 ),
               ],

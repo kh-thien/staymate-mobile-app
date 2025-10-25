@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../features/home/presentation/pages/home_page.dart';
-import '../../features/tracking/presentation/pages/tracking_page.dart';
+import '../../features/contract/presentation/pages/contract_page.dart';
 import '../../features/chat/presentation/pages/chat_page.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import '../../shared/widgets/custom_bottom_nav.dart';
 
 class AppRouter {
   static const String home = '/';
-  static const String tracking = '/tracking';
+  static const String contract = '/contract';
   static const String chat = '/chat';
 
   static final GoRouter router = GoRouter(
@@ -18,7 +18,10 @@ class AppRouter {
         builder: (context, state, child) {
           return Scaffold(
             backgroundColor: Colors.amberAccent,
-            appBar: const CustomAppBar(),
+            appBar: PreferredSize(
+              preferredSize: const Size.fromHeight(70),
+              child: CustomAppBar(),
+            ),
             body: Stack(
               children: [
                 // Main Content
@@ -42,9 +45,9 @@ class AppRouter {
             builder: (context, state) => const HomePage(),
           ),
           GoRoute(
-            path: tracking,
-            name: 'tracking',
-            builder: (context, state) => const TrackingPage(),
+            path: contract,
+            name: 'contract',
+            builder: (context, state) => const ContractPage(),
           ),
           GoRoute(
             path: chat,

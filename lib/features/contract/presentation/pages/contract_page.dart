@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class TrackingPage extends StatefulWidget {
-  const TrackingPage({super.key});
+class ContractPage extends StatefulWidget {
+  const ContractPage({super.key});
 
   @override
-  State<TrackingPage> createState() => _TrackingPageState();
+  State<ContractPage> createState() => _ContractPageState();
 }
 
-class _TrackingPageState extends State<TrackingPage> {
+class _ContractPageState extends State<ContractPage> {
   @override
   Widget build(BuildContext context) {
     return Container(
