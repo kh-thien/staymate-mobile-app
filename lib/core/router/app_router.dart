@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../constants/ui_constants.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/contract/presentation/pages/contract_page.dart';
 import '../../features/contract/presentation/pages/contract_detail_page.dart';
@@ -31,7 +32,6 @@ class AppRouter {
               children: [
                 // Main Content
                 child,
-
                 // Floating Bottom Navigation Bar
                 Positioned(
                   left: 0,

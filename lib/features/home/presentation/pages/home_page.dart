@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/ui_constants.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -85,6 +86,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                   // Quick Actions Grid - Có thể cuộn
                   Expanded(
                     child: GridView.count(
+                      padding: const EdgeInsets.only(
+                        bottom: UIConstants.contentBottomPadding,
+                      ),
                       crossAxisCount: 2,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
