@@ -1,0 +1,438 @@
+import 'dart:io';
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:open_filex/open_filex.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/permission/permission.dart';
+import '../../data/models/contract_file_model.dart';
+
+/// Full screen viewer for contract files with swipe navigation
+class ContractFilesViewerPage extends StatefulWidget {
+  const ContractFilesViewerPage({
+    super.key,
+    required this.files,
+    this.initialIndex = 0,
+  });
+
+  final List<ContractFileModel> files;
+  final int initialIndex;
+
+  @override
+  State<ContractFilesViewerPage> createState() =>
+      _ContractFilesViewerPageState();
+}
+
+class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
+  late PageController _pageController;
+  late int _currentIndex;
+  final supabase = Supabase.instance.client;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+    _pageController = PageController(initialPage: widget.initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _downloadCurrentFile() async {
+    final currentFile = widget.files[_currentIndex];
+    final url = supabase.storage
+        .from('contracts')
+        .getPublicUrl(currentFile.filePath);
+
+    try {
+      // Request storage permission using the service
+      final hasPermission =
+          await StoragePermissionService.requestStoragePermission();
+
+      if (hasPermission) {
+        if (!mounted) return;
+
+        // Show loading dialog and get its context
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (dialogContext) => const Center(
+            child: Card(
+              child: Padding(
+                padding: EdgeInsets.all(24.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Đang tải xuống...'),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Download logic - Simple approach for both platforms
+        final fileName = currentFile.originalName ?? currentFile.fileName;
+        String successMessage;
+        String? filePath;
+
+        try {
+          // Download file using Dio
+          final dio = Dio();
+
+          if (Platform.isAndroid) {
+            // Android: Use Downloads folder
+            final directory = Directory('/storage/emulated/0/Download');
+            if (!await directory.exists()) {
+              final externalDir = await getExternalStorageDirectory();
+              if (externalDir == null) {
+                throw Exception('Không thể truy cập thư mục lưu trữ');
+              }
+              filePath = '${externalDir.path}/$fileName';
+            } else {
+              filePath = '${directory.path}/$fileName';
+            }
+
+            await dio.download(url, filePath);
+            successMessage = 'Đã lưu vào thư mục Download';
+          } else if (Platform.isIOS) {
+            // iOS: Save to app documents directory
+            // User can access via Files app -> On My iPhone -> StayMate
+            final directory = await getApplicationDocumentsDirectory();
+            filePath = '${directory.path}/$fileName';
+
+            await dio.download(url, filePath);
+            successMessage = 'Đã lưu vào Files (On My iPhone → StayMate)';
+          } else {
+            throw Exception('Nền tảng không được hỗ trợ');
+          }
+
+          // Close loading dialog - Use rootNavigator to ensure dialog is closed
+          if (mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+
+          // Wait a bit to ensure dialog is fully closed
+          await Future.delayed(const Duration(milliseconds: 200));
+
+          // Show success message
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(successMessage),
+                    Text(fileName, style: const TextStyle(fontSize: 12)),
+                  ],
+                ),
+                duration: const Duration(seconds: 4),
+                action: SnackBarAction(
+                  label: 'Mở',
+                  onPressed: () async {
+                    final result = await OpenFilex.open(filePath!);
+                    if (result.type != ResultType.done && mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            result.message.isNotEmpty
+                                ? result.message
+                                : 'Không thể mở file',
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            );
+          }
+        } catch (downloadError) {
+          // Close loading dialog if still open - use rootNavigator
+          if (mounted) {
+            Navigator.of(context, rootNavigator: true).pop();
+          }
+
+          // Show download error
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Lỗi khi tải file: ${downloadError.toString()}'),
+                duration: const Duration(seconds: 3),
+              ),
+            );
+          }
+        }
+      } else {
+        // Permission denied - show dialog with option to open settings
+        if (mounted) {
+          await PermissionDialogHelper.showPermissionDeniedDialog(
+            context,
+            title: 'Quyền truy cập bị từ chối',
+            message:
+                'Ứng dụng cần quyền truy cập bộ nhớ để tải xuống file. '
+                'Vui lòng cấp quyền trong cài đặt.',
+          );
+        }
+      }
+    } catch (e) {
+      // Close loading dialog if open - use rootNavigator
+      if (mounted) {
+        try {
+          Navigator.of(context, rootNavigator: true).pop();
+        } catch (_) {
+          // Dialog might already be closed
+        }
+      }
+
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Lỗi khi tải file: ${e.toString()}'),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          // Main content - File viewer
+          PageView.builder(
+            controller: _pageController,
+            itemCount: widget.files.length,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            itemBuilder: (context, index) {
+              final file = widget.files[index];
+              final imageUrl = supabase.storage
+                  .from('contracts')
+                  .getPublicUrl(file.filePath);
+
+              if (file.isImage) {
+                // Image viewer with zoom
+                return PhotoView(
+                  imageProvider: NetworkImage(imageUrl),
+                  minScale: PhotoViewComputedScale.contained,
+                  maxScale: PhotoViewComputedScale.covered * 2,
+                  heroAttributes: PhotoViewHeroAttributes(tag: imageUrl),
+                  loadingBuilder: (context, event) => Center(
+                    child: CircularProgressIndicator(
+                      value: event == null
+                          ? null
+                          : event.cumulativeBytesLoaded /
+                                (event.expectedTotalBytes ?? 1),
+                    ),
+                  ),
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error, size: 64, color: Colors.white54),
+                        SizedBox(height: 16),
+                        Text(
+                          'Không thể tải ảnh',
+                          style: TextStyle(color: Colors.white54),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              } else {
+                // PDF or other file type - show preview card
+                return Center(
+                  child: Card(
+                    margin: const EdgeInsets.all(32),
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            file.isPdf
+                                ? Icons.picture_as_pdf
+                                : Icons.insert_drive_file,
+                            size: 100,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            file.originalName ?? file.fileName,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            file.formattedFileSize,
+                            style: const TextStyle(
+                              color: Colors.grey,
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () async {
+                              // Download file first if not exists locally
+                              try {
+                                final tempDir = await getTemporaryDirectory();
+                                final tempFilePath =
+                                    '${tempDir.path}/${file.fileName}';
+                                final tempFile = File(tempFilePath);
+
+                                // Download if not cached
+                                if (!await tempFile.exists()) {
+                                  final dio = Dio();
+                                  await dio.download(imageUrl, tempFilePath);
+                                }
+
+                                // Open file
+                                final result = await OpenFilex.open(
+                                  tempFilePath,
+                                );
+                                if (result.type != ResultType.done &&
+                                    context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        result.message.isNotEmpty
+                                            ? result.message
+                                            : 'Không thể mở file',
+                                      ),
+                                    ),
+                                  );
+                                }
+                              } catch (e) {
+                                if (context.mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('Lỗi: ${e.toString()}'),
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                            icon: const Icon(Icons.open_in_new),
+                            label: const Text('Mở file'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              }
+            },
+          ),
+
+          // Top bar - Close button and file info
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SafeArea(
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black.withValues(alpha: 0.7),
+                      Colors.transparent,
+                    ],
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    // Close button
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close, color: Colors.white),
+                      tooltip: 'Đóng',
+                    ),
+                    // File name and count
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            widget.files[_currentIndex].originalName ??
+                                widget.files[_currentIndex].fileName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Text(
+                            '${_currentIndex + 1} / ${widget.files.length}',
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    // Download button
+                    IconButton(
+                      onPressed: _downloadCurrentFile,
+                      icon: const Icon(Icons.download, color: Colors.white),
+                      tooltip: 'Tải xuống',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          // Page indicators (dots) - only show if multiple files
+          if (widget.files.length > 1)
+            Positioned(
+              bottom: 32,
+              left: 0,
+              right: 0,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  widget.files.length,
+                  (index) => Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: _currentIndex == index
+                          ? Colors.white
+                          : Colors.white38,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

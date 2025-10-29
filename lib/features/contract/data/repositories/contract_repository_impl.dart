@@ -2,6 +2,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entities/contract_entity.dart';
 import '../../domain/repositories/contract_repository.dart';
 import '../models/contract_model.dart';
+import '../models/contract_file_model.dart';
 
 class ContractRepositoryImpl implements ContractRepository {
   final SupabaseClient _supabase;
@@ -24,7 +25,6 @@ class ContractRepositoryImpl implements ContractRepository {
 
       return response['id'] as String?;
     } catch (e) {
-      print('Error getting tenant ID: $e');
       return null;
     }
   }
@@ -60,7 +60,44 @@ class ContractRepositoryImpl implements ContractRepository {
           )
           .toList();
     } catch (e) {
-      print('Error getting contracts: $e');
+      return [];
+    }
+  }
+
+  @override
+  Future<ContractEntity> getContractDetail(String contractId) async {
+    try {
+      final contractResponse = await _supabase
+          .from('contracts')
+          .select()
+          .eq('id', contractId)
+          .maybeSingle();
+
+      if (contractResponse == null) {
+        throw Exception('Contract not found');
+      }
+
+      final contract = ContractModel.fromJson(contractResponse);
+      return contract.toEntity();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<ContractFileModel>> getContractFiles(String contractId) async {
+    try {
+      final filesResponse = await _supabase
+          .from('contract_files')
+          .select()
+          .eq('contract_id', contractId)
+          .order('upload_order', ascending: true);
+
+      final files = (filesResponse as List)
+          .map((json) => ContractFileModel.fromJson(json))
+          .toList();
+      return files;
+    } catch (e) {
       return [];
     }
   }

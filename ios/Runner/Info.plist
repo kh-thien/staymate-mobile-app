@@ -54,5 +54,10 @@
 			</array>
 		</dict>
 	</array>
+	<!-- Enable file sharing in Files app -->
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 </dict>
 </plist>

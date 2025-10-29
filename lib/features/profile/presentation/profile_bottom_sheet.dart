@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:stay_mate/core/services/auth_service.dart';
-import '../../../shared/widgets/user_avatar.dart';
-import '../../auth/presentation/bloc/auth_bloc_exports.dart';
+
 
 class ProfileBottomSheet extends StatelessWidget {
   const ProfileBottomSheet({super.key});

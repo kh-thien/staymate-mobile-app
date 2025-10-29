@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../../../auth/domain/entities/user.dart';
 
 part '../../../../generated/features/contract/data/models/tenant_model.g.dart';
 
@@ -32,4 +33,17 @@ class TenantModel {
       _$TenantModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$TenantModelToJson(this);
+
+  // Convert to User Entity
+  User toEntity() {
+    return User(
+      id: id,
+      email: email ?? '',
+      fullName: fullname,
+      phoneNumber: phone,
+      avatar: null,
+      createdAt: createdAt,
+      updatedAt: createdAt,
+    );
+  }
 }

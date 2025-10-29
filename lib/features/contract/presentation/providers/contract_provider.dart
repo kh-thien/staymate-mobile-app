@@ -34,6 +34,7 @@ class ContractLoading extends ContractState {
 class ContractLoaded extends ContractState {
   const ContractLoaded(this.contracts);
 
+  @override
   final List<ContractEntity> contracts;
 }
 
