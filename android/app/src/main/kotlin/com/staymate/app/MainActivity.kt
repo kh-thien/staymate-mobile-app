@@ -1,4 +1,4 @@
-package com.example.stay_mate
+package com.staymate.app
 
 import io.flutter.embedding.android.FlutterActivity
 

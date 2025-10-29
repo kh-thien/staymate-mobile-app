@@ -1,0 +1,16 @@
+targets:
+  $default:
+    builders:
+      # Config for json_serializable (.g.dart files)
+      source_gen:combining_builder:
+        options:
+          build_extensions:
+            "^lib/features/{{}}.dart": "lib/generated/features/{{}}.g.dart"
+            "^lib/core/{{}}.dart": "lib/generated/core/{{}}.g.dart"
+
+      # Config for freezed (.freezed.dart files)
+      # freezed:freezed:
+      #   options:
+      #     build_extensions:
+      #       "^lib/features/{{}}.dart": "lib/generated/features/{{}}.freezed.dart"
+      #       "^lib/core/{{}}.dart": "lib/generated/core/{{}}.freezed.dart"
