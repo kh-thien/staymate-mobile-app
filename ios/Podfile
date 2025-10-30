@@ -39,5 +39,11 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    
+    # Fix for Xcode 16: Allow double-quoted includes in framework headers
+    target.build_configurations.each do |config|
+      config.build_settings['CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES'] = 'YES'
+      config.build_settings['OTHER_CFLAGS'] = '$(inherited) -Wno-error=quoted-include-in-framework-header'
+    end
   end
 end

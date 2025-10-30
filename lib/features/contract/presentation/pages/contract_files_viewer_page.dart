@@ -50,8 +50,9 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
 
     try {
       // Request storage permission using the service
-      final hasPermission =
-          await StoragePermissionService.requestStoragePermission();
+      final hasPermission = await PermissionHelper.requestStorageWithFeedback(
+        context,
+      );
 
       if (hasPermission) {
         if (!mounted) return;
@@ -170,18 +171,9 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
             );
           }
         }
-      } else {
-        // Permission denied - show dialog with option to open settings
-        if (mounted) {
-          await PermissionDialogHelper.showPermissionDeniedDialog(
-            context,
-            title: 'Quyền truy cập bị từ chối',
-            message:
-                'Ứng dụng cần quyền truy cập bộ nhớ để tải xuống file. '
-                'Vui lòng cấp quyền trong cài đặt.',
-          );
-        }
       }
+      // Note: No need to handle permission denial here
+      // PermissionHelper.requestStorageWithFeedback() already shows UI feedback
     } catch (e) {
       // Close loading dialog if open - use rootNavigator
       if (mounted) {

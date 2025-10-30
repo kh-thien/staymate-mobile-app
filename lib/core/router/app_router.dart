@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../constants/ui_constants.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/contract/presentation/pages/contract_page.dart';
 import '../../features/contract/presentation/pages/contract_detail_page.dart';
 import '../../features/contract/presentation/providers/contract_detail_cubit.dart';
 import '../../features/contract/domain/usecases/get_contract_detail_usecase.dart';
 import '../../features/contract/data/repositories/contract_repository_impl.dart';
-import '../../features/chat/presentation/pages/chat_page.dart';
+import '../../features/chat/presentation/pages/chat_list_page.dart';
+import '../../features/chat/presentation/pages/chat_detail_page.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import '../../shared/widgets/custom_bottom_nav.dart';
 
@@ -16,6 +16,7 @@ class AppRouter {
   static const String contract = '/contract';
   static const String contractDetail = '/contract/:id';
   static const String chat = '/chat';
+  static const String chatDetail = '/chat/:roomId';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -23,9 +24,10 @@ class AppRouter {
       ShellRoute(
         builder: (context, state, child) {
           return Scaffold(
+            resizeToAvoidBottomInset: true,
             backgroundColor: Colors.amberAccent,
             appBar: PreferredSize(
-              preferredSize: const Size.fromHeight(70),
+              preferredSize: const Size.fromHeight(50),
               child: CustomAppBar(),
             ),
             body: Stack(
@@ -76,7 +78,17 @@ class AppRouter {
           GoRoute(
             path: chat,
             name: 'chat',
-            builder: (context, state) => const ChatPage(),
+            builder: (context, state) => const ChatListPage(),
+            routes: [
+              GoRoute(
+                path: ':roomId',
+                name: 'chatDetail',
+                builder: (context, state) {
+                  final roomId = state.pathParameters['roomId']!;
+                  return ChatDetailPage(roomId: roomId);
+                },
+              ),
+            ],
           ),
         ],
       ),

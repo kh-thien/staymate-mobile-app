@@ -5,14 +5,9 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
 
-  /// TODO: update the Web client ID with your own.
-  ///
   /// Web Client ID that you registered with Google Cloud.
   final webClientId = dotenv.env['GOOGLE_WEB_CLIENT_ID']!;
      
-
-  /// TODO: update the iOS client ID with your own.
-  ///
   /// iOS Client ID that you registered with Google Cloud.
   final iosClientId = dotenv.env['GOOGLE_IOS_CLIENT_ID']!;
       
