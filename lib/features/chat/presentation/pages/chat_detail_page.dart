@@ -68,7 +68,7 @@ class ChatDetailPage extends HookConsumerWidget {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        backgroundColor: Colors.grey[50],
+        backgroundColor: Colors.transparent,
         appBar: ChatDetailAppBar(
           ownerName: ownerName,
           ownerAvatar: ownerAvatar,
@@ -76,238 +76,245 @@ class ChatDetailPage extends HookConsumerWidget {
           onOwnerTap: () => _showOwnerDetail(context, currentRoom),
           onInfoTap: () => _showOwnerDetail(context, currentRoom),
         ),
-        body: Column(
-          children: [
-            // Messages list
-            Expanded(
-              child: messagesAsync.when(
-                data: (messages) {
-                  if (messages.isEmpty) {
-                    return const ChatEmptyState(
-                      message: 'Chưa có tin nhắn nào\nHãy bắt đầu trò chuyện!',
-                    );
-                  }
+        body: Container(
+          color: Colors.white,
+          child: Column(
+            children: [
+              // Messages list
+              Expanded(
+                child: messagesAsync.when(
+                  data: (messages) {
+                    if (messages.isEmpty) {
+                      return const ChatEmptyState(
+                        message:
+                            'Chưa có tin nhắn nào\nHãy bắt đầu trò chuyện!',
+                      );
+                    }
 
-                  return NotificationListener<ScrollNotification>(
-                    onNotification: (notification) {
-                      // Load more when scrolling to top
-                      if (notification is ScrollEndNotification) {
-                        if (scrollController.position.pixels ==
-                            scrollController.position.maxScrollExtent) {
-                          final notifier = ref.read(
-                            chatMessagesProvider(roomId).notifier,
-                          );
-                          if (notifier.hasMore) {
-                            notifier.loadMoreMessages();
+                    return NotificationListener<ScrollNotification>(
+                      onNotification: (notification) {
+                        // Load more when scrolling to top
+                        if (notification is ScrollEndNotification) {
+                          if (scrollController.position.pixels ==
+                              scrollController.position.maxScrollExtent) {
+                            final notifier = ref.read(
+                              chatMessagesProvider(roomId).notifier,
+                            );
+                            if (notifier.hasMore) {
+                              notifier.loadMoreMessages();
+                            }
                           }
                         }
-                      }
-                      return false;
-                    },
-                    child: ListView.builder(
-                      controller: scrollController,
-                      reverse: true, // Start from bottom
-                      padding: const EdgeInsets.only(
-                        top: 16,
-                        bottom: 8,
-                        left: 16,
-                        right: 16,
-                      ),
-                      itemCount: messages.length,
-                      itemBuilder: (context, index) {
-                        // State: [newest(0), newer(1), old(2), older(3)]
-                        // reverse: true means:
-                        //   - index 0 renders at BOTTOM
-                        //   - index 3 renders at TOP
-                        // So messages[0] (newest) will be at bottom ✅
-                        final message = messages[index];
-
-                        return MessageBubble(
-                          message: message,
-                          isMe: message.senderId == currentUserId,
-                          onRetry: message.id.startsWith('temp-')
-                              ? () {
-                                  final notifier = ref.read(
-                                    chatMessagesProvider(roomId).notifier,
-                                  );
-
-                                  // Retry based on message type
-                                  if (message.messageType == 'TEXT') {
-                                    notifier.retryMessage(message);
-                                  } else {
-                                    // For image/file, can't retry (file disposed)
-                                    notifier.removeMessage(message.id);
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Không thể gửi lại file. Vui lòng chọn file mới.',
-                                        ),
-                                        backgroundColor: Colors.red,
-                                      ),
-                                    );
-                                  }
-                                }
-                              : null,
-                        );
+                        return false;
                       },
-                    ),
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
-                  child: SelectableText.rich(
-                    TextSpan(
-                      text: 'Lỗi: ${error.toString()}',
-                      style: const TextStyle(color: Colors.red),
+                      child: ListView.builder(
+                        controller: scrollController,
+                        reverse: true, // Start from bottom
+                        padding: const EdgeInsets.only(
+                          top: 16,
+                          bottom: 8,
+                          left: 16,
+                          right: 16,
+                        ),
+                        itemCount: messages.length,
+                        itemBuilder: (context, index) {
+                          // State: [newest(0), newer(1), old(2), older(3)]
+                          // reverse: true means:
+                          //   - index 0 renders at BOTTOM
+                          //   - index 3 renders at TOP
+                          // So messages[0] (newest) will be at bottom ✅
+                          final message = messages[index];
+
+                          return MessageBubble(
+                            message: message,
+                            isMe: message.senderId == currentUserId,
+                            onRetry: message.id.startsWith('temp-')
+                                ? () {
+                                    final notifier = ref.read(
+                                      chatMessagesProvider(roomId).notifier,
+                                    );
+
+                                    // Retry based on message type
+                                    if (message.messageType == 'TEXT') {
+                                      notifier.retryMessage(message);
+                                    } else {
+                                      // For image/file, can't retry (file disposed)
+                                      notifier.removeMessage(message.id);
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Không thể gửi lại file. Vui lòng chọn file mới.',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                    }
+                                  }
+                                : null,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  loading: () =>
+                      const Center(child: CircularProgressIndicator()),
+                  error: (error, stack) => Center(
+                    child: SelectableText.rich(
+                      TextSpan(
+                        text: 'Lỗi: ${error.toString()}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
-            // Message input
-            MessageInput(
-              controller: textController,
-              onSend: () async {
-                final content = textController.text.trim();
-                if (content.isEmpty) return;
+              // Message input
+              MessageInput(
+                controller: textController,
+                onSend: () async {
+                  final content = textController.text.trim();
+                  if (content.isEmpty) return;
 
-                try {
-                  // Clear input immediately
-                  textController.clear();
+                  try {
+                    // Clear input immediately
+                    textController.clear();
 
-                  // Send message
-                  await ref
-                      .read(chatMessagesProvider(roomId).notifier)
-                      .sendMessage(content, messageType: 'TEXT');
-
-                  // Scroll to bottom
-                  _scrollToBottom(scrollController);
-                } catch (e) {
-                  // Show error
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Lỗi: ${e.toString()}'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-              onPickImage: () async {
-                try {
-                  // Show image source options
-                  final source = await showDialog<ImageSource>(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Chọn hình ảnh từ'),
-                      content: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ListTile(
-                            leading: const Icon(Icons.camera_alt),
-                            title: const Text('Camera'),
-                            onTap: () =>
-                                Navigator.pop(context, ImageSource.camera),
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.photo_library),
-                            title: const Text('Thư viện'),
-                            onTap: () =>
-                                Navigator.pop(context, ImageSource.gallery),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-
-                  if (source == null) return;
-
-                  // Make sure keyboard is hidden before opening system pickers
-                  FocusScope.of(context).unfocus();
-
-                  // Pick image - image_picker handles permissions automatically on iOS
-                  final picker = ImagePicker();
-                  final pickedFile = await picker.pickImage(
-                    source: source,
-                    maxWidth: 1920,
-                    maxHeight: 1920,
-                    imageQuality: 85,
-                  );
-
-                  if (pickedFile == null) return;
-
-                  // Show preview and send
-                  final file = File(pickedFile.path);
-                  final caption = await _showImagePreview(context, file);
-
-                  if (caption != null) {
+                    // Send message
                     await ref
                         .read(chatMessagesProvider(roomId).notifier)
-                        .sendImageMessage(file, caption: caption);
+                        .sendMessage(content, messageType: 'TEXT');
+
+                    // Scroll to bottom
                     _scrollToBottom(scrollController);
-                  }
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Lỗi chọn hình ảnh: $e'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
-              },
-              onPickFile: () async {
-                try {
-                  // ensure keyboard is hidden before opening file picker
-                  FocusScope.of(context).unfocus();
-                  // Note: FilePicker.platform.pickFiles() uses system file picker
-                  // No permission needed on Android 10+ (Scoped Storage)
-                  // Permission handled automatically by the system
-
-                  // Pick file
-                  final result = await FilePicker.platform.pickFiles(
-                    type: FileType.any,
-                    allowMultiple: false,
-                  );
-
-                  if (result == null || result.files.isEmpty) return;
-
-                  final file = File(result.files.first.path!);
-
-                  // Check file size (max 10MB)
-                  final fileSize = await file.length();
-                  if (fileSize > 10 * 1024 * 1024) {
+                  } catch (e) {
+                    // Show error
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('File quá lớn. Tối đa 10MB'),
+                        SnackBar(
+                          content: Text('Lỗi: ${e.toString()}'),
                           backgroundColor: Colors.red,
                         ),
                       );
                     }
-                    return;
                   }
-
-                  // Send file
-                  await ref
-                      .read(chatMessagesProvider(roomId).notifier)
-                      .sendFileMessage(file);
-                  _scrollToBottom(scrollController);
-                } catch (e) {
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Lỗi chọn file: $e'),
-                        backgroundColor: Colors.red,
+                },
+                onPickImage: () async {
+                  try {
+                    // Show image source options
+                    final source = await showDialog<ImageSource>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Chọn hình ảnh từ'),
+                        content: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ListTile(
+                              leading: const Icon(Icons.camera_alt),
+                              title: const Text('Camera'),
+                              onTap: () =>
+                                  Navigator.pop(context, ImageSource.camera),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.photo_library),
+                              title: const Text('Thư viện'),
+                              onTap: () =>
+                                  Navigator.pop(context, ImageSource.gallery),
+                            ),
+                          ],
+                        ),
                       ),
                     );
+
+                    if (source == null) return;
+
+                    // Make sure keyboard is hidden before opening system pickers
+                    FocusScope.of(context).unfocus();
+
+                    // Pick image - image_picker handles permissions automatically on iOS
+                    final picker = ImagePicker();
+                    final pickedFile = await picker.pickImage(
+                      source: source,
+                      maxWidth: 1920,
+                      maxHeight: 1920,
+                      imageQuality: 85,
+                    );
+
+                    if (pickedFile == null) return;
+
+                    // Show preview and send
+                    final file = File(pickedFile.path);
+                    final caption = await _showImagePreview(context, file);
+
+                    if (caption != null) {
+                      await ref
+                          .read(chatMessagesProvider(roomId).notifier)
+                          .sendImageMessage(file, caption: caption);
+                      _scrollToBottom(scrollController);
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Lỗi chọn hình ảnh: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
                   }
-                }
-              },
-            ),
-          ],
+                },
+                onPickFile: () async {
+                  try {
+                    // ensure keyboard is hidden before opening file picker
+                    FocusScope.of(context).unfocus();
+                    // Note: FilePicker.platform.pickFiles() uses system file picker
+                    // No permission needed on Android 10+ (Scoped Storage)
+                    // Permission handled automatically by the system
+
+                    // Pick file
+                    final result = await FilePicker.platform.pickFiles(
+                      type: FileType.any,
+                      allowMultiple: false,
+                    );
+
+                    if (result == null || result.files.isEmpty) return;
+
+                    final file = File(result.files.first.path!);
+
+                    // Check file size (max 10MB)
+                    final fileSize = await file.length();
+                    if (fileSize > 10 * 1024 * 1024) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('File quá lớn. Tối đa 10MB'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                      return;
+                    }
+
+                    // Send file
+                    await ref
+                        .read(chatMessagesProvider(roomId).notifier)
+                        .sendFileMessage(file);
+                    _scrollToBottom(scrollController);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Lỗi chọn file: $e'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

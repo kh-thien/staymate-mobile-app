@@ -40,7 +40,7 @@ class InvoicePage extends HookConsumerWidget {
     }, [tabController]);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surfaceContainerLowest,
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(48),
         child: Container(
@@ -68,14 +68,30 @@ class InvoicePage extends HookConsumerWidget {
           ),
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
-        children: const [
-          _InvoiceListView(),
-          _InvoiceListView(),
-          _InvoiceListView(),
-          _InvoiceListView(),
-        ],
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+          child: TabBarView(
+            controller: tabController,
+            children: const [
+              _InvoiceListView(),
+              _InvoiceListView(),
+              _InvoiceListView(),
+              _InvoiceListView(),
+            ],
+          ),
+        ),
       ),
     );
   }

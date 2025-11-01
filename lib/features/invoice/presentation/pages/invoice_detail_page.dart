@@ -13,15 +13,20 @@ class InvoiceDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final invoiceAsync = ref.watch(invoiceDetailProvider(billId));
-    final theme = Theme.of(context);
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surfaceContainerLowest,
-      extendBodyBehindAppBar: true,
+      backgroundColor: Colors.transparent,
+      // extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         centerTitle: false,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
           color: Colors.black,
@@ -36,25 +41,37 @@ class InvoiceDetailPage extends ConsumerWidget {
           ),
         ),
       ),
-      body: invoiceAsync.when(
-        data: (invoice) => _InvoiceDetailContent(invoice: invoice),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: SelectableText.rich(
-            TextSpan(
-              children: [
-                const TextSpan(
-                  text: 'Lỗi: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
-                ),
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          // borderRadius: const BorderRadius.only(
+          //   topLeft: Radius.circular(30),
+          //   topRight: Radius.circular(30),
+          // ),
+        ),
+        child: ClipRRect(
+          child: invoiceAsync.when(
+            data: (invoice) => _InvoiceDetailContent(invoice: invoice),
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
+              child: SelectableText.rich(
                 TextSpan(
-                  text: error.toString(),
-                  style: const TextStyle(color: Colors.red),
+                  children: [
+                    const TextSpan(
+                      text: 'Lỗi: ',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ),
+                    TextSpan(
+                      text: error.toString(),
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),
@@ -86,7 +103,7 @@ class _InvoiceDetailContent extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            SizedBox(height: MediaQuery.of(context).padding.top),
+            const SizedBox(height: 16),
             // Header card với gradient background
             Container(
               margin: const EdgeInsets.all(16),

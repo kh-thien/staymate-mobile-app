@@ -24,45 +24,63 @@ class ChatListPage extends ConsumerWidget {
     });
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: roomsAsync.when(
-        data: (rooms) {
-          if (rooms.isEmpty) {
-            return const ChatEmptyState(message: 'Chưa có cuộc trò chuyện nào');
-          }
+      backgroundColor: Colors.transparent,
+      body: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
+          ),
+          child: roomsAsync.when(
+            data: (rooms) {
+              if (rooms.isEmpty) {
+                return const ChatEmptyState(
+                  message: 'Chưa có cuộc trò chuyện nào',
+                );
+              }
 
-          return RefreshIndicator(
-            onRefresh: () async {
-              ref.invalidate(chatRoomsProvider);
-            },
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                8,
-                8,
-                8,
-                UIConstants.contentBottomPadding,
-              ),
-              child: ListView.builder(
-                itemCount: rooms.length,
-                itemBuilder: (context, index) {
-                  final room = rooms[index];
-                  return ChatRoomCard(
-                    room: room,
-                    onTap: () {
-                      context.go('/chat/${room.id}');
-                    },
-                  );
+              return RefreshIndicator(
+                onRefresh: () async {
+                  ref.invalidate(chatRoomsProvider);
                 },
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    8,
+                    20,
+                    8,
+                    UIConstants.contentBottomPadding,
+                  ),
+                  child: ListView.builder(
+                    itemCount: rooms.length,
+                    itemBuilder: (context, index) {
+                      final room = rooms[index];
+                      return ChatRoomCard(
+                        room: room,
+                        onTap: () {
+                          context.go('/chat/${room.id}');
+                        },
+                      );
+                    },
+                  ),
+                ),
+              );
+            },
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (error, stack) => Center(
+              child: SelectableText.rich(
+                TextSpan(
+                  text: 'Lỗi: ${error.toString()}',
+                  style: const TextStyle(color: Colors.red),
+                ),
               ),
-            ),
-          );
-        },
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stack) => Center(
-          child: SelectableText.rich(
-            TextSpan(
-              text: 'Lỗi: ${error.toString()}',
-              style: const TextStyle(color: Colors.red),
             ),
           ),
         ),

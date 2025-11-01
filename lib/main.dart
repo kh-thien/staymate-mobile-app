@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
@@ -10,6 +11,11 @@ import 'features/auth/presentation/bloc/auth_bloc_exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize date formatting for Vietnamese locale
+  await initializeDateFormatting('vi', null);
+  await initializeDateFormatting('vi_VN', null);
+
   await dotenv.load(fileName: ".env");
 
   // Suppress app_links plugin errors
