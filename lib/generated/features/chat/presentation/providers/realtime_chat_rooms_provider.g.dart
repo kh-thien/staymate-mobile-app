@@ -56,4 +56,4 @@ final class RealtimeChatRoomsProvider
   }
 }
 
-String _$realtimeChatRoomsHash() => r'd01d0c8b99218b403a0d9c76c3dbb051cfcda8a3';
+String _$realtimeChatRoomsHash() => r'729e198be5932a9e9a44055534d321d1f4768e1d';

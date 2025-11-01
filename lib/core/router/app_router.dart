@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:stay_mate/features/invoice/presentation/pages/invoice_page.dart';
+import 'package:stay_mate/features/report/presentation/pages/report_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/contract/presentation/pages/contract_page.dart';
 import '../../features/contract/presentation/pages/contract_detail_page.dart';
@@ -17,6 +19,9 @@ class AppRouter {
   static const String contractDetail = '/contract/:id';
   static const String chat = '/chat';
   static const String chatDetail = '/chat/:roomId';
+  static const String invoice = '/invoice';
+  static const String invoiceDetail = '/invoice/:invoiceId';
+  static const String report = '/report';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -89,6 +94,17 @@ class AppRouter {
                 },
               ),
             ],
+          ),
+
+          GoRoute(
+            path: invoice,
+            name: 'invoice',
+            builder: (context, state) => const InvoicePage(),
+          ),
+          GoRoute(
+            path: report,
+            name: 'report',
+            builder: (context, state) => const ReportPage(),
           ),
         ],
       ),

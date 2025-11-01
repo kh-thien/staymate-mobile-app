@@ -43,9 +43,9 @@ class CustomBottomNav extends StatelessWidget {
                 _buildNavItem(
                   icon: Icons.receipt_rounded,
                   label: 'Hóa đơn',
-                  isSelected: currentLocation == '/invoices',
+                  isSelected: currentLocation == '/invoice',
                   onTap: () {
-                    context.go('/invoices');
+                    context.go('/invoice');
                   },
                 ),
 
@@ -66,9 +66,9 @@ class CustomBottomNav extends StatelessWidget {
                 _buildNavItem(
                   icon: Icons.report_problem_rounded,
                   label: 'Sự cố',
-                  isSelected: currentLocation == '/reports',
+                  isSelected: currentLocation == '/report',
                   onTap: () {
-                    context.go('/reports');
+                    context.go('/report');
                   },
                 ),
               ],
