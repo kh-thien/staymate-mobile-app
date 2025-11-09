@@ -1,145 +1,92 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stay_mate/features/profile/presentation/profile_bottom_sheet.dart';
-import '../../features/auth/presentation/widgets/sign_in_bottom_sheet.dart';
 import '../../features/auth/presentation/bloc/auth_bloc_exports.dart';
 import 'user_avatar.dart';
+import 'internet_status_indicator.dart';
 
-class CustomAppBar extends StatefulWidget {
+class CustomAppBar extends ConsumerStatefulWidget {
   const CustomAppBar({super.key});
 
   @override
-  State<CustomAppBar> createState() => _CustomAppBarState();
+  ConsumerState<CustomAppBar> createState() => _CustomAppBarState();
 }
 
-class _CustomAppBarState extends State<CustomAppBar> {
-  bool _showWelcomeText = true;
-  Timer? _timer;
-  String? _lastAuthenticatedUserId;
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
-
-  void _startWelcomeTimer(String userId) {
-    // Only start timer if this is a new login (different user or first time)
-    if (_lastAuthenticatedUserId != userId) {
-      _lastAuthenticatedUserId = userId;
-      _showWelcomeText = true;
-
-      // Cancel existing timer if any
-      _timer?.cancel();
-
-      // Start 30 second timer
-      _timer = Timer(const Duration(seconds: 30), () {
-        if (mounted) {
-          setState(() {
-            _showWelcomeText = false;
-          });
-        }
-      });
-    }
-  }
-
+class _CustomAppBarState extends ConsumerState<CustomAppBar> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthBlocState>(
       builder: (context, state) {
-        String userName = '';
-        bool isLoggedIn = false;
-        String? userId;
+        final authenticatedState =
+            state is AuthAuthenticated ? state : null;
+        final isLoggedIn = authenticatedState != null;
 
-        if (state is AuthAuthenticated) {
-          userName = state.displayName;
-          isLoggedIn = true;
-          userId = state.user.id;
-
-          // Start timer when user is authenticated
-          _startWelcomeTimer(userId);
-        } else {
-          userName = 'tới StayMate!';
-          isLoggedIn = false;
-          _lastAuthenticatedUserId = null;
-          _showWelcomeText = true;
-          _timer?.cancel();
-        }
-
-        final authenticatedState = isLoggedIn
-            ? state as AuthAuthenticated
-            : null;
-
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+        return SafeArea(
+          bottom: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 8,
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                // Layout ban đầu - giữ nguyên như cũ
+                Row(
                   children: [
-                    if (isLoggedIn && _showWelcomeText) ...[
-                      const Text(
-                        'Chào mừng',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                    // Logo - Expanded để tránh overflow
+                    Expanded(
+                      child: SizedBox(
+                        height: 56,
+                        child: Image.asset(
+                          'lib/core/assets/images/staymate_text_logo-removebg.png',
+                          fit: BoxFit.contain,
+                          alignment: Alignment.centerLeft,
                         ),
                       ),
-                      Text(
-                        '$userName!',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                    ),
+                    const SizedBox(width: 8),
+                    // Action buttons
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          onPressed: () {
+                            context.push('/notifications');
+                          },
+                          icon: const Icon(Icons.notifications_rounded),
+                          iconSize: 24,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
                         ),
-                      ),
-                    ] else ...[
-                      SvgPicture.asset(
-                        'lib/core/assets/images/staymate_text_logo.svg',
-                        height: 70,
-                      ),
-                    ],
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => _showProfileBottomSheet(
+                            context,
+                            isLoggedIn,
+                          ),
+                          child: authenticatedState != null
+                              ? UserAvatar(
+                                  user: authenticatedState.user,
+                                  displayName: authenticatedState.displayName,
+                                  size: 24,
+                                  backgroundColor: Colors.blue,
+                                )
+                              : const Icon(
+                                  Icons.person_rounded,
+                                  size: 24,
+                                ),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: const Icon(
-                      Icons.notifications_rounded,
-                      color: Colors.black,
-                      size: 24,
-                    ),
-                    onPressed: () {},
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: isLoggedIn
-                        ? UserAvatar(
-                            user: authenticatedState!.user,
-                            displayName: authenticatedState.displayName,
-                            size: 24,
-                            backgroundColor: Colors.blue,
-                          )
-                        : const Icon(
-                            Icons.person_rounded,
-                            color: Colors.black,
-                            size: 24,
-                          ),
-                    onPressed: () {
-                      _showProfileBottomSheet(context, isLoggedIn);
-                    },
-                  ),
-                ],
-              ),
-            ],
+                // Internet Status Indicator - Overlay ở giữa
+                const InternetStatusIndicator(),
+              ],
+            ),
           ),
         );
       },
@@ -148,15 +95,8 @@ class _CustomAppBarState extends State<CustomAppBar> {
 
   void _showProfileBottomSheet(BuildContext context, bool isLoggedIn) {
     if (!isLoggedIn) {
-      // Hiển thị form đăng nhập/đăng ký nếu chưa đăng nhập
-      showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        backgroundColor: Colors.transparent,
-        enableDrag: true,
-        isDismissible: true,
-        builder: (context) => const SignInBottomSheet(),
-      );
+      // Navigate đến auth page nếu chưa đăng nhập
+      context.push('/auth');
     } else {
       // Hiển thị profile nếu đã đăng nhập
       showModalBottomSheet(

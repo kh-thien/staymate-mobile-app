@@ -1,6 +1,7 @@
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entities/invoice.dart';
+import '../../domain/entities/payment_account.dart';
 import '../../domain/repositories/invoice_repository.dart';
 import '../../data/datasources/invoice_remote_datasource.dart';
 import '../../data/repositories/invoice_repository_impl.dart';
@@ -59,4 +60,47 @@ Future<List<Invoice>> invoicesByStatus(Ref ref, BillStatus? status) async {
   }
 
   return repository.getInvoicesByStatus(status);
+}
+
+/// Get landlord's payment account for an invoice
+@riverpod
+Future<PaymentAccount?> landlordPaymentAccount(Ref ref, String billId) async {
+  print(
+    '🎯 Provider START: landlordPaymentAccount called with billId: $billId',
+  );
+  try {
+    final repository = ref.watch(invoiceRepositoryProvider);
+    print('🎯 Provider: Got repository, calling getLandlordPaymentAccount...');
+    final result = await repository.getLandlordPaymentAccount(billId);
+    print('🎯 Provider SUCCESS: Got result: ${result != null}');
+    return result;
+  } catch (e, stack) {
+    print('🎯 Provider ERROR: $e');
+    print('🎯 Provider STACK: $stack');
+    rethrow;
+  }
+}
+
+/// Get payment account from payment (receiving_account)
+@riverpod
+Future<PaymentAccount?> paymentAccountFromPayment(
+  Ref ref,
+  String billId,
+) async {
+  print(
+    '🎯 Provider START: paymentAccountFromPayment called with billId: $billId',
+  );
+  try {
+    final repository = ref.watch(invoiceRepositoryProvider);
+    print(
+      '🎯 Provider: Got repository, calling getPaymentAccountFromPayment...',
+    );
+    final result = await repository.getPaymentAccountFromPayment(billId);
+    print('🎯 Provider SUCCESS: Got result: ${result != null}');
+    return result;
+  } catch (e, stack) {
+    print('🎯 Provider ERROR: $e');
+    print('🎯 Provider STACK: $stack');
+    rethrow;
+  }
 }

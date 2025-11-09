@@ -38,6 +38,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     try {
       if (_authService.isLoggedIn) {
         final user = _authService.currentUser!;
+        
+        // Kiểm tra role và block admin khi check auth status
+        try {
+          await _authService.checkAndBlockAdmin(user.id);
+        } on AuthException catch (e) {
+          // Nếu là admin, emit error và return
+          emit(AuthError(message: e.message, code: e.statusCode));
+          return;
+        }
+        
         final displayName =
             user.userMetadata?['full_name'] as String? ??
             user.email?.split('@').first ??
@@ -48,7 +58,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
-      emit(AuthError(message: 'Failed to check auth status: $e'));
+      if (e is AuthException) {
+        emit(AuthError(message: e.message, code: e.statusCode));
+      } else {
+        emit(AuthError(message: 'Failed to check auth status: $e'));
+      }
     }
   }
 
@@ -59,6 +73,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     try {
       if (_authService.isLoggedIn) {
         final user = _authService.currentUser!;
+        
+        // Kiểm tra role và block admin khi auth state changed
+        try {
+          await _authService.checkAndBlockAdmin(user.id);
+        } on AuthException catch (e) {
+          // Nếu là admin, emit error và return
+          emit(AuthError(message: e.message, code: e.statusCode));
+          return;
+        }
+        
         final displayName =
             user.userMetadata?['full_name'] as String? ??
             user.email?.split('@').first ??
@@ -69,7 +93,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
-      emit(AuthError(message: 'Auth state change error: $e'));
+      if (e is AuthException) {
+        emit(AuthError(message: e.message, code: e.statusCode));
+      } else {
+        emit(AuthError(message: 'Auth state change error: $e'));
+      }
     }
   }
 
@@ -168,9 +196,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
       );
 
       if (response.user != null) {
-        emit(
-          AuthSignUpSuccess(user: response.user!, displayName: event.fullName),
-        );
+        // Kiểm tra xem email đã được xác nhận chưa
+        // Nếu session == null, có nghĩa là cần xác nhận email
+        if (response.session == null) {
+          // Email confirmation required
+          emit(
+            AuthEmailConfirmationRequired(
+              email: event.email,
+              message:
+                  'Đăng ký thành công! Vui lòng kiểm tra email và xác nhận tài khoản trước khi đăng nhập.',
+            ),
+          );
+        } else {
+          // Email đã được xác nhận (hoặc không cần confirmation)
+          emit(
+            AuthSignUpSuccess(user: response.user!, displayName: event.fullName),
+          );
+        }
       } else {
         emit(AuthUnauthenticated());
       }

@@ -26,9 +26,14 @@ Stream<void> realtimeChatRooms(Ref ref) {
         table: 'chat_messages',
         callback: (payload) {
           print('🔔 [RealtimeChatRooms] New message inserted');
-          // Refresh chat rooms list
+          // Refresh chat rooms list only if current state is not error
+          final currentState = ref.read(chatRoomsProvider);
+          if (!currentState.hasError) {
           ref.read(chatRoomsProvider.notifier).refresh();
           controller.add(null);
+          } else {
+            print('⚠️ [RealtimeChatRooms] Skipping refresh due to error state');
+          }
         },
       )
       .onPostgresChanges(
@@ -38,9 +43,14 @@ Stream<void> realtimeChatRooms(Ref ref) {
         callback: (payload) {
           print('🔔 [RealtimeChatRooms] Participant updated (mark as read)');
           print('   Payload: ${payload.newRecord}');
-          // Refresh chat rooms list
+          // Refresh chat rooms list only if current state is not error
+          final currentState = ref.read(chatRoomsProvider);
+          if (!currentState.hasError) {
           ref.read(chatRoomsProvider.notifier).refresh();
           controller.add(null);
+          } else {
+            print('⚠️ [RealtimeChatRooms] Skipping refresh due to error state');
+          }
         },
       )
       .subscribe();

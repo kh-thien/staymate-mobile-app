@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -6,57 +7,90 @@ import '../../domain/entities/maintenance.dart';
 import '../../domain/entities/maintenance_request.dart';
 import '../providers/maintenance_request_provider.dart';
 
-class ReportPage extends ConsumerWidget {
+class ReportPage extends HookConsumerWidget {
   const ReportPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        body: Container(
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Colors.white,
+    final tabController = useTabController(initialLength: 2);
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Column(
+        children: [
+          // Custom TabBar with modern design
+          ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
             ),
-          ),
-          child: Column(
-            children: [
-              // Tab Bar
-              Material(
-                color: Colors.white,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                child: TabBar(
-                  labelColor: const Color(0xFF6C63FF),
-                  unselectedLabelColor: Colors.grey,
-                  indicatorColor: const Color(0xFF6C63FF),
-                  indicatorWeight: 3,
-                  labelStyle: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
                   ),
-                  tabs: const [
-                    Tab(
-                      icon: Icon(Icons.report_problem_rounded),
-                      text: 'Báo cáo sự cố',
+                ],
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Container(
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
+                  child: TabBar(
+                    controller: tabController,
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: theme.colorScheme.primaryContainer,
                     ),
-                    Tab(
-                      icon: Icon(Icons.construction_rounded),
-                      text: 'Công việc bảo trì',
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    labelColor: theme.colorScheme.onPrimaryContainer,
+                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                    labelStyle: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
                     ),
-                  ],
+                    unselectedLabelStyle: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
+                    tabs: const [
+                      Tab(
+                        icon: Icon(Icons.report_problem_rounded, size: 18),
+                        text: 'Báo cáo sự cố',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.construction_rounded, size: 18),
+                        text: 'Công việc bảo trì',
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              // Tab Bar View
-              Expanded(
+            ),
+          ),
+          // TabBarView content
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLowest,
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
                 child: TabBarView(
+                  controller: tabController,
                   children: [
                     // Tab 1: Maintenance Requests
                     _MaintenanceRequestsTab(),
@@ -65,25 +99,30 @@ class ReportPage extends ConsumerWidget {
                   ],
                 ),
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).padding.bottom + 80,
-          ),
-          child: FloatingActionButton.extended(
-            onPressed: () {
-              context.push('/report/create');
-            },
-            backgroundColor: const Color(0xFF6C63FF),
-            icon: const Icon(Icons.report_problem_rounded, size: 22),
-            label: const Text(
-              'Tạo báo cáo sự cố',
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
-            elevation: 6,
           ),
+        ],
+      ),
+      floatingActionButton: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom + 80,
+        ),
+        child: FloatingActionButton.extended(
+          onPressed: () {
+            context.push('/report/create');
+          },
+          backgroundColor: const Color(0xFFEF4444),
+          foregroundColor: Colors.white,
+          icon: const Icon(Icons.report_problem_rounded, size: 22),
+          label: const Text(
+            'Tạo báo cáo sự cố',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          elevation: 6,
+          highlightElevation: 8,
         ),
       ),
     );
@@ -226,7 +265,7 @@ class _MaintenanceRequestsList extends StatelessWidget {
           bottom: MediaQuery.of(context).padding.bottom + 80,
         ),
         itemCount: requests.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, __) => const SizedBox(height: 16),
         itemBuilder: (context, index) {
           final request = requests[index];
           return _MaintenanceRequestCard(request: request);
@@ -248,17 +287,24 @@ class _MaintenanceRequestCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.zero,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white, Colors.grey.shade50],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 2.0,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+            spreadRadius: 0,
           ),
         ],
       ),
@@ -591,22 +637,32 @@ class _MaintenanceCard extends StatelessWidget {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
     final theme = Theme.of(context);
 
-    return Card(
+    return Container(
       margin: EdgeInsets.only(bottom: marginBottom),
-      elevation: 3,
-      shadowColor: Colors.black.withOpacity(0.1),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(16),
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Colors.white, Colors.grey.shade50],
-          ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 1.5,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -839,7 +895,6 @@ class _MaintenanceCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
     );
   }
 }

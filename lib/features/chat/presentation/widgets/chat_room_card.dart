@@ -17,9 +17,9 @@ class ChatRoomCard extends StatelessWidget {
         : null;
 
     final unreadCount = _getUnreadCount();
-    final displayName = _getDisplayName();
+    final address = _getAddress();
     final propertyName = room.room?.properties?.name ?? '';
-    final ownerName = room.room?.properties?.owner?.displayName ?? displayName;
+    final roomCode = room.room?.code;
     final ownerAvatar = room.room?.properties?.owner?.avatar;
 
     return InkWell(
@@ -39,20 +39,20 @@ class ChatRoomCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Owner Avatar - show network image or fallback to gradient
-            _buildOwnerAvatar(ownerAvatar, ownerName),
+            // Address Avatar - show location icon or property image
+            _buildAddressAvatar(ownerAvatar, address),
             const SizedBox(width: 14),
             // Content
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Room name with better typography
+                  // Address with better typography
                   Row(
                     children: [
                       Expanded(
                         child: Text(
-                          displayName,
+                          address,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: unreadCount > 0
@@ -61,7 +61,7 @@ class ChatRoomCard extends StatelessWidget {
                             color: Colors.black87,
                             height: 1.3,
                           ),
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -89,8 +89,8 @@ class ChatRoomCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 6),
-                  // Property name with icon
-                  if (propertyName.isNotEmpty) ...[
+                  // Property name with room code and icon
+                  if (propertyName.isNotEmpty || roomCode != null) ...[
                     Row(
                       children: [
                         Icon(
@@ -101,7 +101,13 @@ class ChatRoomCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            propertyName,
+                            propertyName.isNotEmpty && roomCode != null
+                                ? '$propertyName - $roomCode'
+                                : propertyName.isNotEmpty
+                                    ? propertyName
+                                    : roomCode != null
+                                        ? 'Phòng $roomCode'
+                                        : '',
                             style: TextStyle(
                               fontSize: 13,
                               color: Colors.grey[600],
@@ -184,12 +190,18 @@ class ChatRoomCard extends StatelessWidget {
     );
   }
 
-  String _getDisplayName() {
-    if (room.name.isNotEmpty) return room.name;
-    if (room.roomCode != null && room.roomCode!.isNotEmpty) {
-      return 'Phòng ${room.roomCode}';
+  String _getAddress() {
+    final property = room.room?.properties;
+    if (property != null) {
+      // Format: address, ward, city (excluding district)
+      final parts = <String>[
+        property.address,
+        if (property.ward != null && property.ward!.isNotEmpty) property.ward!,
+        if (property.city != null && property.city!.isNotEmpty) property.city!,
+      ];
+      return parts.join(', ');
     }
-    return 'Chat Room';
+    return 'Địa chỉ không xác định';
   }
 
   int _getUnreadCount() {
@@ -248,8 +260,8 @@ class ChatRoomCard extends StatelessWidget {
     }
   }
 
-  /// Build owner avatar with network image or fallback
-  Widget _buildOwnerAvatar(String? avatarUrl, String ownerName) {
+  /// Build address avatar with network image or fallback to location icon
+  Widget _buildAddressAvatar(String? avatarUrl, String address) {
     if (avatarUrl != null && avatarUrl.isNotEmpty) {
       // Show network image
       return Container(
@@ -272,8 +284,8 @@ class ChatRoomCard extends StatelessWidget {
             height: 56,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stack) {
-              // Fallback to letter avatar if image fails
-              return _buildLetterAvatar(ownerName);
+              // Fallback to location icon if image fails
+              return _buildLocationIcon();
             },
             loadingBuilder: (context, child, loadingProgress) {
               if (loadingProgress == null) return child;
@@ -299,13 +311,13 @@ class ChatRoomCard extends StatelessWidget {
         ),
       );
     } else {
-      // Fallback to letter avatar
-      return _buildLetterAvatar(ownerName);
+      // Fallback to location icon
+      return _buildLocationIcon();
     }
   }
 
-  /// Build letter avatar with gradient
-  Widget _buildLetterAvatar(String name) {
+  /// Build location icon with gradient
+  Widget _buildLocationIcon() {
     return Container(
       width: 56,
       height: 56,
@@ -324,14 +336,11 @@ class ChatRoomCard extends StatelessWidget {
           ),
         ],
       ),
-      child: Center(
-        child: Text(
-          name.isNotEmpty ? name[0].toUpperCase() : 'C',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+      child: const Center(
+        child: Icon(
+          Icons.location_on,
+          color: Colors.white,
+          size: 28,
         ),
       ),
     );

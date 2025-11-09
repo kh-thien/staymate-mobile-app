@@ -50,7 +50,7 @@ final class FilteredInvoicesProvider
   }
 }
 
-String _$filteredInvoicesHash() => r'03cfd4258788bbee255c3c81b174ed1f3037db6b';
+String _$filteredInvoicesHash() => r'910a8f361a4894adfab3db747a89a46f10cb3de6';
 
 /// Provide filtered invoices stream with realtime updates
 
@@ -95,4 +95,4 @@ final class FilteredInvoicesStreamProvider
 }
 
 String _$filteredInvoicesStreamHash() =>
-    r'1e6a2b54882e3bab9f203397993f94aec0289d3e';
+    r'dd61206c2e02bcbaf1a0e8a5f5aa35b45703f671';

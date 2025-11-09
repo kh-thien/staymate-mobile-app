@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/constants/ui_constants.dart';
 import '../../domain/entities/invoice.dart';
 import '../providers/invoice_filter_provider.dart';
 import '../providers/filtered_invoices_provider.dart';
@@ -12,7 +13,7 @@ class InvoicePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tabController = useTabController(initialLength: 4);
+    final tabController = useTabController(initialLength: 5);
     final theme = Theme.of(context);
 
     // Listen to tab changes and update filter
@@ -27,9 +28,12 @@ class InvoicePage extends HookConsumerWidget {
             notifier.showUnpaid();
             break;
           case 2:
-            notifier.showPaid();
+            notifier.showProcessing();
             break;
           case 3:
+            notifier.showPaid();
+            break;
+          case 4:
             notifier.showOverdue();
             break;
         }
@@ -40,65 +44,115 @@ class InvoicePage extends HookConsumerWidget {
     }, [tabController]);
 
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(48),
-        child: Container(
-          color: theme.colorScheme.surface,
-          child: SafeArea(
-            child: TabBar(
-              controller: tabController,
-              isScrollable: true,
-              indicatorWeight: 3,
-              labelStyle: const TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 14,
+      backgroundColor: Colors.transparent,
+      body: Column(
+        children: [
+          // Custom TabBar with modern design
+          ClipRRect(
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(24),
+              topRight: Radius.circular(24),
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surface,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              unselectedLabelStyle: const TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 14,
+              child: SafeArea(
+                bottom: false,
+                child: Container(
+                  height: 60,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: TabBar(
+                    controller: tabController,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: theme.colorScheme.primaryContainer,
+                    ),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    labelColor: theme.colorScheme.onPrimaryContainer,
+                    unselectedLabelColor: theme.colorScheme.onSurfaceVariant,
+                    labelStyle: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    ),
+                    unselectedLabelStyle: theme.textTheme.labelMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                      fontSize: 13,
+                    ),
+                    tabs: const [
+                      Tab(
+                        icon: Icon(Icons.receipt_long_rounded, size: 18),
+                        text: 'Tất cả',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.pending_actions_rounded, size: 18),
+                        text: 'Chưa TT',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.hourglass_empty_rounded, size: 18),
+                        text: 'Chờ duyệt',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.check_circle_rounded, size: 18),
+                        text: 'Đã TT',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.error_rounded, size: 18),
+                        text: 'Quá hạn',
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              tabs: const [
-                Tab(text: 'Tất cả'),
-                Tab(text: 'Chưa TT'),
-                Tab(text: 'Đã TT'),
-                Tab(text: 'Quá hạn'),
-              ],
             ),
           ),
-        ),
-      ),
-      body: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerLowest,
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
+          // TabBarView content
+          Expanded(
+            child: Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerLowest,
+                
+              ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(24),
+                  topRight: Radius.circular(24),
+                ),
+                child: TabBarView(
+                  controller: tabController,
+                  children: [
+                    _InvoiceListView(tabController: tabController),
+                    _InvoiceListView(tabController: tabController),
+                    _InvoiceListView(tabController: tabController),
+                    _InvoiceListView(tabController: tabController),
+                    _InvoiceListView(tabController: tabController),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-          ),
-          child: TabBarView(
-            controller: tabController,
-            children: const [
-              _InvoiceListView(),
-              _InvoiceListView(),
-              _InvoiceListView(),
-              _InvoiceListView(),
-            ],
-          ),
-        ),
+        ],
       ),
     );
   }
 }
 
 class _InvoiceListView extends ConsumerWidget {
-  const _InvoiceListView();
+  final TabController tabController;
+
+  const _InvoiceListView({required this.tabController});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -135,11 +189,19 @@ class _InvoiceListView extends ConsumerWidget {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: UIConstants.contentBottomPadding,
+            ),
             itemCount: invoices.length,
             itemBuilder: (context, index) {
               final invoice = invoices[index];
-              return _InvoiceCard(invoice: invoice);
+              return _InvoiceCard(
+                invoice: invoice,
+                tabController: tabController,
+              );
             },
           );
         },
@@ -168,13 +230,14 @@ class _InvoiceListView extends ConsumerWidget {
   }
 }
 
-class _InvoiceCard extends StatelessWidget {
+class _InvoiceCard extends ConsumerWidget {
   final Invoice invoice;
+  final TabController tabController;
 
-  const _InvoiceCard({required this.invoice});
+  const _InvoiceCard({required this.invoice, required this.tabController});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(
       locale: 'vi_VN',
@@ -186,30 +249,55 @@ class _InvoiceCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white, Colors.grey.shade50],
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 1.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 12,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {
-            Navigator.push(
+          onTap: () async {
+            final result = await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => InvoiceDetailPage(billId: invoice.id),
               ),
             );
+
+            // If result contains switchToTab, animate to that tab
+            print('📱 InvoicePage: Received result: $result');
+            if (result is Map && result['switchToTab'] != null) {
+              print('🔄 Switching to tab: ${result['switchToTab']}');
+
+              // Invalidate provider to refresh the list
+              print('♻️  Invalidating invoices provider...');
+              ref.invalidate(filteredInvoicesStreamProvider);
+
+              tabController.animateTo(result['switchToTab']);
+
+              // Show success message
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'Đã ghi nhận thanh toán. Chủ nhà sẽ xác nhận trong thời gian sớm nhất.',
+                    ),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
+              }
+            }
           },
           borderRadius: BorderRadius.circular(16),
           child: Padding(
@@ -237,10 +325,21 @@ class _InvoiceCard extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          if (invoice.name != null && invoice.name!.isNotEmpty)
+                            Text(
+                              invoice.name!,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          if (invoice.name != null && invoice.name!.isNotEmpty)
+                            const SizedBox(height: 4),
                           Text(
                             invoice.billNumber ?? 'N/A',
                             style: theme.textTheme.titleSmall?.copyWith(
                               fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -366,6 +465,12 @@ class _StatusBadge extends StatelessWidget {
         textColor = Colors.white;
         icon = Icons.schedule_rounded;
         text = 'Chưa TT';
+        break;
+      case BillStatus.processing:
+        backgroundColor = const Color(0xFF8B5CF6);
+        textColor = Colors.white;
+        icon = Icons.hourglass_empty_rounded;
+        text = 'Chờ duyệt';
         break;
       case BillStatus.overdue:
         backgroundColor = const Color(0xFFEF4444);

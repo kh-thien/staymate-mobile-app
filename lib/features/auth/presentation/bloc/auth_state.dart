@@ -36,3 +36,15 @@ class AuthSignUpSuccess extends AuthBlocState {
 
   AuthSignUpSuccess({required this.user, required this.displayName});
 }
+
+// Email confirmation required state
+class AuthEmailConfirmationRequired extends AuthBlocState {
+  final String email;
+  final String message;
+
+  AuthEmailConfirmationRequired({
+    required this.email,
+    this.message =
+        'Vui lòng kiểm tra email và xác nhận tài khoản trước khi đăng nhập.',
+  });
+}

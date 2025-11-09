@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../domain/entities/contract_entity.dart';
-import 'contract_info_row.dart';
 
-/// Widget hiển thị một hợp đồng dạng card
+/// Widget hiển thị một hợp đồng dạng card đơn giản, nhỏ gọn
 class ContractCard extends StatelessWidget {
   const ContractCard({super.key, required this.contract});
 
@@ -11,58 +10,61 @@ class ContractCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        context.pushNamed(
-          'contractDetail',
-          pathParameters: {'id': contract.id},
-        );
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withValues(alpha: 0.1),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
-            ),
-          ],
+    final theme = Theme.of(context);
+    final statusColor = _getStatusColor(contract.status);
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 1.5,
         ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+            spreadRadius: 0,
+          ),
+          BoxShadow(
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 4,
+            offset: const Offset(0, 1),
+            spreadRadius: 0,
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            context.pushNamed(
+              'contractDetail',
+              pathParameters: {'id': contract.id},
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(context),
-              const SizedBox(height: 16),
-              const Divider(),
-              const SizedBox(height: 12),
-              _buildInfoSection(),
-              const SizedBox(height: 12),
-              _buildActionButton(context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return Row(
+                // Header Row
+                Row(
       children: [
         Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: _getStatusColor(contract.status).withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+                        color: statusColor.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
-            Icons.assignment,
-            color: _getStatusColor(contract.status),
-            size: 24,
+                        Icons.description_rounded,
+                        color: statusColor,
+                        size: 20,
           ),
         ),
         const SizedBox(width: 12),
@@ -73,102 +75,142 @@ class ContractCard extends StatelessWidget {
               Text(
                 contract.contractNumber ??
                     'Hợp đồng #${contract.id.substring(0, 8)}',
-                style: const TextStyle(
-                  fontSize: 16,
+                            style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: Color(0xFF2D3748),
                 ),
+                            overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 4),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: _getStatusColor(
-                    contract.status,
-                  ).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(4),
+                          _StatusBadge(
+                            status: contract.status,
+                            statusInVietnamese: contract.statusInVietnamese,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                child: Text(
-                  contract.statusInVietnamese,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: _getStatusColor(contract.status),
-                    fontWeight: FontWeight.w600,
+                // Room info (nếu có)
+                if (contract.roomCode != null || contract.roomName != null) ...[
+                  const SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.home_rounded,
+                        size: 14,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          contract.roomDisplayName,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
+                  if (contract.formattedAddress != 'N/A') ...[
+                    const SizedBox(height: 4),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 20),
+                child: Text(
+                        contract.formattedAddress,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                    fontSize: 12,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ],
+                const SizedBox(height: 12),
+                // Info section
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        statusColor.withOpacity(0.08),
+                        statusColor.withOpacity(0.04),
+                      ],
+                    ),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Tiền thuê',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              '${_formatCurrency(contract.monthlyRent)}/tháng',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: statusColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (contract.startDate != null)
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                'Ngày bắt đầu',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w500,
+                  ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatDate(contract.startDate!),
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildInfoSection() {
-    return Column(
-      children: [
-        ContractInfoRow(
-          icon: Icons.calendar_today,
-          label: 'Ngày bắt đầu',
-          value: contract.startDate != null
-              ? _formatDate(contract.startDate!)
-              : 'Chưa xác định',
-        ),
-        const SizedBox(height: 8),
-        ContractInfoRow(
-          icon: Icons.event,
-          label: 'Ngày kết thúc',
-          value: contract.endDate != null
-              ? _formatDate(contract.endDate!)
-              : 'Chưa xác định',
-        ),
-        const SizedBox(height: 8),
-        ContractInfoRow(
-          icon: Icons.attach_money,
-          label: 'Tiền thuê',
-          value: '${_formatCurrency(contract.monthlyRent)}/tháng',
-        ),
-        const SizedBox(height: 8),
-        ContractInfoRow(
-          icon: Icons.account_balance_wallet,
-          label: 'Tiền cọc',
-          value: _formatCurrency(contract.deposit),
+                  ),
         ),
       ],
-    );
-  }
-
-  Widget _buildActionButton(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        TextButton.icon(
-          onPressed: () {
-            context.pushNamed(
-              'contractDetail',
-              pathParameters: {'id': contract.id},
-            );
-          },
-          icon: const Icon(Icons.arrow_forward, size: 16),
-          label: const Text('Xem chi tiết'),
-          style: TextButton.styleFrom(foregroundColor: const Color(0xFF4F46E5)),
+            ),
+          ),
         ),
-      ],
+      ),
     );
   }
 
   Color _getStatusColor(String status) {
-    switch (status) {
+    switch (status.toUpperCase()) {
       case 'ACTIVE':
-        return Colors.green;
+        return const Color(0xFF10B981);
       case 'DRAFT':
-        return Colors.orange;
+        return const Color(0xFFF59E0B);
       case 'EXPIRED':
-        return Colors.red;
+        return const Color(0xFFEF4444);
       case 'TERMINATED':
-        return Colors.grey;
+        return const Color(0xFF6B7280);
       default:
-        return Colors.blue;
+        return const Color(0xFF3B82F6);
     }
   }
 
@@ -178,5 +220,73 @@ class ContractCard extends StatelessWidget {
 
   String _formatCurrency(double amount) {
     return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ';
+  }
+}
+
+// Status badge widget
+class _StatusBadge extends StatelessWidget {
+  final String status;
+  final String statusInVietnamese;
+
+  const _StatusBadge({
+    required this.status,
+    required this.statusInVietnamese,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    Color backgroundColor;
+    Color textColor;
+    IconData icon;
+
+    switch (status.toUpperCase()) {
+      case 'ACTIVE':
+        backgroundColor = const Color(0xFF10B981);
+        textColor = Colors.white;
+        icon = Icons.check_circle_rounded;
+        break;
+      case 'DRAFT':
+        backgroundColor = const Color(0xFFF59E0B);
+        textColor = Colors.white;
+        icon = Icons.edit_rounded;
+        break;
+      case 'EXPIRED':
+        backgroundColor = const Color(0xFFEF4444);
+        textColor = Colors.white;
+        icon = Icons.schedule_rounded;
+        break;
+      case 'TERMINATED':
+        backgroundColor = const Color(0xFF6B7280);
+        textColor = Colors.white;
+        icon = Icons.cancel_rounded;
+        break;
+      default:
+        backgroundColor = const Color(0xFF3B82F6);
+        textColor = Colors.white;
+        icon = Icons.info_rounded;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: textColor),
+          const SizedBox(width: 4),
+          Text(
+            statusInVietnamese,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: textColor,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

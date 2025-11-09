@@ -9,6 +9,7 @@ class ContractModel {
     required this.id,
     required this.roomId,
     this.tenantId,
+    this.landlordId,
     this.contractNumber,
     required this.status,
     this.contractType,
@@ -32,6 +33,13 @@ class ContractModel {
     this.isEarlyTermination,
     this.terms,
     required this.createdAt,
+    this.updatedAt,
+    this.roomCode,
+    this.roomName,
+    this.propertyAddress,
+    this.propertyWard,
+    this.propertyCity,
+    this.propertyName,
   });
 
   final String id;
@@ -39,6 +47,8 @@ class ContractModel {
   final String roomId;
   @JsonKey(name: 'tenant_id')
   final String? tenantId;
+  @JsonKey(name: 'landlord_id')
+  final String? landlordId;
   @JsonKey(name: 'contract_number')
   final String? contractNumber;
   final String status;
@@ -73,8 +83,8 @@ class ContractModel {
   final bool? signedByLandlord;
   @JsonKey(name: 'signed_at')
   final DateTime? signedAt;
-  @JsonKey(name: 'termination_reason')
-  final String? terminationReason;
+  @JsonKey(name: 'termination_reason', unknownEnumValue: null)
+  final TerminationReason? terminationReason;
   @JsonKey(name: 'termination_note')
   final String? terminationNote;
   @JsonKey(name: 'is_early_termination')
@@ -82,6 +92,21 @@ class ContractModel {
   final String? terms;
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+  @JsonKey(name: 'updated_at')
+  final DateTime? updatedAt;
+  // Room and property info (from join)
+  @JsonKey(name: 'room_code', includeFromJson: true, includeToJson: false)
+  final String? roomCode;
+  @JsonKey(name: 'room_name', includeFromJson: true, includeToJson: false)
+  final String? roomName;
+  @JsonKey(name: 'property_address', includeFromJson: true, includeToJson: false)
+  final String? propertyAddress;
+  @JsonKey(name: 'property_ward', includeFromJson: true, includeToJson: false)
+  final String? propertyWard;
+  @JsonKey(name: 'property_city', includeFromJson: true, includeToJson: false)
+  final String? propertyCity;
+  @JsonKey(name: 'property_name', includeFromJson: true, includeToJson: false)
+  final String? propertyName;
 
   factory ContractModel.fromJson(Map<String, dynamic> json) =>
       _$ContractModelFromJson(json);
@@ -109,6 +134,7 @@ class ContractModel {
       id: id,
       roomId: roomId,
       tenantId: tenantId,
+      landlordId: landlordId,
       contractNumber: contractNumber,
       status: status,
       contractType: contractType,
@@ -132,6 +158,13 @@ class ContractModel {
       isEarlyTermination: isEarlyTermination,
       terms: terms,
       createdAt: createdAt,
+      updatedAt: updatedAt,
+      roomCode: roomCode,
+      roomName: roomName,
+      propertyAddress: propertyAddress,
+      propertyWard: propertyWard,
+      propertyCity: propertyCity,
+      propertyName: propertyName,
     );
   }
 }

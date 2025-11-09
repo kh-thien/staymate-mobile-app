@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-/// Chat AppBar with owner information
+/// Chat AppBar with address information
 class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String ownerName;
+  final String address;
   final String? ownerAvatar;
   final String? propertyName;
   final VoidCallback onOwnerTap;
@@ -10,7 +10,7 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   const ChatDetailAppBar({
     super.key,
-    required this.ownerName,
+    required this.address,
     this.ownerAvatar,
     this.propertyName,
     required this.onOwnerTap,
@@ -44,22 +44,22 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         onTap: onOwnerTap,
         child: Row(
           children: [
-            // Owner Avatar
-            _buildOwnerAvatar(ownerAvatar, ownerName),
+            // Property Avatar/Icon
+            _buildAddressAvatar(ownerAvatar, address),
             const SizedBox(width: 12),
-            // Owner Name
+            // Address
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    ownerName,
+                    address,
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: Colors.black87,
                     ),
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (propertyName != null)
@@ -85,8 +85,8 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  /// Build owner avatar widget
-  Widget _buildOwnerAvatar(String? avatarUrl, String ownerName) {
+  /// Build address avatar widget (location icon)
+  Widget _buildAddressAvatar(String? avatarUrl, String address) {
     if (avatarUrl != null && avatarUrl.isNotEmpty) {
       return ClipOval(
         child: Image.network(
@@ -95,17 +95,17 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
           height: 40,
           fit: BoxFit.cover,
           errorBuilder: (context, error, stack) {
-            return _buildLetterAvatar(ownerName);
+            return _buildLocationIcon();
           },
         ),
       );
     } else {
-      return _buildLetterAvatar(ownerName);
+      return _buildLocationIcon();
     }
   }
 
-  /// Build letter avatar
-  Widget _buildLetterAvatar(String name) {
+  /// Build location icon
+  Widget _buildLocationIcon() {
     return Container(
       width: 40,
       height: 40,
@@ -117,14 +117,11 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
         ),
         shape: BoxShape.circle,
       ),
-      child: Center(
-        child: Text(
-          name.isNotEmpty ? name[0].toUpperCase() : 'C',
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
+      child: const Center(
+        child: Icon(
+          Icons.location_on,
+          color: Colors.white,
+          size: 20,
         ),
       ),
     );

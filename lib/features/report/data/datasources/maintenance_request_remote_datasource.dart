@@ -313,22 +313,34 @@ class MaintenanceRequestRemoteDatasource {
 
   /// Get maintenance records for tenant's contracted properties
   /// Tenant can view maintenance progress (READ-ONLY) but NOT cancelled ones
+  /// Tenant can only see maintenance for their own rooms or property-level maintenance (room_id IS NULL)
   Future<List<MaintenanceModel>> getMaintenanceRecords() async {
     try {
-      // Step 1: Get active contracts to find property IDs
+      // Step 1: Get active contracts to find property IDs and room IDs
       final contracts = await getActiveContracts();
 
       if (contracts.isEmpty) {
         return [];
       }
 
-      // Step 2: Extract property IDs
+      // Step 2: Extract property IDs and room IDs
       final propertyIds = contracts
           .map((c) => c.propertyId)
           .whereType<String>()
+          .toSet()
+          .toList();
+
+      final roomIds = contracts
+          .map((c) => c.roomId)
+          .whereType<String>()
+          .toSet()
           .toList();
 
       // Step 3: Query maintenance table with filters
+      // Logic: Show maintenance if:
+      // 1. property_id matches AND (room_id IS NULL OR room_id matches tenant's rooms)
+      // 2. Status is NOT CANCELLED
+      // 3. deleted_at IS NULL
       final response = await _supabase
           .from('maintenance')
           .select('''
@@ -356,16 +368,29 @@ class MaintenanceRequestRemoteDatasource {
           .isFilter('deleted_at', null)
           .order('created_at', ascending: false);
 
-      print('✅ [DEBUG] Found ${response.length} maintenance records');
+      print('✅ [DEBUG] Found ${response.length} maintenance records before room filtering');
 
-      return response.map<MaintenanceModel>((json) {
+      // Step 4: Filter by room_id in application layer
+      // Keep records where room_id IS NULL (property-level maintenance) OR room_id is in tenant's rooms
+      final filteredResponse = (response as List).where((json) {
+        final roomId = json['room_id'] as String?;
+        // If room_id is NULL, it's property-level maintenance (show it)
+        if (roomId == null) {
+          return true;
+        }
+        // If room_id is not NULL, only show if it's in tenant's rooms
+        return roomIds.contains(roomId);
+      }).toList();
+
+      print('✅ [DEBUG] Found ${filteredResponse.length} maintenance records after room filtering');
+
+      return filteredResponse.map<MaintenanceModel>((json) {
         // Flatten nested JSON structure
-        final flattened = {
-          ...json,
-          'property_name': json['properties']?['name'],
-          'room_code': json['rooms']?['code'],
-          'room_name': json['rooms']?['name'],
-        };
+        final jsonMap = json as Map<String, dynamic>;
+        final flattened = Map<String, dynamic>.from(jsonMap);
+        flattened['property_name'] = jsonMap['properties']?['name'];
+        flattened['room_code'] = jsonMap['rooms']?['code'];
+        flattened['room_name'] = jsonMap['rooms']?['name'];
         flattened.remove('properties');
         flattened.remove('rooms');
 
@@ -382,7 +407,7 @@ class MaintenanceRequestRemoteDatasource {
     final controller = StreamController<List<MaintenanceModel>>();
 
     try {
-      // Step 1: Get active contracts to find property IDs
+      // Step 1: Get active contracts to find property IDs and room IDs
       final contracts = await getActiveContracts();
 
       if (contracts.isEmpty) {
@@ -390,10 +415,17 @@ class MaintenanceRequestRemoteDatasource {
         return;
       }
 
-      // Step 2: Extract property IDs
+      // Step 2: Extract property IDs and room IDs
       final propertyIds = contracts
           .map((c) => c.propertyId)
           .whereType<String>()
+          .toSet()
+          .toList();
+
+      final roomIds = contracts
+          .map((c) => c.roomId)
+          .whereType<String>()
+          .toSet()
           .toList();
 
       // Step 3: Subscribe to realtime updates
@@ -435,13 +467,25 @@ class MaintenanceRequestRemoteDatasource {
                     .isFilter('deleted_at', null)
                     .order('created_at', ascending: false);
 
-                final maintenances = response.map<MaintenanceModel>((json) {
-                  final flattened = {
-                    ...json,
-                    'property_name': json['properties']?['name'],
-                    'room_code': json['rooms']?['code'],
-                    'room_name': json['rooms']?['name'],
-                  };
+                // Filter by room_id in application layer
+                // Keep records where room_id IS NULL (property-level maintenance) OR room_id is in tenant's rooms
+                final filteredResponse = (response as List).where((json) {
+                  final jsonMap = json as Map<String, dynamic>;
+                  final roomId = jsonMap['room_id'] as String?;
+                  // If room_id is NULL, it's property-level maintenance (show it)
+                  if (roomId == null) {
+                    return true;
+                  }
+                  // If room_id is not NULL, only show if it's in tenant's rooms
+                  return roomIds.contains(roomId);
+                }).toList();
+
+                final maintenances = filteredResponse.map<MaintenanceModel>((json) {
+                  final jsonMap = json as Map<String, dynamic>;
+                  final flattened = Map<String, dynamic>.from(jsonMap);
+                  flattened['property_name'] = jsonMap['properties']?['name'];
+                  flattened['room_code'] = jsonMap['rooms']?['code'];
+                  flattened['room_name'] = jsonMap['rooms']?['name'];
                   flattened.remove('properties');
                   flattened.remove('rooms');
 

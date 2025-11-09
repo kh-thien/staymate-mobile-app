@@ -1,8 +1,41 @@
+import 'package:json_annotation/json_annotation.dart';
+
+enum TerminationReason {
+  @JsonValue('EXPIRED')
+  expired,
+  @JsonValue('VIOLATION')
+  violation,
+  @JsonValue('TENANT_REQUEST')
+  tenantRequest,
+  @JsonValue('LANDLORD_REQUEST')
+  landlordRequest,
+  @JsonValue('OTHER')
+  other,
+}
+
+extension TerminationReasonExtension on TerminationReason {
+  String get displayName {
+    switch (this) {
+      case TerminationReason.expired:
+        return 'Hết hạn';
+      case TerminationReason.violation:
+        return 'Vi phạm';
+      case TerminationReason.tenantRequest:
+        return 'Yêu cầu của khách thuê';
+      case TerminationReason.landlordRequest:
+        return 'Yêu cầu của chủ nhà';
+      case TerminationReason.other:
+        return 'Khác';
+    }
+  }
+}
+
 class ContractEntity {
   const ContractEntity({
     required this.id,
     required this.roomId,
     this.tenantId,
+    this.landlordId,
     this.contractNumber,
     required this.status,
     this.contractType,
@@ -26,11 +59,19 @@ class ContractEntity {
     this.isEarlyTermination,
     this.terms,
     required this.createdAt,
+    this.updatedAt,
+    this.roomCode,
+    this.roomName,
+    this.propertyAddress,
+    this.propertyWard,
+    this.propertyCity,
+    this.propertyName,
   });
 
   final String id;
   final String roomId;
   final String? tenantId;
+  final String? landlordId;
   final String? contractNumber;
   final String status;
   final String? contractType;
@@ -49,11 +90,19 @@ class ContractEntity {
   final bool? signedByTenant;
   final bool? signedByLandlord;
   final DateTime? signedAt;
-  final String? terminationReason;
+  final TerminationReason? terminationReason;
   final String? terminationNote;
   final bool? isEarlyTermination;
   final String? terms;
   final DateTime createdAt;
+  final DateTime? updatedAt;
+  // Room and property info
+  final String? roomCode;
+  final String? roomName;
+  final String? propertyAddress;
+  final String? propertyWard;
+  final String? propertyCity;
+  final String? propertyName;
 
   String get statusInVietnamese {
     switch (status.toUpperCase()) {
@@ -108,4 +157,31 @@ class ContractEntity {
       (signedByTenant ?? false) || (signedByLandlord ?? false);
   bool get isFullySigned =>
       (signedByTenant ?? false) && (signedByLandlord ?? false);
+
+  /// Get formatted room info: "Tên phòng - Mã phòng"
+  String get roomDisplayName {
+    if (roomName != null && roomName!.isNotEmpty && roomCode != null) {
+      return '$roomName - $roomCode';
+    } else if (roomCode != null) {
+      return roomCode!;
+    } else if (roomName != null && roomName!.isNotEmpty) {
+      return roomName!;
+    }
+    return 'N/A';
+  }
+
+  /// Get formatted address: "Địa chỉ, Ward, City"
+  String get formattedAddress {
+    final parts = <String>[];
+    if (propertyAddress != null && propertyAddress!.isNotEmpty) {
+      parts.add(propertyAddress!);
+    }
+    if (propertyWard != null && propertyWard!.isNotEmpty) {
+      parts.add(propertyWard!);
+    }
+    if (propertyCity != null && propertyCity!.isNotEmpty) {
+      parts.add(propertyCity!);
+    }
+    return parts.isNotEmpty ? parts.join(', ') : 'N/A';
+  }
 }

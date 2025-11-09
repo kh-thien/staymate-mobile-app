@@ -57,20 +57,39 @@ class ChatDetailPage extends HookConsumerWidget {
           // Silently fail - not critical
         }
       });
-      return null;
+      
+      // Mark as read when leaving chat (pop back)
+      return () {
+        Future.delayed(Duration.zero, () async {
+          try {
+            await ref.read(markAsReadProvider(roomId).future);
+          } catch (e) {
+            // Silently fail - not critical
+          }
+        });
+      };
     }, [roomId]);
 
-    final ownerName =
-        currentRoom?.room?.properties?.owner?.displayName ?? 'Chủ nhà';
-    final ownerAvatar = currentRoom?.room?.properties?.owner?.avatar;
-    final propertyName = currentRoom?.room?.properties?.name;
+    final property = currentRoom?.room?.properties;
+    // Format: address, ward, city (excluding district)
+    final address = property != null
+        ? [
+            property.address,
+            if (property.ward != null && property.ward!.isNotEmpty)
+              property.ward!,
+            if (property.city != null && property.city!.isNotEmpty)
+              property.city!,
+          ].join(', ')
+        : 'Địa chỉ không xác định';
+    final ownerAvatar = property?.owner?.avatar;
+    final propertyName = property?.name;
 
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: ChatDetailAppBar(
-          ownerName: ownerName,
+          address: address,
           ownerAvatar: ownerAvatar,
           propertyName: propertyName,
           onOwnerTap: () => _showOwnerDetail(context, currentRoom),
@@ -102,6 +121,14 @@ class ChatDetailPage extends HookConsumerWidget {
                             );
                             if (notifier.hasMore) {
                               notifier.loadMoreMessages();
+                            }
+                          }
+                          // Mark as read when scrolled to bottom (newest messages)
+                          if (scrollController.position.pixels == 0) {
+                            try {
+                              ref.read(markAsReadProvider(roomId).future);
+                            } catch (e) {
+                              // Silently fail
                             }
                           }
                         }

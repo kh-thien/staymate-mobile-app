@@ -9,7 +9,10 @@ part '../../../../generated/features/invoice/presentation/providers/filtered_inv
 @riverpod
 Future<List<Invoice>> filteredInvoices(Ref ref) async {
   final filter = ref.watch(invoiceFilterProvider);
-  return ref.watch(invoicesByStatusProvider(filter).future);
+  final invoices = await ref.watch(invoicesByStatusProvider(filter).future);
+  // Sort by createdAt descending (newest first)
+  invoices.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return invoices;
 }
 
 /// Provide filtered invoices stream with realtime updates
@@ -20,17 +23,20 @@ Stream<List<Invoice>> filteredInvoicesStream(Ref ref) async* {
   final allInvoicesStream = repository.streamInvoices();
 
   await for (final invoices in allInvoicesStream) {
+    List<Invoice> result;
     if (filter == null) {
-      yield invoices;
+      result = invoices;
     } else {
       // Filter locally from stream
-      final filtered = invoices.where((invoice) {
+      result = invoices.where((invoice) {
         if (filter == BillStatus.overdue) {
           return invoice.isOverdue;
         }
         return invoice.status == filter;
       }).toList();
-      yield filtered;
     }
+    // Sort by createdAt descending (newest first)
+    result.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    yield result;
   }
 }

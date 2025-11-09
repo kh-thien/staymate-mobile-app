@@ -23,6 +23,10 @@ class InvoiceFilter extends _$InvoiceFilter {
     state = BillStatus.unpaid;
   }
 
+  void showProcessing() {
+    state = BillStatus.processing;
+  }
+
   void showPaid() {
     state = BillStatus.paid;
   }

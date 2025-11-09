@@ -1,9 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'bill_item.dart';
 
 enum BillStatus {
   @JsonValue('UNPAID')
   unpaid,
+  @JsonValue('PROCESSING')
+  processing,
   @JsonValue('PAID')
   paid,
   @JsonValue('OVERDUE')
@@ -14,12 +17,45 @@ enum BillStatus {
   partiallyPaid,
 }
 
+extension BillStatusExtension on BillStatus {
+  String toJsonValue() {
+    switch (this) {
+      case BillStatus.unpaid:
+        return 'UNPAID';
+      case BillStatus.processing:
+        return 'PROCESSING';
+      case BillStatus.paid:
+        return 'PAID';
+      case BillStatus.overdue:
+        return 'OVERDUE';
+      case BillStatus.cancelled:
+        return 'CANCELLED';
+      case BillStatus.partiallyPaid:
+        return 'PARTIALLY_PAID';
+    }
+  }
+}
+
+enum PaymentMethod {
+  @JsonValue('BANK_TRANSFER')
+  bankTransfer,
+  @JsonValue('QRCODE')
+  qrCode,
+  @JsonValue('MOMO')
+  momo,
+  @JsonValue('ZALO_PAY')
+  zaloPay,
+  @JsonValue('CARD')
+  card,
+}
+
 class Invoice {
   final String id;
   final String? contractId;
   final String? roomId;
   final String? tenantId;
   final String? billNumber;
+  final String? name;
   final BillStatus status;
   final DateTime? periodStart;
   final DateTime? periodEnd;
@@ -42,6 +78,7 @@ class Invoice {
     this.roomId,
     this.tenantId,
     this.billNumber,
+    this.name,
     required this.status,
     this.periodStart,
     this.periodEnd,
@@ -65,12 +102,24 @@ class Invoice {
     return status == BillStatus.unpaid && DateTime.now().isAfter(dueDate!);
   }
 
-  double get finalAmount => totalAmount + lateFee - discountAmount;
+  // total_amount trong DB đã là số tiền cuối cùng (đã cộng late_fee và trừ discount_amount)
+  // late_fee và discount_amount chỉ để hiển thị thông tin, không dùng để tính toán
+  double get finalAmount => totalAmount;
+
+  // Tổng tiền từ các bill items (tổng tiền gốc trước khi giảm và cộng phí)
+  double get itemsTotalAmount {
+    return items.fold<double>(
+      0.0,
+      (sum, item) => sum + (item.amount),
+    );
+  }
 
   String get statusText {
     switch (status) {
       case BillStatus.unpaid:
         return isOverdue ? 'Quá hạn' : 'Chưa thanh toán';
+      case BillStatus.processing:
+        return 'Chờ duyệt';
       case BillStatus.paid:
         return 'Đã thanh toán';
       case BillStatus.overdue:
@@ -80,5 +129,55 @@ class Invoice {
       case BillStatus.partiallyPaid:
         return 'Thanh toán một phần';
     }
+  }
+}
+
+// Helper extension for PaymentMethod
+extension PaymentMethodExtension on PaymentMethod {
+  String get displayName {
+    switch (this) {
+      case PaymentMethod.bankTransfer:
+        return 'Chuyển khoản ngân hàng';
+      case PaymentMethod.qrCode:
+        return 'Quét mã QR';
+      case PaymentMethod.momo:
+        return 'Ví MoMo';
+      case PaymentMethod.zaloPay:
+        return 'ZaloPay';
+      case PaymentMethod.card:
+        return 'Thẻ tín dụng/Ghi nợ';
+    }
+  }
+
+  IconData get icon {
+    switch (this) {
+      case PaymentMethod.bankTransfer:
+        return Icons.account_balance;
+      case PaymentMethod.qrCode:
+        return Icons.qr_code_2;
+      case PaymentMethod.momo:
+        return Icons.account_balance_wallet;
+      case PaymentMethod.zaloPay:
+        return Icons.payment;
+      case PaymentMethod.card:
+        return Icons.credit_card;
+    }
+  }
+
+  bool get isAvailable {
+    switch (this) {
+      case PaymentMethod.bankTransfer:
+      case PaymentMethod.qrCode:
+        return true;
+      case PaymentMethod.momo:
+      case PaymentMethod.zaloPay:
+      case PaymentMethod.card:
+        return false; // Chưa phát triển
+    }
+  }
+
+  String? get comingSoonText {
+    if (isAvailable) return null;
+    return 'Sắp ra mắt';
   }
 }

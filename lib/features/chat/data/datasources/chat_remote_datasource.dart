@@ -18,7 +18,11 @@ class ChatRemoteDatasource {
         throw Exception('User not authenticated');
       }
 
+      print('🔍 [ChatDS] Getting chat rooms for user: ${user.id}');
+      
       // Query with nested relations including owner info and participants
+      // Note: rooms!inner means only rooms with room_id that exists
+      // If room_id is null or room doesn't exist, it will be excluded
       final response = await _supabase
           .from('chat_rooms')
           .select('''
@@ -34,7 +38,6 @@ class ChatRemoteDatasource {
             address,
             city,
             ward,
-            district,
             owner_id,
             owner:users(
               userid,
@@ -61,7 +64,10 @@ class ChatRemoteDatasource {
           .order('updated_at', ascending: false)
           .limit(50);
 
+      print('📊 [ChatDS] Query returned ${(response as List).length} chat rooms');
+
       if ((response as List).isEmpty) {
+        print('⚠️ [ChatDS] No chat rooms found');
         return [];
       }
 
@@ -72,9 +78,20 @@ class ChatRemoteDatasource {
         try {
           // Fetch last message AND unread messages for this room
           final roomId = json['id'] as String;
+          print('📋 [ChatDS] Processing room: ${json['name']} (${roomId})');
+
+          // Check if user is in participants
+          final participants = json['chat_participants'] as List?;
+          if (participants != null) {
+            final userParticipant = participants.where((p) => p['user_id'] == user.id).toList();
+            if (userParticipant.isEmpty) {
+              print('⚠️ [ChatDS] User ${user.id} not found in participants for room ${roomId}');
+            } else {
+              print('✅ [ChatDS] User found in participants: ${userParticipant.length}');
+            }
+          }
 
           // Get user's lastReadAt from participants
-          final participants = json['chat_participants'] as List?;
           DateTime? userLastReadAt;
 
           if (participants != null) {
@@ -340,12 +357,21 @@ class ChatRemoteDatasource {
 
       // Update last_read_at in chat_participants using UTC time
       final now = DateTime.now().toUtc();
+      print('📖 [ChatDS] Marking room $roomId as read for user ${user.id} at ${now.toIso8601String()}');
 
-      await _supabase
+      final response = await _supabase
           .from('chat_participants')
           .update({'last_read_at': now.toIso8601String()})
           .eq('room_id', roomId)
-          .eq('user_id', user.id);
+          .eq('user_id', user.id)
+          .select();
+
+      print('📖 [ChatDS] Update response: $response');
+
+      if (response.isEmpty) {
+        print('⚠️ [ChatDS] No rows updated - RLS policy may have blocked the update');
+        throw Exception('Failed to mark as read: No rows updated');
+      }
 
       // Mark notifications as read
       await _supabase
@@ -353,7 +379,10 @@ class ChatRemoteDatasource {
           .update({'is_read': true})
           .eq('room_id', roomId)
           .eq('user_id', user.id);
+      
+      print('✅ [ChatDS] Successfully marked room as read');
     } catch (e) {
+      print('❌ [ChatDS] Error marking as read: $e');
       throw Exception('Failed to mark as read: $e');
     }
   }

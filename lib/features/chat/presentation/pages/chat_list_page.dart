@@ -75,10 +75,25 @@ class ChatListPage extends ConsumerWidget {
             },
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (error, stack) => Center(
-              child: SelectableText.rich(
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SelectableText.rich(
                 TextSpan(
                   text: 'Lỗi: ${error.toString()}',
                   style: const TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        ref.invalidate(chatRoomsProvider);
+                      },
+                      child: const Text('Thử lại'),
+                    ),
+                  ],
                 ),
               ),
             ),

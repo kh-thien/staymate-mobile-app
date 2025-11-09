@@ -1,8 +1,31 @@
 import '../../domain/entities/invoice.dart';
+import '../../domain/entities/payment_account.dart';
 import '../../domain/repositories/invoice_repository.dart';
 import '../datasources/invoice_remote_datasource.dart';
 
 class InvoiceRepositoryImpl implements InvoiceRepository {
+  @override
+  Future<void> confirmPayment({
+    required String billNumberOrId,
+    required BillStatus newStatus,
+    required PaymentMethod paymentMethod,
+    required DateTime paymentDate,
+  }) async {
+    try {
+      print('🏪 Repository: Confirming payment for bill $billNumberOrId');
+      await _remoteDatasource.confirmPayment(
+        billNumberOrId: billNumberOrId,
+        newStatus: newStatus,
+        paymentMethod: paymentMethod,
+        paymentDate: paymentDate,
+      );
+      print('🏪 Repository: Payment confirmation completed successfully');
+    } catch (e) {
+      print('🏪 Repository: Payment confirmation failed - $e');
+      throw Exception('Failed to confirm payment: $e');
+    }
+  }
+
   final InvoiceRemoteDatasource _remoteDatasource;
 
   InvoiceRepositoryImpl(this._remoteDatasource);
@@ -49,6 +72,72 @@ class InvoiceRepositoryImpl implements InvoiceRepository {
       }).toList();
     } catch (e) {
       throw Exception('Failed to get invoices by status: $e');
+    }
+  }
+
+  @override
+  Future<PaymentAccount?> getLandlordPaymentAccount(String billId) async {
+    try {
+      print('🏪 Repository: Getting payment account for bill: $billId');
+      final model = await _remoteDatasource.getLandlordPaymentAccount(billId);
+      print('🏪 Repository: Got payment account model: ${model != null}');
+      return model?.toEntity();
+    } catch (e) {
+      print('🏪 Repository ERROR: $e');
+      throw Exception('Failed to get landlord payment account: $e');
+    }
+  }
+
+  @override
+  Future<void> updateBillStatus(
+    String billNumberOrId,
+    BillStatus newStatus,
+  ) async {
+    try {
+      print(
+        '🏪 Repository: Updating bill $billNumberOrId to ${newStatus.name}',
+      );
+      await _remoteDatasource.updateBillStatus(billNumberOrId, newStatus);
+      print('🏪 Repository: Update completed successfully');
+    } catch (e) {
+      print('🏪 Repository: Update failed - $e');
+      throw Exception('Failed to update bill status: $e');
+    }
+  }
+
+  /// Update payment method and payment date for payments
+  @override
+  Future<void> updatePaymentInfo({
+    required String billId,
+    required PaymentMethod paymentMethod,
+    required DateTime paymentDate,
+    String? receivingAccountId,
+  }) async {
+    try {
+      print('🏪 Repository: Updating payment info for bill $billId');
+      await _remoteDatasource.updatePaymentInfo(
+        billId: billId,
+        paymentMethod: paymentMethod,
+        paymentDate: paymentDate,
+        receivingAccountId: receivingAccountId,
+      );
+      print('🏪 Repository: Payment info update completed successfully');
+    } catch (e) {
+      print('🏪 Repository: Payment info update failed - $e');
+      throw Exception('Failed to update payment info: $e');
+    }
+  }
+
+  /// Get payment account from payment (receiving_account)
+  @override
+  Future<PaymentAccount?> getPaymentAccountFromPayment(String billId) async {
+    try {
+      print('🏪 Repository: Getting payment account from payment for bill $billId');
+      final model = await _remoteDatasource.getPaymentAccountFromPayment(billId);
+      return model?.toEntity();
+    } catch (e) {
+      print('🏪 Repository ERROR: $e');
+      throw Exception('Failed to get payment account from payment: $e');
     }
   }
 }

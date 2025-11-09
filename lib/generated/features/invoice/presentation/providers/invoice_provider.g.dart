@@ -408,3 +408,175 @@ final class InvoicesByStatusFamily extends $Family
   @override
   String toString() => r'invoicesByStatusProvider';
 }
+
+/// Get landlord's payment account for an invoice
+
+@ProviderFor(landlordPaymentAccount)
+const landlordPaymentAccountProvider = LandlordPaymentAccountFamily._();
+
+/// Get landlord's payment account for an invoice
+
+final class LandlordPaymentAccountProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaymentAccount?>,
+          PaymentAccount?,
+          FutureOr<PaymentAccount?>
+        >
+    with $FutureModifier<PaymentAccount?>, $FutureProvider<PaymentAccount?> {
+  /// Get landlord's payment account for an invoice
+  const LandlordPaymentAccountProvider._({
+    required LandlordPaymentAccountFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'landlordPaymentAccountProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$landlordPaymentAccountHash();
+
+  @override
+  String toString() {
+    return r'landlordPaymentAccountProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PaymentAccount?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaymentAccount?> create(Ref ref) {
+    final argument = this.argument as String;
+    return landlordPaymentAccount(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is LandlordPaymentAccountProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$landlordPaymentAccountHash() =>
+    r'e6a62f16dacd945d932e3362255cb3b07ecb2747';
+
+/// Get landlord's payment account for an invoice
+
+final class LandlordPaymentAccountFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<PaymentAccount?>, String> {
+  const LandlordPaymentAccountFamily._()
+    : super(
+        retry: null,
+        name: r'landlordPaymentAccountProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Get landlord's payment account for an invoice
+
+  LandlordPaymentAccountProvider call(String billId) =>
+      LandlordPaymentAccountProvider._(argument: billId, from: this);
+
+  @override
+  String toString() => r'landlordPaymentAccountProvider';
+}
+
+/// Get payment account from payment (receiving_account)
+
+@ProviderFor(paymentAccountFromPayment)
+const paymentAccountFromPaymentProvider = PaymentAccountFromPaymentFamily._();
+
+/// Get payment account from payment (receiving_account)
+
+final class PaymentAccountFromPaymentProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<PaymentAccount?>,
+          PaymentAccount?,
+          FutureOr<PaymentAccount?>
+        >
+    with $FutureModifier<PaymentAccount?>, $FutureProvider<PaymentAccount?> {
+  /// Get payment account from payment (receiving_account)
+  const PaymentAccountFromPaymentProvider._({
+    required PaymentAccountFromPaymentFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'paymentAccountFromPaymentProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$paymentAccountFromPaymentHash();
+
+  @override
+  String toString() {
+    return r'paymentAccountFromPaymentProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<PaymentAccount?> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<PaymentAccount?> create(Ref ref) {
+    final argument = this.argument as String;
+    return paymentAccountFromPayment(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is PaymentAccountFromPaymentProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$paymentAccountFromPaymentHash() =>
+    r'25d3d1e73746be24859ea8193cc9b0d34ff8f9d8';
+
+/// Get payment account from payment (receiving_account)
+
+final class PaymentAccountFromPaymentFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<PaymentAccount?>, String> {
+  const PaymentAccountFromPaymentFamily._()
+    : super(
+        retry: null,
+        name: r'paymentAccountFromPaymentProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Get payment account from payment (receiving_account)
+
+  PaymentAccountFromPaymentProvider call(String billId) =>
+      PaymentAccountFromPaymentProvider._(argument: billId, from: this);
+
+  @override
+  String toString() => r'paymentAccountFromPaymentProvider';
+}

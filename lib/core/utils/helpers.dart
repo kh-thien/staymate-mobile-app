@@ -17,7 +17,7 @@ class DateTimeUtils {
         dateTime.month == now.month &&
         dateTime.day == now.day;
   }
-
+  
   static String getTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);

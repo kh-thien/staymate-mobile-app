@@ -12,6 +12,7 @@ InvoiceModel _$InvoiceModelFromJson(Map<String, dynamic> json) => InvoiceModel(
   roomId: json['room_id'] as String?,
   tenantId: json['tenant_id'] as String?,
   billNumber: json['bill_number'] as String?,
+  name: json['name'] as String?,
   status: $enumDecode(
     _$BillStatusEnumMap,
     json['status'],
@@ -50,6 +51,7 @@ Map<String, dynamic> _$InvoiceModelToJson(InvoiceModel instance) =>
       'room_id': instance.roomId,
       'tenant_id': instance.tenantId,
       'bill_number': instance.billNumber,
+      'name': instance.name,
       'status': _$BillStatusEnumMap[instance.status]!,
       'period_start': instance.periodStart?.toIso8601String(),
       'period_end': instance.periodEnd?.toIso8601String(),
@@ -69,6 +71,7 @@ Map<String, dynamic> _$InvoiceModelToJson(InvoiceModel instance) =>
 
 const _$BillStatusEnumMap = {
   BillStatus.unpaid: 'UNPAID',
+  BillStatus.processing: 'PROCESSING',
   BillStatus.paid: 'PAID',
   BillStatus.overdue: 'OVERDUE',
   BillStatus.cancelled: 'CANCELLED',

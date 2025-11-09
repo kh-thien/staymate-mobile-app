@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:stay_mate/core/services/auth_service.dart';
+import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
 
 
 class ProfileBottomSheet extends StatelessWidget {
@@ -107,28 +109,8 @@ class ProfileBottomSheet extends StatelessWidget {
                           },
                         ),
                         _buildMenuItem(
-                          icon: Icons.description_outlined,
-                          title: 'Hợp đồng của tôi',
-                          onTap: () {
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                              // TODO: Navigate to contracts page
-                            }
-                          },
-                        ),
-                        _buildMenuItem(
-                          icon: Icons.payment_outlined,
-                          title: 'Thanh toán',
-                          onTap: () {
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                              // TODO: Navigate to payments page
-                            }
-                          },
-                        ),
-                        _buildMenuItem(
                           icon: Icons.settings_outlined,
-                          title: 'Cài đặt',
+                          title: 'Tài khoản',
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
@@ -137,12 +119,22 @@ class ProfileBottomSheet extends StatelessWidget {
                           },
                         ),
                         _buildMenuItem(
-                          icon: Icons.help_outline,
-                          title: 'Trợ giúp',
+                          icon: Icons.notifications_outlined,
+                          title: 'Thông báo',
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
-                              // TODO: Navigate to help page
+                              context.push('/notification-settings');
+                            }
+                          },
+                        ),
+                        _buildMenuItem(
+                          icon: Icons.help_outline,
+                          title: 'Trợ giúp',
+                          onTap: () async {
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              await _openEmailSupport(context);
                             }
                           },
                         ),
@@ -201,5 +193,38 @@ class ProfileBottomSheet extends StatelessWidget {
         tileColor: Colors.grey[50],
       ),
     );
+  }
+
+  Future<void> _openEmailSupport(BuildContext context) async {
+    final String email = 'staymate.home@gmail.com';
+    final String subject = 'Hỗ trợ từ ứng dụng Stay Mate';
+    final Uri emailUri = Uri.parse('mailto:$email?subject=${Uri.encodeComponent(subject)}');
+
+    try {
+      if (await canLaunchUrl(emailUri)) {
+        await launchUrl(
+          emailUri,
+          mode: LaunchMode.externalApplication,
+        );
+      } else {
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Không thể mở ứng dụng email. Vui lòng kiểm tra cài đặt của bạn.',
+              ),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Đã xảy ra lỗi: $e'),
+          ),
+        );
+      }
+    }
   }
 }

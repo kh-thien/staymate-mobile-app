@@ -44,7 +44,7 @@ final class InvoiceFilterProvider
   }
 }
 
-String _$invoiceFilterHash() => r'f28d4db30a9c90257f33487a132f9dd6b46d3568';
+String _$invoiceFilterHash() => r'7632cf56172b79e9aaef1297e650f46ff72cc5a8';
 
 /// Filter state for invoice tabs
 

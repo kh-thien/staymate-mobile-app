@@ -11,6 +11,7 @@ class InvoiceModel {
   final String? roomId;
   final String? tenantId;
   final String? billNumber;
+  final String? name;
   @JsonKey(unknownEnumValue: BillStatus.unpaid)
   final BillStatus status;
   final DateTime? periodStart;
@@ -34,6 +35,7 @@ class InvoiceModel {
     this.roomId,
     this.tenantId,
     this.billNumber,
+    this.name,
     required this.status,
     this.periodStart,
     this.periodEnd,
@@ -63,6 +65,7 @@ class InvoiceModel {
       roomId: roomId,
       tenantId: tenantId,
       billNumber: billNumber,
+      name: name,
       status: status,
       periodStart: periodStart,
       periodEnd: periodEnd,

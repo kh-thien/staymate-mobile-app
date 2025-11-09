@@ -1,5 +1,7 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/constants/ui_constants.dart';
 import '../../../../core/services/auth_service.dart';
 import '../../data/repositories/contract_repository_impl.dart';
 import '../../domain/usecases/get_user_contracts_usecase.dart';
@@ -20,6 +22,11 @@ class _ContractPageState extends State<ContractPage> {
   @override
   void initState() {
     super.initState();
+    print('🚀🚀🚀 [ContractPage] initState called 🚀🚀🚀');
+    developer.log(
+      '🚀 [ContractPage] initState called',
+      name: 'ContractPage',
+    );
     _authService = AuthService();
 
     // Initialize cubit
@@ -32,9 +39,30 @@ class _ContractPageState extends State<ContractPage> {
   }
 
   Future<void> _loadContracts() async {
+    print('📞📞📞 [ContractPage] _loadContracts called 📞📞📞');
+    developer.log(
+      '📞 [ContractPage] _loadContracts called',
+      name: 'ContractPage',
+    );
     final user = _authService.currentUser;
+    print('👤👤👤 [ContractPage] Current user: ${user?.id ?? "NULL"} 👤👤👤');
+    developer.log(
+      '👤 [ContractPage] Current user: ${user?.id ?? "NULL"}',
+      name: 'ContractPage',
+    );
     if (user != null) {
+      print('✅✅✅ [ContractPage] User found, loading contracts for: ${user.id} ✅✅✅');
+      developer.log(
+        '✅ [ContractPage] User found, loading contracts for: ${user.id}',
+        name: 'ContractPage',
+      );
       await _contractCubit.loadUserContracts(user.id);
+    } else {
+      print('⚠️⚠️⚠️ [ContractPage] User is NULL, cannot load contracts ⚠️⚠️⚠️');
+      developer.log(
+        '⚠️ [ContractPage] User is NULL, cannot load contracts',
+        name: 'ContractPage',
+      );
     }
   }
 
@@ -65,44 +93,38 @@ class _ContractPageState extends State<ContractPage> {
           child: BlocBuilder<ContractCubit, ContractState>(
             bloc: _contractCubit,
             builder: (context, state) {
+              developer.log(
+                '🔄 [ContractPage] State changed: ${state.runtimeType}',
+                name: 'ContractPage',
+              );
+              if (state is ContractLoaded) {
+                developer.log(
+                  '📋 [ContractPage] Contracts loaded: ${state.contracts.length}',
+                  name: 'ContractPage',
+                );
+              } else if (state is ContractError) {
+                developer.log(
+                  '❌ [ContractPage] Error: ${state.message}',
+                  name: 'ContractPage',
+                );
+              }
               return Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
-                    const Text(
-                      'Theo dõi hợp đồng trọ',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3748),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Quản lý và theo dõi tình trạng hợp đồng thuê trọ',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 30),
-
-                    // Contract Status Card
-                    ContractStatusCard(state: state),
-                    const SizedBox(height: 20),
-
                     // Contracts List
                     if (state is ContractLoading)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
+                      const Expanded(
+                        child: Center(
                           child: CircularProgressIndicator(),
                         ),
                       )
                     else if (state is ContractLoaded &&
                         state.contracts.isNotEmpty) ...[
-                      const Text(
-                        'Danh sách hợp đồng',
-                        style: TextStyle(
+                      Text(
+                        'Danh sách hợp đồng (${state.contracts.length})',
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF2D3748),
@@ -111,6 +133,9 @@ class _ContractPageState extends State<ContractPage> {
                       const SizedBox(height: 16),
                       Expanded(
                         child: ListView.separated(
+                          padding: EdgeInsets.only(
+                            bottom: UIConstants.bottomNavTotalHeight,
+                          ),
                           itemCount: state.contracts.length,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 12),
@@ -127,8 +152,12 @@ class _ContractPageState extends State<ContractPage> {
                           onRetry: _loadContracts,
                         ),
                       )
-                    else
+                    else ...[
+                      // Contract Status Card - chỉ hiển thị khi không có hợp đồng
+                      ContractStatusCard(state: state),
+                      const SizedBox(height: 20),
                       const Expanded(child: ContractEmptyState()),
+                    ],
                   ],
                 ),
               );

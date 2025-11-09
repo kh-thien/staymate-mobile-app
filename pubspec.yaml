@@ -34,6 +34,13 @@ dependencies:
   riverpod_annotation: ^3.0.2
   hooks_riverpod: ^3.0.2
   flutter_hooks: ^0.21.3
+  firebase_core: ^4.2.1
+  firebase_messaging: ^16.0.4
+  url_launcher: ^6.3.1
+  package_info_plus: ^8.1.1
+  device_info_plus: ^11.1.0
+  connectivity_plus: ^6.0.5
+  font_awesome_flutter: ^10.7.0
 
 dev_dependencies:
   flutter_test:
