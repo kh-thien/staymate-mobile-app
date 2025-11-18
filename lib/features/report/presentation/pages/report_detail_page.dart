@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/maintenance_request.dart';
 import '../providers/maintenance_request_provider.dart';
 
@@ -15,20 +17,30 @@ class ReportDetailPage extends ConsumerWidget {
     WidgetRef ref,
     String id,
   ) async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận huỷ'),
-        content: const Text('Bạn có chắc muốn huỷ báo cáo này?'),
+        title: Text(
+          AppLocalizationsHelper.translate('confirmCancel', languageCode),
+        ),
+        content: Text(
+          AppLocalizationsHelper.translate('confirmCancelReport', languageCode),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Không'),
+            child: Text(
+              AppLocalizationsHelper.translate('no', languageCode),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Huỷ báo cáo'),
+            child: Text(
+              AppLocalizationsHelper.translate('cancelReport', languageCode),
+            ),
           ),
         ],
       ),
@@ -44,9 +56,16 @@ class ReportDetailPage extends ConsumerWidget {
           // Show snackbar after navigation
           await Future.delayed(const Duration(milliseconds: 100));
           if (context.mounted) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Đã huỷ báo cáo'),
+              SnackBar(
+                content: Text(
+                  AppLocalizationsHelper.translate(
+                    'reportCancelled',
+                    languageCode,
+                  ),
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -54,8 +73,15 @@ class ReportDetailPage extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
+          final locale = ref.read(appLocaleProvider);
+          final languageCode = locale.languageCode;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(
+                '${AppLocalizationsHelper.translate('error', languageCode)}: $e',
+              ),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       }
@@ -67,22 +93,33 @@ class ReportDetailPage extends ConsumerWidget {
     WidgetRef ref,
     String id,
   ) async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Xác nhận xoá'),
-        content: const Text(
-          'Bạn có chắc muốn xoá báo cáo này? Hành động này không thể hoàn tác.',
+        title: Text(
+          AppLocalizationsHelper.translate('confirmDelete', languageCode),
+        ),
+        content: Text(
+          AppLocalizationsHelper.translate(
+            'confirmDeleteReport',
+            languageCode,
+          ),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('Không'),
+            child: Text(
+              AppLocalizationsHelper.translate('no', languageCode),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Xoá'),
+            child: Text(
+              AppLocalizationsHelper.translate('delete', languageCode),
+            ),
           ),
         ],
       ),
@@ -98,9 +135,16 @@ class ReportDetailPage extends ConsumerWidget {
           // Show snackbar after navigation
           await Future.delayed(const Duration(milliseconds: 100));
           if (context.mounted) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Đã xoá báo cáo'),
+              SnackBar(
+                content: Text(
+                  AppLocalizationsHelper.translate(
+                    'reportDeleted',
+                    languageCode,
+                  ),
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -108,8 +152,15 @@ class ReportDetailPage extends ConsumerWidget {
         }
       } catch (e) {
         if (context.mounted) {
+          final locale = ref.read(appLocaleProvider);
+          final languageCode = locale.languageCode;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(
+                '${AppLocalizationsHelper.translate('error', languageCode)}: $e',
+              ),
+              backgroundColor: Colors.red,
+            ),
           );
         }
       }
@@ -141,16 +192,32 @@ class ReportDetailPage extends ConsumerWidget {
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Chi tiết sự cố',
-          style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold),
+        title: Builder(
+          builder: (context) {
+            final locale = ref.watch(appLocaleProvider);
+            final languageCode = locale.languageCode;
+            return Text(
+              AppLocalizationsHelper.translate('reportDetail', languageCode),
+              style: const TextStyle(
+                color: Colors.black87,
+                fontWeight: FontWeight.bold,
+              ),
+            );
+          },
         ),
         centerTitle: true,
         actions: maintenanceRequestsAsync.when(
           data: (requests) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
             final request = requests.firstWhere(
               (r) => r.id == reportId,
-              orElse: () => throw Exception('Không tìm thấy báo cáo'),
+              orElse: () => throw Exception(
+                AppLocalizationsHelper.translate(
+                  'reportNotFound',
+                  languageCode,
+                ),
+              ),
             );
 
             return [
@@ -162,14 +229,20 @@ class ReportDetailPage extends ConsumerWidget {
                     color: Colors.black87,
                   ),
                   onPressed: () => _showCancelDialog(context, ref, request.id),
-                  tooltip: 'Huỷ báo cáo',
+                  tooltip: AppLocalizationsHelper.translate(
+                    'cancelReport',
+                    languageCode,
+                  ),
                 ),
               // Show delete button if status is cancelled
               if (request.status == MaintenanceRequestStatus.cancelled)
                 IconButton(
                   icon: const Icon(Icons.delete_outline, color: Colors.black87),
                   onPressed: () => _showDeleteDialog(context, ref, request.id),
-                  tooltip: 'Xoá báo cáo',
+                  tooltip: AppLocalizationsHelper.translate(
+                    'deleteReport',
+                    languageCode,
+                  ),
                 ),
             ];
           },
@@ -181,9 +254,16 @@ class ReportDetailPage extends ConsumerWidget {
         color: Colors.white,
         child: maintenanceRequestsAsync.when(
           data: (requests) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
             final request = requests.firstWhere(
               (r) => r.id == reportId,
-              orElse: () => throw Exception('Không tìm thấy báo cáo'),
+              orElse: () => throw Exception(
+                AppLocalizationsHelper.translate(
+                  'reportNotFound',
+                  languageCode,
+                ),
+              ),
             );
 
             return SingleChildScrollView(
@@ -192,24 +272,40 @@ class ReportDetailPage extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Status Card
-                  _StatusCard(request: request, theme: theme),
+                  _StatusCard(
+                    request: request,
+                    theme: theme,
+                    languageCode: languageCode,
+                  ),
                   const SizedBox(height: 16),
 
                   // Property & Room Info
                   _InfoCard(
-                    title: 'Thông tin vị trí',
+                    title: AppLocalizationsHelper.translate(
+                      'locationInfo',
+                      languageCode,
+                    ),
                     icon: Icons.location_on_rounded,
+                    languageCode: languageCode,
                     children: [
                       _InfoRow(
-                        label: 'Bất động sản',
+                        label: AppLocalizationsHelper.translate(
+                          'property',
+                          languageCode,
+                        ),
                         value: request.propertyName ?? 'N/A',
                         icon: Icons.apartment_rounded,
+                        languageCode: languageCode,
                       ),
                       const SizedBox(height: 12),
                       _InfoRow(
-                        label: 'Phòng',
+                        label: AppLocalizationsHelper.translate(
+                          'room',
+                          languageCode,
+                        ),
                         value: request.roomCode ?? request.roomName ?? 'N/A',
                         icon: Icons.meeting_room_rounded,
+                        languageCode: languageCode,
                       ),
                     ],
                   ),
@@ -217,8 +313,12 @@ class ReportDetailPage extends ConsumerWidget {
 
                   // Description
                   _InfoCard(
-                    title: 'Mô tả sự cố',
+                    title: AppLocalizationsHelper.translate(
+                      'issueDescription',
+                      languageCode,
+                    ),
                     icon: Icons.description_rounded,
+                    languageCode: languageCode,
                     children: [
                       Text(
                         request.description,
@@ -233,8 +333,12 @@ class ReportDetailPage extends ConsumerWidget {
                   // Image if available
                   if (request.urlReport != null) ...[
                     _InfoCard(
-                      title: 'Ảnh minh họa',
+                      title: AppLocalizationsHelper.translate(
+                        'illustrationImage',
+                        languageCode,
+                      ),
                       icon: Icons.image_rounded,
+                      languageCode: languageCode,
                       children: [
                         ClipRRect(
                           borderRadius: BorderRadius.circular(12),
@@ -257,7 +361,10 @@ class ReportDetailPage extends ConsumerWidget {
                                       ),
                                       const SizedBox(height: 8),
                                       Text(
-                                        'Không thể tải ảnh',
+                                        AppLocalizationsHelper.translate(
+                                          'cannotLoadImage',
+                                          languageCode,
+                                        ),
                                         style: TextStyle(
                                           color: Colors.grey.shade600,
                                         ),
@@ -276,23 +383,35 @@ class ReportDetailPage extends ConsumerWidget {
 
                   // Timeline
                   _InfoCard(
-                    title: 'Thông tin thời gian',
+                    title: AppLocalizationsHelper.translate(
+                      'timeInfo',
+                      languageCode,
+                    ),
                     icon: Icons.access_time_rounded,
+                    languageCode: languageCode,
                     children: [
                       _InfoRow(
-                        label: 'Ngày báo cáo',
+                        label: AppLocalizationsHelper.translate(
+                          'reportDate',
+                          languageCode,
+                        ),
                         value: DateFormat(
                           'dd/MM/yyyy HH:mm',
                         ).format(request.createdAt),
                         icon: Icons.calendar_today_rounded,
+                        languageCode: languageCode,
                       ),
                       const SizedBox(height: 12),
                       _InfoRow(
-                        label: 'Cập nhật lần cuối',
+                        label: AppLocalizationsHelper.translate(
+                          'lastUpdated',
+                          languageCode,
+                        ),
                         value: DateFormat(
                           'dd/MM/yyyy HH:mm',
                         ).format(request.updatedAt),
                         icon: Icons.update_rounded,
+                        languageCode: languageCode,
                       ),
                     ],
                   ),
@@ -302,38 +421,47 @@ class ReportDetailPage extends ConsumerWidget {
             );
           },
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline_rounded,
-                  size: 64,
-                  color: Colors.red.shade300,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'Lỗi: ${error.toString()}',
-                  style: TextStyle(color: Colors.red.shade700),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
-          ),
+          error: (error, stack) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 64,
+                    color: Colors.red.shade300,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '${AppLocalizationsHelper.translate('error', languageCode)}: ${error.toString()}',
+                    style: TextStyle(color: Colors.red.shade700),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
 
-class _StatusCard extends StatelessWidget {
+class _StatusCard extends ConsumerWidget {
   final MaintenanceRequest request;
   final ThemeData theme;
+  final String languageCode;
 
-  const _StatusCard({required this.request, required this.theme});
+  const _StatusCard({
+    required this.request,
+    required this.theme,
+    required this.languageCode,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     Color statusColor;
     IconData statusIcon;
 
@@ -381,7 +509,7 @@ class _StatusCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Trạng thái',
+                  AppLocalizationsHelper.translate('status', languageCode),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.grey.shade600,
                   ),
@@ -407,11 +535,13 @@ class _InfoCard extends StatelessWidget {
   final String title;
   final IconData icon;
   final List<Widget> children;
+  final String languageCode;
 
   const _InfoCard({
     required this.title,
     required this.icon,
     required this.children,
+    required this.languageCode,
   });
 
   @override
@@ -458,11 +588,13 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
   final IconData icon;
+  final String languageCode;
 
   const _InfoRow({
     required this.label,
     required this.value,
     required this.icon,
+    required this.languageCode,
   });
 
   @override

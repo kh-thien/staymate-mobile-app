@@ -1,23 +1,31 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/constants/ui_constants.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../data/repositories/contract_repository_impl.dart';
 import '../../domain/usecases/get_user_contracts_usecase.dart';
 import '../providers/contract_provider.dart';
 import '../widgets/widgets.dart';
+import '../../../../shared/widgets/skeleton_loader.dart';
+import '../../../../shared/providers/app_bar_provider.dart';
 
-class ContractPage extends StatefulWidget {
+
+class ContractPage extends ConsumerStatefulWidget {
   const ContractPage({super.key});
 
   @override
-  State<ContractPage> createState() => _ContractPageState();
+  ConsumerState<ContractPage> createState() => _ContractPageState();
 }
 
-class _ContractPageState extends State<ContractPage> {
+class _ContractPageState extends ConsumerState<ContractPage> {
   late ContractCubit _contractCubit;
   late AuthService _authService;
+  AppBarNotifier? _appBarNotifier;
+  bool _hasSetTitle = false;
 
   @override
   void initState() {
@@ -36,6 +44,26 @@ class _ContractPageState extends State<ContractPage> {
 
     // Load contracts
     _loadContracts();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Set AppBar title only once when page is first mounted
+    if (!_hasSetTitle) {
+      _appBarNotifier ??= ref.read(appBarProvider.notifier);
+      final locale = ref.read(appLocaleProvider);
+      final languageCode = locale.languageCode;
+      // Use a small delay to ensure this runs after any cleanup from previous page
+      Future.microtask(() {
+        if (mounted) {
+          _appBarNotifier?.updateTitle(
+            AppLocalizationsHelper.translate('contracts', languageCode),
+          );
+        }
+      });
+      _hasSetTitle = true;
+    }
   }
 
   Future<void> _loadContracts() async {
@@ -69,11 +97,28 @@ class _ContractPageState extends State<ContractPage> {
   @override
   void dispose() {
     _contractCubit.close();
+    // Don't reset title here - let the next page set its own title
+    // Only HomePage should reset title to show logo
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Update title if locale changes (but only if we've already set it)
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+    
+    if (_hasSetTitle && _appBarNotifier != null && mounted) {
+      // Update title when locale changes, but use a small delay to avoid race conditions
+      Future.microtask(() {
+        if (mounted) {
+          _appBarNotifier?.updateTitle(
+            AppLocalizationsHelper.translate('contracts', languageCode),
+          );
+        }
+      });
+    }
+    
     return Container(
       width: double.infinity,
       decoration: const BoxDecoration(
@@ -115,15 +160,27 @@ class _ContractPageState extends State<ContractPage> {
                   children: [
                     // Contracts List
                     if (state is ContractLoading)
-                      const Expanded(
-                        child: Center(
-                          child: CircularProgressIndicator(),
+                      Expanded(
+                        child: ListView.separated(
+                          padding: EdgeInsets.only(
+                            bottom: UIConstants.bottomNavTotalHeight,
+                          ),
+                          itemCount: 5,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            return const ContractCardSkeleton();
+                          },
                         ),
                       )
                     else if (state is ContractLoaded &&
                         state.contracts.isNotEmpty) ...[
                       Text(
-                        'Danh sách hợp đồng (${state.contracts.length})',
+                        AppLocalizationsHelper.translateWithParams(
+                          'contractListCount',
+                          ref.watch(appLocaleProvider).languageCode,
+                          {'count': state.contracts.length.toString()},
+                        ),
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -156,7 +213,7 @@ class _ContractPageState extends State<ContractPage> {
                       // Contract Status Card - chỉ hiển thị khi không có hợp đồng
                       ContractStatusCard(state: state),
                       const SizedBox(height: 20),
-                      const Expanded(child: ContractEmptyState()),
+                      Expanded(child: ContractEmptyState(onRefresh: _loadContracts)),
                     ],
                   ],
                 ),

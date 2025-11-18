@@ -1,23 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/chat_room.dart';
 
 /// Chat room card widget for displaying room in list
-class ChatRoomCard extends StatelessWidget {
+class ChatRoomCard extends ConsumerWidget {
   final ChatRoom room;
   final VoidCallback onTap;
 
   const ChatRoomCard({super.key, required this.room, required this.onTap});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final lastMessage = room.messages?.isNotEmpty == true
         ? room.messages!.first
         : null;
 
     final unreadCount = _getUnreadCount();
-    final address = _getAddress();
+    final address = _getAddress(languageCode);
     final propertyName = room.room?.properties?.name ?? '';
     final roomCode = room.room?.code;
     final ownerAvatar = room.room?.properties?.owner?.avatar;
@@ -77,7 +82,7 @@ class ChatRoomCard extends StatelessWidget {
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Text(
-                            _formatTimestamp(lastMessage.createdAt),
+                            _formatTimestamp(lastMessage.createdAt, languageCode),
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w500,
@@ -106,7 +111,7 @@ class ChatRoomCard extends StatelessWidget {
                                 : propertyName.isNotEmpty
                                     ? propertyName
                                     : roomCode != null
-                                        ? 'Phòng $roomCode'
+                                        ? '${AppLocalizationsHelper.translate('roomLabel', languageCode)} $roomCode'
                                         : '',
                             style: TextStyle(
                               fontSize: 13,
@@ -130,8 +135,12 @@ class ChatRoomCard extends StatelessWidget {
                               ? _formatLastMessage(
                                   lastMessage.content,
                                   lastMessage.messageType,
+                                  languageCode,
                                 )
-                              : 'Chưa có tin nhắn',
+                              : AppLocalizationsHelper.translate(
+                                  'noMessagesYet',
+                                  languageCode,
+                                ),
                           style: TextStyle(
                             fontSize: 14,
                             color: unreadCount > 0
@@ -190,7 +199,7 @@ class ChatRoomCard extends StatelessWidget {
     );
   }
 
-  String _getAddress() {
+  String _getAddress(String languageCode) {
     final property = room.room?.properties;
     if (property != null) {
       // Format: address, ward, city (excluding district)
@@ -201,7 +210,7 @@ class ChatRoomCard extends StatelessWidget {
       ];
       return parts.join(', ');
     }
-    return 'Địa chỉ không xác định';
+    return AppLocalizationsHelper.translate('addressUnknown', languageCode);
   }
 
   int _getUnreadCount() {
@@ -232,18 +241,18 @@ class ChatRoomCard extends StatelessWidget {
     }
   }
 
-  String _formatLastMessage(String content, String messageType) {
+  String _formatLastMessage(String content, String messageType, String languageCode) {
     switch (messageType) {
       case 'IMAGE':
-        return '📷 Hình ảnh';
+        return '📷 ${AppLocalizationsHelper.translate('image', languageCode)}';
       case 'FILE':
-        return '📎 File';
+        return '📎 ${AppLocalizationsHelper.translate('file', languageCode)}';
       default:
         return content;
     }
   }
 
-  String _formatTimestamp(DateTime timestamp) {
+  String _formatTimestamp(DateTime timestamp, String languageCode) {
     // Convert UTC timestamp to local time
     final localTimestamp = timestamp.toLocal();
     final now = DateTime.now();
@@ -252,9 +261,9 @@ class ChatRoomCard extends StatelessWidget {
     if (difference.inDays == 0) {
       return DateFormat('HH:mm').format(localTimestamp);
     } else if (difference.inDays == 1) {
-      return 'Hôm qua';
+      return AppLocalizationsHelper.translate('yesterday', languageCode);
     } else if (difference.inDays < 7) {
-      return DateFormat('EEEE', 'vi').format(localTimestamp);
+      return DateFormat('EEEE', languageCode).format(localTimestamp);
     } else {
       return DateFormat('dd/MM').format(localTimestamp);
     }

@@ -78,5 +78,28 @@ class NotificationRemoteDatasource {
       throw Exception('Failed to mark notification as read: $e');
     }
   }
+
+  /// Stream notifications for realtime updates
+  Stream<List<NotificationModel>> streamNotifications() {
+    final user = _supabase.auth.currentUser;
+    if (user == null) {
+      throw Exception('User not authenticated');
+    }
+
+    return _supabase
+        .from('notifications')
+        .stream(
+          primaryKey: ['id'],
+        )
+        .eq('user_id', user.id)
+        .order('created_at', ascending: false)
+        .map(
+          (rows) => rows
+              .map(
+                (json) => NotificationModel.fromJson(json),
+              )
+              .toList(),
+        );
+  }
 }
 

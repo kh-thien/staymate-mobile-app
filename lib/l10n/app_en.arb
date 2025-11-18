@@ -1,0 +1,274 @@
+{
+  "@@locale": "en",
+  "appName": "StayMate",
+  "@appName": {
+    "description": "The application name"
+  },
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in button text"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Sign in with Google button text"
+  },
+  "signUpWithGoogle": "Sign up with Google",
+  "@signUpWithGoogle": {
+    "description": "Sign up with Google button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password label"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home tab label"
+  },
+  "contracts": "Contracts",
+  "@contracts": {
+    "description": "Contracts tab label"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Chat tab label"
+  },
+  "invoices": "Invoices",
+  "@invoices": {
+    "description": "Invoices tab label"
+  },
+  "reports": "Reports",
+  "@reports": {
+    "description": "Reports tab label"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile tab label"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications label"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings label"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language label"
+  },
+  "vietnamese": "Vietnamese",
+  "@vietnamese": {
+    "description": "Vietnamese language option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "noContracts": "No contracts",
+  "@noContracts": {
+    "description": "Empty state message for contracts"
+  },
+  "noInvoices": "No invoices",
+  "@noInvoices": {
+    "description": "Empty state message for invoices"
+  },
+  "noReports": "No reports",
+  "@noReports": {
+    "description": "Empty state message for reports"
+  },
+  "noChats": "No chats",
+  "@noChats": {
+    "description": "Empty state message for chats"
+  },
+  "createReport": "Create Report",
+  "@createReport": {
+    "description": "Create report button text"
+  },
+  "reportIssue": "Report Issue",
+  "@reportIssue": {
+    "description": "Report issue label"
+  },
+  "maintenanceWork": "Maintenance Work",
+  "@maintenanceWork": {
+    "description": "Maintenance work label"
+  },
+  "pending": "Pending",
+  "@pending": {
+    "description": "Pending status"
+  },
+  "approved": "Approved",
+  "@approved": {
+    "description": "Approved status"
+  },
+  "rejected": "Rejected",
+  "@rejected": {
+    "description": "Rejected status"
+  },
+  "cancelled": "Cancelled",
+  "@cancelled": {
+    "description": "Cancelled status"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error label"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Try again button text"
+  },
+  "anErrorOccurred": "An error occurred",
+  "@anErrorOccurred": {
+    "description": "Error message"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "view": "View",
+  "@view": {
+    "description": "View button text"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send button text"
+  },
+  "pay": "Pay",
+  "@pay": {
+    "description": "Pay button text"
+  },
+  "paid": "Paid",
+  "@paid": {
+    "description": "Paid status"
+  },
+  "unpaid": "Unpaid",
+  "@unpaid": {
+    "description": "Unpaid status"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status"
+  },
+  "offline": "Offline",
+  "@offline": {
+    "description": "Offline status"
+  },
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "description": "No internet connection message"
+  },
+  "reconnected": "Reconnected",
+  "@reconnected": {
+    "description": "Reconnected message"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera label"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery label"
+  },
+  "file": "File",
+  "@file": {
+    "description": "File label"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Just now time label"
+  },
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "description": "Minutes ago time label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "description": "Hours ago time label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday label"
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "description": "Days ago time label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "Feature coming soon",
+  "@featureComingSoon": {
+    "description": "Tooltip for features that are not yet implemented"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "startAConversationToSeeItHere": "Start a conversation to see it here.",
+  "@startAConversationToSeeItHere": {
+    "description": "Subtitle for empty chat list"
+  },
+  "noInvoicesFound": "No Invoices Found",
+  "@noInvoicesFound": {
+    "description": "Title for empty invoice list"
+  },
+  "invoicesOfThisCategoryWillAppearHere": "Invoices in this category will appear here.",
+  "@invoicesOfThisCategoryWillAppearHere": {
+    "description": "Subtitle for empty invoice list"
+  },
+  "noIssuesToReport": "No Issues to Report",
+  "@noIssuesToReport": {
+    "description": "Title for empty maintenance request list"
+  },
+  "yourReportedIssuesWillAppearHere": "Your reported issues will appear here.",
+  "@yourReportedIssuesWillAppearHere": {
+    "description": "Subtitle for empty maintenance request list"
+  },
+  "reconnecting": "Connection issue. Reconnecting...",
+  "@reconnecting": {
+    "description": "Message shown when the app is trying to reconnect"
+  }
+}

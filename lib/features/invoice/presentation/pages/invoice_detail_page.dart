@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stay_mate/core/constants/ui_constants.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/invoice.dart';
 import '../providers/invoice_provider.dart';
 import 'bank_transfer_page.dart';
@@ -34,13 +36,19 @@ class InvoiceDetailPage extends ConsumerWidget {
           color: Colors.black,
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: const Text(
-          'Chi tiết hoá đơn',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 22,
-            color: Colors.black,
-          ),
+        title: Builder(
+          builder: (context) {
+            final locale = ref.watch(appLocaleProvider);
+            final languageCode = locale.languageCode;
+            return Text(
+              AppLocalizationsHelper.translate('invoiceDetail', languageCode),
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 22,
+                color: Colors.black,
+              ),
+            );
+          },
         ),
       ),
       body: Container(
@@ -56,25 +64,65 @@ class InvoiceDetailPage extends ConsumerWidget {
           child: invoiceAsync.when(
             data: (invoice) => _InvoiceDetailContent(invoice: invoice),
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (error, stack) => Center(
-              child: SelectableText.rich(
-                TextSpan(
-                  children: [
-                    const TextSpan(
-                      text: 'Lỗi: ',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
+            error: (error, stack) {
+              final locale = ref.read(appLocaleProvider);
+              final languageCode = locale.languageCode;
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.error_outline_rounded,
+                        size: 64,
+                        color: Colors.red.shade400,
                       ),
-                    ),
-                    TextSpan(
-                      text: error.toString(),
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  ],
+                      const SizedBox(height: 16),
+                      SelectableText.rich(
+                        TextSpan(
+                          children: [
+                            TextSpan(
+                              text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.red,
+                                fontSize: 16,
+                              ),
+                            ),
+                            TextSpan(
+                              text: error.toString(),
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ],
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 24),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          ref.invalidate(invoiceDetailProvider(billId));
+                        },
+                        icon: const Icon(Icons.refresh_rounded),
+                        label: Text(
+                          AppLocalizationsHelper.translate(
+                            'tryAgain',
+                            languageCode,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.red,
+                          foregroundColor: Colors.white,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -82,17 +130,26 @@ class InvoiceDetailPage extends ConsumerWidget {
   }
 }
 
-class _InvoiceDetailContent extends StatelessWidget {
+class _InvoiceDetailContent extends ConsumerWidget {
   final Invoice invoice;
 
   const _InvoiceDetailContent({required this.invoice});
 
-  void _showPaymentMethodModal(BuildContext context, Invoice invoice) async {
+  void _showPaymentMethodModal(
+    BuildContext context,
+    WidgetRef ref,
+    Invoice invoice,
+  ) async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _PaymentMethodModal(invoice: invoice),
+      builder: (context) => _PaymentMethodModal(
+        invoice: invoice,
+        languageCode: languageCode,
+      ),
     );
 
     // Handle result from modal
@@ -104,11 +161,13 @@ class _InvoiceDetailContent extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
+      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
+      symbol: languageCode == 'vi' ? '₫' : '\$',
       decimalDigits: 0,
     );
     final dateFormatter = DateFormat('dd/MM/yyyy');
@@ -187,7 +246,10 @@ class _InvoiceDetailContent extends StatelessWidget {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
-                              _StatusChip(status: invoice.status),
+                              _StatusChip(
+                                status: invoice.status,
+                                languageCode: languageCode,
+                              ),
                             ],
                           ),
                         ),
@@ -197,23 +259,35 @@ class _InvoiceDetailContent extends StatelessWidget {
                     _InfoRow(
                       icon: Icons.home_rounded,
                       iconColor: Colors.blue,
-                      label: 'Phòng',
+                      label: AppLocalizationsHelper.translate(
+                        'roomLabel',
+                        languageCode,
+                      ),
                       value: invoice.roomName ?? 'N/A',
+                      languageCode: languageCode,
                     ),
                     const SizedBox(height: 12),
                     _InfoRow(
                       icon: Icons.person_rounded,
                       iconColor: Colors.purple,
-                      label: 'Khách thuê',
+                      label: AppLocalizationsHelper.translate(
+                        'tenant',
+                        languageCode,
+                      ),
                       value: invoice.tenantName ?? 'N/A',
+                      languageCode: languageCode,
                     ),
                     const SizedBox(height: 12),
                     _InfoRow(
                       icon: Icons.calendar_month_rounded,
                       iconColor: Colors.orange,
-                      label: 'Kỳ thanh toán',
+                      label: AppLocalizationsHelper.translate(
+                        'paymentPeriod',
+                        languageCode,
+                      ),
                       value:
                           '${dateFormatter.format(invoice.periodStart ?? DateTime.now())} - ${dateFormatter.format(invoice.periodEnd ?? DateTime.now())}',
+                      languageCode: languageCode,
                     ),
                     const SizedBox(height: 12),
                     _InfoRow(
@@ -221,13 +295,17 @@ class _InvoiceDetailContent extends StatelessWidget {
                       iconColor: invoice.isOverdue
                           ? theme.colorScheme.error
                           : Colors.green,
-                      label: 'Hạn thanh toán',
+                      label: AppLocalizationsHelper.translate(
+                        'dueDate',
+                        languageCode,
+                      ),
                       value: dateFormatter.format(
                         invoice.dueDate ?? DateTime.now(),
                       ),
                       valueColor: invoice.isOverdue
                           ? theme.colorScheme.error
                           : null,
+                      languageCode: languageCode,
                     ),
                   ],
                 ),
@@ -271,14 +349,17 @@ class _InvoiceDetailContent extends StatelessWidget {
                           ),
                           const SizedBox(width: 8),
                           Text(
-                            'Chi tiết hoá đơn',
+                            AppLocalizationsHelper.translate(
+                              'invoiceInfo',
+                              languageCode,
+                            ),
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           const Spacer(),
                           Text(
-                            '${invoice.items.length} mục',
+                            '${invoice.items.length} ${AppLocalizationsHelper.translate('items', languageCode)}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -300,7 +381,10 @@ class _InvoiceDetailContent extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8),
                                 Text(
-                                  'Chưa có chi tiết hoá đơn',
+                                  AppLocalizationsHelper.translate(
+                                    'noInvoiceDetails',
+                                    languageCode,
+                                  ),
                                   style: theme.textTheme.bodyMedium?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -363,7 +447,10 @@ class _InvoiceDetailContent extends StatelessWidget {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                'Tổng kết',
+                                AppLocalizationsHelper.translate(
+                                  'summary',
+                                  languageCode,
+                                ),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -373,28 +460,40 @@ class _InvoiceDetailContent extends StatelessWidget {
                           const SizedBox(height: 16),
                           // Tổng tiền từ các bill items
                           _SummaryRow(
-                            label: 'Tổng tiền',
+                            label: AppLocalizationsHelper.translate(
+                              'total',
+                              languageCode,
+                            ),
                             value: currencyFormatter.format(
                               invoice.itemsTotalAmount,
                             ),
+                            languageCode: languageCode,
                           ),
                           // Hiển thị giảm giá nếu có
                           if (invoice.discountAmount > 0) ...[
                             const SizedBox(height: 8),
                             _SummaryRow(
-                              label: 'Giảm giá',
+                              label: AppLocalizationsHelper.translate(
+                                'discount',
+                                languageCode,
+                              ),
                               value:
                                   '- ${currencyFormatter.format(invoice.discountAmount)}',
                               valueColor: Colors.green,
+                              languageCode: languageCode,
                             ),
                           ],
                           // Hiển thị phí trễ hạn nếu có
                           if (invoice.lateFee > 0) ...[
                             const SizedBox(height: 8),
                             _SummaryRow(
-                              label: 'Phí trễ hạn',
+                              label: AppLocalizationsHelper.translate(
+                                'lateFee',
+                                languageCode,
+                              ),
                               value: '+ ${currencyFormatter.format(invoice.lateFee)}',
                               valueColor: theme.colorScheme.error,
+                              languageCode: languageCode,
                             ),
                           ],
                           const Divider(height: 24),
@@ -411,12 +510,16 @@ class _InvoiceDetailContent extends StatelessWidget {
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: _SummaryRow(
-                              label: 'Tổng cộng',
+                              label: AppLocalizationsHelper.translate(
+                                'totalAmountLabel',
+                                languageCode,
+                              ),
                               value: currencyFormatter.format(
                                 invoice.totalAmount,
                               ),
                               isBold: true,
                               valueColor: theme.colorScheme.primary,
+                              languageCode: languageCode,
                             ),
                           ),
                         ],
@@ -478,7 +581,7 @@ class _InvoiceDetailContent extends StatelessWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       onTap: () {
-                        _showPaymentMethodModal(context, invoice);
+                        _showPaymentMethodModal(context, ref, invoice);
                       },
                       borderRadius: BorderRadius.circular(12),
                       child: Padding(
@@ -492,7 +595,10 @@ class _InvoiceDetailContent extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Thanh toán ngay',
+                              AppLocalizationsHelper.translate(
+                                'payNow',
+                                languageCode,
+                              ),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 color: theme.colorScheme.onPrimary,
                                 fontWeight: FontWeight.bold,
@@ -514,8 +620,12 @@ class _InvoiceDetailContent extends StatelessWidget {
 
 class _StatusChip extends StatelessWidget {
   final BillStatus status;
+  final String languageCode;
 
-  const _StatusChip({required this.status});
+  const _StatusChip({
+    required this.status,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -528,32 +638,32 @@ class _StatusChip extends StatelessWidget {
       case BillStatus.paid:
         backgroundColor = Colors.green.shade50;
         textColor = Colors.green.shade700;
-        text = 'Đã thanh toán';
+        text = AppLocalizationsHelper.translate('paid', languageCode);
         break;
       case BillStatus.unpaid:
         backgroundColor = Colors.orange.shade50;
         textColor = Colors.orange.shade700;
-        text = 'Chưa thanh toán';
+        text = AppLocalizationsHelper.translate('unpaid', languageCode);
         break;
       case BillStatus.processing:
         backgroundColor = Colors.purple.shade50;
         textColor = Colors.purple.shade700;
-        text = 'Chờ duyệt';
+        text = AppLocalizationsHelper.translate('processing', languageCode);
         break;
       case BillStatus.overdue:
         backgroundColor = Colors.red.shade50;
         textColor = Colors.red.shade700;
-        text = 'Quá hạn';
+        text = AppLocalizationsHelper.translate('overdue', languageCode);
         break;
       case BillStatus.cancelled:
         backgroundColor = Colors.grey.shade200;
         textColor = Colors.grey.shade700;
-        text = 'Đã huỷ';
+        text = AppLocalizationsHelper.translate('cancelled', languageCode);
         break;
       case BillStatus.partiallyPaid:
         backgroundColor = Colors.blue.shade50;
         textColor = Colors.blue.shade700;
-        text = 'Thanh toán 1 phần';
+        text = AppLocalizationsHelper.translate('partiallyPaid', languageCode);
         break;
     }
 
@@ -574,6 +684,7 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
   final Color? valueColor;
+  final String languageCode;
 
   const _InfoRow({
     required this.icon,
@@ -581,6 +692,7 @@ class _InfoRow extends StatelessWidget {
     required this.label,
     required this.value,
     this.valueColor,
+    required this.languageCode,
   });
 
   @override
@@ -730,12 +842,14 @@ class _SummaryRow extends StatelessWidget {
   final String value;
   final bool isBold;
   final Color? valueColor;
+  final String languageCode;
 
   const _SummaryRow({
     required this.label,
     required this.value,
     this.isBold = false,
     this.valueColor,
+    required this.languageCode,
   });
 
   @override
@@ -765,17 +879,21 @@ class _SummaryRow extends StatelessWidget {
 }
 
 // Payment Method Modal
-class _PaymentMethodModal extends StatelessWidget {
+class _PaymentMethodModal extends ConsumerWidget {
   final Invoice invoice;
+  final String languageCode;
 
-  const _PaymentMethodModal({required this.invoice});
+  const _PaymentMethodModal({
+    required this.invoice,
+    required this.languageCode,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
+      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
+      symbol: languageCode == 'vi' ? '₫' : '\$',
       decimalDigits: 0,
     );
 
@@ -822,7 +940,10 @@ class _PaymentMethodModal extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Chọn phương thức thanh toán',
+                          AppLocalizationsHelper.translate(
+                            'choosePaymentMethod',
+                            languageCode,
+                          ),
                           style: theme.textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -830,7 +951,7 @@ class _PaymentMethodModal extends StatelessWidget {
                         const SizedBox(height: 4),
                         if (invoice.billNumber != null) ...[
                           Text(
-                            'Số hóa đơn: ${invoice.billNumber}',
+                            '${AppLocalizationsHelper.translate('invoiceNumber', languageCode)}: ${invoice.billNumber}',
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: Colors.grey.shade700,
                               fontWeight: FontWeight.w500,
@@ -839,7 +960,7 @@ class _PaymentMethodModal extends StatelessWidget {
                           const SizedBox(height: 2),
                         ],
                         Text(
-                          'Số tiền: ${currencyFormatter.format(invoice.finalAmount)}',
+                          '${AppLocalizationsHelper.translate('amount', languageCode)}: ${currencyFormatter.format(invoice.finalAmount)}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.w600,
@@ -864,7 +985,11 @@ class _PaymentMethodModal extends StatelessWidget {
                   const Divider(height: 1, indent: 72),
               itemBuilder: (context, index) {
                 final method = PaymentMethod.values[index];
-                return _PaymentMethodTile(method: method, invoice: invoice);
+                return _PaymentMethodTile(
+                  method: method,
+                  invoice: invoice,
+                  languageCode: languageCode,
+                );
               },
             ),
 
@@ -877,13 +1002,20 @@ class _PaymentMethodModal extends StatelessWidget {
 }
 
 // Payment Method Tile
-class _PaymentMethodTile extends StatelessWidget {
+class _PaymentMethodTile extends ConsumerWidget {
   final PaymentMethod method;
   final Invoice invoice;
+  final String languageCode;
 
-  const _PaymentMethodTile({required this.method, required this.invoice});
+  const _PaymentMethodTile({
+    required this.method,
+    required this.invoice,
+    required this.languageCode,
+  });
 
-  void _handlePayment(BuildContext context) async {
+  void _handlePayment(BuildContext context, WidgetRef ref) async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     if (!method.isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -918,8 +1050,13 @@ class _PaymentMethodTile extends StatelessWidget {
     } else if (method == PaymentMethod.qrCode) {
       // TODO: Implement QR code payment
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Chức năng thanh toán QR đang được phát triển'),
+        SnackBar(
+          content: Text(
+            AppLocalizationsHelper.translate(
+              'qrPaymentUnderDevelopment',
+              languageCode,
+            ),
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -927,14 +1064,14 @@ class _PaymentMethodTile extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final isAvailable = method.isAvailable;
 
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => _handlePayment(context),
+        onTap: () => _handlePayment(context, ref),
         child: Opacity(
           opacity: isAvailable ? 1.0 : 0.5,
           child: Padding(
@@ -1002,11 +1139,24 @@ class _ReceivingAccountCard extends ConsumerWidget {
 
   const _ReceivingAccountCard({required this.billId});
 
-  void _copyToClipboard(BuildContext context, String text, String label) {
+  void _copyToClipboard(
+    BuildContext context,
+    WidgetRef ref,
+    String text,
+    String label,
+  ) {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã sao chép $label'),
+        content: Text(
+          AppLocalizationsHelper.translateWithParams(
+            'copiedToClipboard',
+            languageCode,
+            {'label': label},
+          ),
+        ),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),
@@ -1015,6 +1165,8 @@ class _ReceivingAccountCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final theme = Theme.of(context);
     final paymentAccountAsync = ref.watch(
       paymentAccountFromPaymentProvider(billId),
@@ -1071,7 +1223,10 @@ class _ReceivingAccountCard extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Tài khoản nhận tiền',
+                                AppLocalizationsHelper.translate(
+                                  'receivingAccount',
+                                  languageCode,
+                                ),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.blue.shade900,
@@ -1079,7 +1234,10 @@ class _ReceivingAccountCard extends ConsumerWidget {
                               ),
                               const SizedBox(height: 2),
                               Text(
-                                'Xem lại thông tin chuyển khoản',
+                                AppLocalizationsHelper.translate(
+                                  'reviewTransferInfo',
+                                  languageCode,
+                                ),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: Colors.blue.shade700,
                                 ),
@@ -1093,41 +1251,65 @@ class _ReceivingAccountCard extends ConsumerWidget {
                     _AccountInfoRow(
                       icon: Icons.account_balance,
                       iconColor: Colors.blue,
-                      label: 'Ngân hàng',
+                      label: AppLocalizationsHelper.translate(
+                        'bank',
+                        languageCode,
+                      ),
                       value: paymentAccount.bankName,
+                      languageCode: languageCode,
                       onCopy: () => _copyToClipboard(
                         context,
+                        ref,
                         paymentAccount.bankName,
-                        'tên ngân hàng',
+                        AppLocalizationsHelper.translate(
+                          'bankName',
+                          languageCode,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     _AccountInfoRow(
                       icon: Icons.credit_card,
                       iconColor: Colors.green,
-                      label: 'Số tài khoản',
+                      label: AppLocalizationsHelper.translate(
+                        'accountNumber',
+                        languageCode,
+                      ),
                       value: paymentAccount.accountNumber,
                       valueStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         letterSpacing: 1.2,
                       ),
+                      languageCode: languageCode,
                       onCopy: () => _copyToClipboard(
                         context,
+                        ref,
                         paymentAccount.accountNumber,
-                        'số tài khoản',
+                        AppLocalizationsHelper.translate(
+                          'accountNumber',
+                          languageCode,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
                     _AccountInfoRow(
                       icon: Icons.person,
                       iconColor: Colors.orange,
-                      label: 'Tên tài khoản',
+                      label: AppLocalizationsHelper.translate(
+                        'accountHolder',
+                        languageCode,
+                      ),
                       value: paymentAccount.accountHolder,
+                      languageCode: languageCode,
                       onCopy: () => _copyToClipboard(
                         context,
+                        ref,
                         paymentAccount.accountHolder,
-                        'tên tài khoản',
+                        AppLocalizationsHelper.translate(
+                          'accountHolder',
+                          languageCode,
+                        ),
                       ),
                     ),
                     if (paymentAccount.branch != null &&
@@ -1136,9 +1318,13 @@ class _ReceivingAccountCard extends ConsumerWidget {
                       _AccountInfoRow(
                         icon: Icons.location_on,
                         iconColor: Colors.teal,
-                        label: 'Chi nhánh',
+                        label: AppLocalizationsHelper.translate(
+                          'branch',
+                          languageCode,
+                        ),
                         value: paymentAccount.branch!,
                         showCopyButton: false,
+                        languageCode: languageCode,
                       ),
                     ],
                   ],
@@ -1153,15 +1339,20 @@ class _ReceivingAccountCard extends ConsumerWidget {
             color: Colors.grey.shade100,
             borderRadius: BorderRadius.circular(16),
           ),
-          child: const Row(
+          child: Row(
             children: [
-              SizedBox(
+              const SizedBox(
                 width: 16,
                 height: 16,
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
-              SizedBox(width: 12),
-              Text('Đang tải thông tin tài khoản...'),
+              const SizedBox(width: 12),
+              Text(
+                AppLocalizationsHelper.translate(
+                  'loadingAccountInfo',
+                  languageCode,
+                ),
+              ),
             ],
           ),
         ),
@@ -1178,7 +1369,10 @@ class _ReceivingAccountCard extends ConsumerWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Không thể tải thông tin tài khoản',
+                  AppLocalizationsHelper.translate(
+                    'cannotLoadAccountInfo',
+                    languageCode,
+                  ),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.red.shade700,
                   ),
@@ -1193,7 +1387,7 @@ class _ReceivingAccountCard extends ConsumerWidget {
 }
 
 /// Widget hiển thị thông tin tài khoản trong card
-class _AccountInfoRow extends StatelessWidget {
+class _AccountInfoRow extends ConsumerWidget {
   final IconData icon;
   final Color iconColor;
   final String label;
@@ -1201,6 +1395,7 @@ class _AccountInfoRow extends StatelessWidget {
   final TextStyle? valueStyle;
   final VoidCallback? onCopy;
   final bool showCopyButton;
+  final String languageCode;
 
   const _AccountInfoRow({
     required this.icon,
@@ -1210,10 +1405,11 @@ class _AccountInfoRow extends StatelessWidget {
     this.valueStyle,
     this.onCopy,
     this.showCopyButton = true,
+    required this.languageCode,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return Row(
@@ -1254,7 +1450,7 @@ class _AccountInfoRow extends StatelessWidget {
           IconButton(
             onPressed: onCopy,
             icon: const Icon(Icons.copy, size: 18),
-            tooltip: 'Sao chép',
+            tooltip: AppLocalizationsHelper.translate('copy', languageCode),
             color: iconColor,
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),

@@ -1,23 +1,33 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stay_mate/features/profile/presentation/profile_bottom_sheet.dart';
 import '../../features/auth/presentation/bloc/auth_bloc_exports.dart';
+import '../../features/home/presentation/providers/notifications_provider.dart';
+import '../providers/app_bar_provider.dart';
 import 'user_avatar.dart';
-import 'internet_status_indicator.dart';
 
-class CustomAppBar extends ConsumerStatefulWidget {
+class CustomAppBar extends ConsumerWidget {
   const CustomAppBar({super.key});
 
   @override
-  ConsumerState<CustomAppBar> createState() => _CustomAppBarState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final appBarState = ref.watch(appBarProvider);
+    final title = appBarState.title;
+    final actions = appBarState.actions;
 
-class _CustomAppBarState extends ConsumerState<CustomAppBar> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthBlocState>(
+    return BlocConsumer<AuthBloc, AuthBlocState>(
+      listener: (context, state) {
+        if (state is AuthError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
       builder: (context, state) {
         final authenticatedState =
             state is AuthAuthenticated ? state : null;
@@ -25,42 +35,61 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
 
         return SafeArea(
           bottom: false,
-          child: Padding(
+          child: Container(
+            height: 56,
             padding: const EdgeInsets.symmetric(
               horizontal: 16,
-              vertical: 8,
             ),
-            child: Stack(
-              alignment: Alignment.center,
+            child: Row(
               children: [
-                // Layout ban đầu - giữ nguyên như cũ
-                Row(
-                  children: [
-                    // Logo - Expanded để tránh overflow
-                    Expanded(
-                      child: SizedBox(
-                        height: 56,
-                        child: Image.asset(
-                          'lib/core/assets/images/staymate_text_logo-removebg.png',
-                          fit: BoxFit.contain,
-                          alignment: Alignment.centerLeft,
-                        ),
-                      ),
+                // Dynamic Title or Logo
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 300),
+                      transitionBuilder: (child, animation) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(0, 0.2),
+                              end: Offset.zero,
+                            ).animate(animation),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: title != null
+                          ? Text(
+                              title,
+                              key: ValueKey<String>(title), // Key for AnimatedSwitcher
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            )
+                          : SizedBox(
+                              key: const ValueKey<String>('logo'), // Key for AnimatedSwitcher
+                              height: 52,
+                              child: Image.asset(
+                                'lib/core/assets/images/staymate_text_logo-removebg.png',
+                                fit: BoxFit.contain,
+                                alignment: Alignment.centerLeft,
+                              ),
+                            ),
                     ),
-                    const SizedBox(width: 8),
-                    // Action buttons
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            context.push('/notifications');
-                          },
-                          icon: const Icon(Icons.notifications_rounded),
-                          iconSize: 24,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                        ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                // Action buttons
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: actions ?? // Use actions from provider if available
+                      [
+                        _buildNotificationButton(context, ref),
                         const SizedBox(width: 8),
                         GestureDetector(
                           onTap: () => _showProfileBottomSheet(
@@ -80,11 +109,7 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
                                 ),
                         ),
                       ],
-                    ),
-                  ],
                 ),
-                // Internet Status Indicator - Overlay ở giữa
-                const InternetStatusIndicator(),
               ],
             ),
           ),
@@ -95,10 +120,10 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
 
   void _showProfileBottomSheet(BuildContext context, bool isLoggedIn) {
     if (!isLoggedIn) {
-      // Navigate đến auth page nếu chưa đăng nhập
+      // Navigate to auth page if not logged in
       context.push('/auth');
     } else {
-      // Hiển thị profile nếu đã đăng nhập
+      // Show profile if logged in
       showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -108,5 +133,64 @@ class _CustomAppBarState extends ConsumerState<CustomAppBar> {
         builder: (context) => const ProfileBottomSheet(),
       );
     }
+  }
+
+  Widget _buildNotificationButton(BuildContext context, WidgetRef ref) {
+    final unreadAsync = ref.watch(unreadNotificationsCountProvider);
+
+    Widget baseButton() {
+      return IconButton(
+        onPressed: () {
+          context.push('/notifications');
+        },
+        icon: const Icon(Icons.notifications_rounded),
+        iconSize: 24,
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(),
+      );
+    }
+
+    return unreadAsync.when(
+      data: (count) {
+        if (count <= 0) {
+          return baseButton();
+        }
+
+        return Stack(
+          clipBehavior: Clip.none,
+          children: [
+            baseButton(),
+            Positioned(
+              right: -4,
+              top: -4,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 6,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.redAccent,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                constraints: const BoxConstraints(
+                  minWidth: 20,
+                ),
+                child: Text(
+                  count > 99 ? '99+' : '$count',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => baseButton(),
+      error: (_, __) => baseButton(),
+    );
   }
 }

@@ -231,7 +231,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
 
       emit(AuthUnauthenticated());
     } on AuthException catch (e) {
-      emit(AuthError(message: e.message, code: e.statusCode));
+      if (e is AuthRetryableFetchException) {
+        emit(AuthError(message: 'Lỗi kết nối mạng. Vui lòng thử lại.', code: e.statusCode));
+      } else {
+        emit(AuthError(message: e.message, code: e.statusCode));
+      }
     } catch (e) {
       emit(AuthError(message: 'Sign out failed: $e'));
     }

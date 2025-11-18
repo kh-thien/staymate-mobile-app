@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/contract_entity.dart';
 import '../../data/models/contract_file_model.dart';
 import '../providers/contract_detail_cubit.dart';
@@ -62,19 +65,21 @@ class _ContractDetailView extends StatelessWidget {
   }
 }
 
-class _LoadedView extends StatelessWidget {
+class _LoadedView extends ConsumerWidget {
   const _LoadedView({required this.contract, required this.files});
 
   final ContractEntity contract;
   final List<ContractFileModel> files;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final dateFormat = DateFormat('dd/MM/yyyy');
     final currencyFormat = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
+      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
+      symbol: languageCode == 'vi' ? '₫' : '\$',
       decimalDigits: 0,
     );
     final statusColor = _getStatusColor(contract.status);
@@ -92,9 +97,9 @@ class _LoadedView extends StatelessWidget {
             topRight: Radius.circular(30),
           ),
         ),
-        title: const Text(
-          'Chi tiết hợp đồng',
-          style: TextStyle(
+        title: Text(
+          AppLocalizationsHelper.translate('contractDetail', languageCode),
+          style: const TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -113,11 +118,22 @@ class _LoadedView extends StatelessWidget {
               Icons.insert_drive_file,
               color: Colors.black87,
             ),
-            tooltip: 'Xem file hợp đồng (${files.length})',
+            tooltip: AppLocalizationsHelper.translateWithParams(
+              'viewContractFiles',
+              languageCode,
+              {'count': files.length.toString()},
+            ),
             onPressed: () {
               if (files.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Chưa có file hợp đồng')),
+                  SnackBar(
+                    content: Text(
+                      AppLocalizationsHelper.translate(
+                        'noContractFiles',
+                        languageCode,
+                      ),
+                    ),
+                  ),
                 );
               } else {
                 Navigator.push(
@@ -191,7 +207,11 @@ class _LoadedView extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  contract.contractNumber ?? 'Chưa có',
+                                  contract.contractNumber ??
+                                      AppLocalizationsHelper.translate(
+                                        'notAvailable',
+                                        languageCode,
+                                      ),
                                   style: theme.textTheme.titleLarge?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -200,6 +220,7 @@ class _LoadedView extends StatelessWidget {
                                 _StatusBadge(
                                   status: contract.status,
                                   statusInVietnamese: contract.statusInVietnamese,
+                                  languageCode: languageCode,
                                 ),
                               ],
                             ),
@@ -248,31 +269,39 @@ class _LoadedView extends StatelessWidget {
 
               // Thông tin hợp đồng
               _SectionCard(
-                title: 'Thông tin hợp đồng',
+                title: AppLocalizationsHelper.translate('contractInfo', languageCode),
+                languageCode: languageCode,
                 child: Column(
                   children: [
                     _InfoRow(
-                      label: 'Loại hợp đồng',
+                      label: AppLocalizationsHelper.translate('contractType', languageCode),
                       value: contract.contractTypeInVietnamese,
+                      languageCode: languageCode,
                     ),
                     if (contract.startDate != null)
                       _InfoRow(
-                        label: 'Ngày bắt đầu',
+                        label: AppLocalizationsHelper.translate('startDate', languageCode),
                         value: dateFormat.format(contract.startDate!),
+                        languageCode: languageCode,
                       ),
                     if (contract.endDate != null)
                       _InfoRow(
-                        label: 'Ngày kết thúc',
+                        label: AppLocalizationsHelper.translate('endDate', languageCode),
                         value: dateFormat.format(contract.endDate!),
+                        languageCode: languageCode,
                       ),
                     _InfoRow(
-                      label: 'Gia hạn tự động',
-                      value: (contract.autoRenewal ?? false) ? 'Có' : 'Không',
+                      label: AppLocalizationsHelper.translate('autoRenewal', languageCode),
+                      value: (contract.autoRenewal ?? false)
+                          ? AppLocalizationsHelper.translate('yes', languageCode)
+                          : AppLocalizationsHelper.translate('no', languageCode),
+                      languageCode: languageCode,
                     ),
                     if (contract.noticePeriodDays != null)
                       _InfoRow(
-                        label: 'Thời gian báo hủy',
-                        value: '${contract.noticePeriodDays} ngày',
+                        label: AppLocalizationsHelper.translate('noticePeriod', languageCode),
+                        value: '${contract.noticePeriodDays} ${AppLocalizationsHelper.translate('days', languageCode)}',
+                        languageCode: languageCode,
                       ),
                     if (contract.specialTerms != null) ...[
                       const Divider(height: 20),
@@ -290,7 +319,8 @@ class _LoadedView extends StatelessWidget {
 
               // Thông tin thanh toán
               _SectionCard(
-                title: 'Thông tin thanh toán',
+                title: AppLocalizationsHelper.translate('paymentInfo', languageCode),
+                languageCode: languageCode,
                 child: Column(
                   children: [
                     Container(
@@ -311,7 +341,7 @@ class _LoadedView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Tiền thuê hàng tháng',
+                                AppLocalizationsHelper.translate('monthlyRent', languageCode),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -330,7 +360,7 @@ class _LoadedView extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                'Tiền cọc',
+                                AppLocalizationsHelper.translate('deposit', languageCode),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
@@ -349,22 +379,26 @@ class _LoadedView extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
                     _InfoRow(
-                      label: 'Chu kỳ thanh toán',
+                      label: AppLocalizationsHelper.translate('paymentCycle', languageCode),
                       value: contract.paymentCycleInVietnamese,
+                      languageCode: languageCode,
                     ),
                     if (contract.paymentFrequency != null)
                       _InfoRow(
-                        label: 'Tần suất thanh toán',
-                        value: '${contract.paymentFrequency} lần/chu kỳ',
+                        label: AppLocalizationsHelper.translate('paymentFrequency', languageCode),
+                        value: '${contract.paymentFrequency} ${AppLocalizationsHelper.translate('timesPerCycle', languageCode)}',
+                        languageCode: languageCode,
                       ),
                     _InfoRow(
-                      label: 'Loại ngày thanh toán',
+                      label: AppLocalizationsHelper.translate('paymentDayType', languageCode),
                       value: contract.paymentDayTypeInVietnamese,
+                      languageCode: languageCode,
                     ),
                     if (contract.paymentDay != null)
                       _InfoRow(
-                        label: 'Ngày thanh toán',
-                        value: 'Ngày ${contract.paymentDay}',
+                        label: AppLocalizationsHelper.translate('paymentDay', languageCode),
+                        value: '${AppLocalizationsHelper.translate('day', languageCode)} ${contract.paymentDay}',
+                        languageCode: languageCode,
                       ),
                     if (contract.paymentDays != null &&
                         (contract.paymentDays!).isNotEmpty) ...[
@@ -376,7 +410,7 @@ class _LoadedView extends StatelessWidget {
                             .map(
                               (day) => Chip(
                                 label: Text(
-                                  'Ngày $day',
+                                  '${AppLocalizationsHelper.translate('day', languageCode)} $day',
                                   style: const TextStyle(fontSize: 12),
                                 ),
                                 padding: EdgeInsets.zero,
@@ -395,23 +429,27 @@ class _LoadedView extends StatelessWidget {
               // Tình trạng ký kết
               if (contract.hasSignature)
                 _SectionCard(
-                  title: 'Tình trạng ký kết',
+                  title: AppLocalizationsHelper.translate('signingStatus', languageCode),
+                  languageCode: languageCode,
                   child: Column(
                     children: [
                       _SignatureRow(
-                        label: 'Chủ nhà đã ký',
+                        label: AppLocalizationsHelper.translate('landlordSigned', languageCode),
                         isSigned: contract.signedByLandlord ?? false,
+                        languageCode: languageCode,
                       ),
                       const SizedBox(height: 12),
                       _SignatureRow(
-                        label: 'Người thuê đã ký',
+                        label: AppLocalizationsHelper.translate('tenantSigned', languageCode),
                         isSigned: contract.signedByTenant ?? false,
+                        languageCode: languageCode,
                       ),
                       if (contract.signedAt != null) ...[
                         const Divider(height: 20),
                         _InfoRow(
-                          label: 'Ngày ký',
+                          label: AppLocalizationsHelper.translate('signingDate', languageCode),
                           value: dateFormat.format(contract.signedAt!),
+                          languageCode: languageCode,
                         ),
                       ],
                     ],
@@ -433,7 +471,7 @@ class _LoadedView extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Thông tin chấm dứt',
+                          AppLocalizationsHelper.translate('terminationInfo', languageCode),
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.red.shade700,
@@ -442,22 +480,25 @@ class _LoadedView extends StatelessWidget {
                         const SizedBox(height: 12),
                         if (contract.terminationReason != null)
                           _InfoRow(
-                            label: 'Lý do',
+                            label: AppLocalizationsHelper.translate('reason', languageCode),
                             value: contract.terminationReason!.displayName,
+                            languageCode: languageCode,
                           ),
                         if (contract.terminationNote != null) ...[
                           const SizedBox(height: 8),
                           _InfoRow(
-                            label: 'Ghi chú',
+                            label: AppLocalizationsHelper.translate('note', languageCode),
                             value: contract.terminationNote!,
+                            languageCode: languageCode,
                           ),
                         ],
                         const SizedBox(height: 8),
                         _InfoRow(
-                          label: 'Chấm dứt sớm',
+                          label: AppLocalizationsHelper.translate('earlyTermination', languageCode),
                           value: (contract.isEarlyTermination ?? false)
-                              ? 'Có'
-                              : 'Không',
+                              ? AppLocalizationsHelper.translate('yes', languageCode)
+                              : AppLocalizationsHelper.translate('no', languageCode),
+                          languageCode: languageCode,
                         ),
                       ],
                     ),
@@ -493,8 +534,13 @@ class _LoadedView extends StatelessWidget {
 class _SectionCard extends StatelessWidget {
   final String title;
   final Widget child;
+  final String languageCode;
 
-  const _SectionCard({required this.title, required this.child});
+  const _SectionCard({
+    required this.title,
+    required this.child,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -540,8 +586,13 @@ class _SectionCard extends StatelessWidget {
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
+  final String languageCode;
 
-  const _InfoRow({required this.label, required this.value});
+  const _InfoRow({
+    required this.label,
+    required this.value,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -579,8 +630,13 @@ class _InfoRow extends StatelessWidget {
 class _SignatureRow extends StatelessWidget {
   final String label;
   final bool isSigned;
+  final String languageCode;
 
-  const _SignatureRow({required this.label, required this.isSigned});
+  const _SignatureRow({
+    required this.label,
+    required this.isSigned,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -603,7 +659,9 @@ class _SignatureRow extends StatelessWidget {
             ),
             const SizedBox(width: 6),
             Text(
-              isSigned ? 'Đã ký' : 'Chưa ký',
+              isSigned
+                  ? AppLocalizationsHelper.translate('signed', languageCode)
+                  : AppLocalizationsHelper.translate('notSigned', languageCode),
               style: TextStyle(
                 fontSize: 14,
                 color: isSigned ? Colors.green : Colors.red,
@@ -621,10 +679,12 @@ class _SignatureRow extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   final String status;
   final String statusInVietnamese;
+  final String languageCode;
 
   const _StatusBadge({
     required this.status,
     required this.statusInVietnamese,
+    required this.languageCode,
   });
 
   @override

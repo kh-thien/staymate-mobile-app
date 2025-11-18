@@ -41,32 +41,59 @@ class ErrorWidget extends StatelessWidget {
   final String message;
   final VoidCallback? onRetry;
   final IconData icon;
+  final String? retryLabel;
 
   const ErrorWidget({
     Key? key,
     required this.message,
     this.onRetry,
     this.icon = Icons.error_outline,
+    this.retryLabel,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(icon, size: AppSizes.iconXL, color: AppColors.error),
-          const SizedBox(height: AppSizes.paddingM),
-          Text(
-            message,
-            style: AppTextStyles.bodyMedium,
-            textAlign: TextAlign.center,
-          ),
-          if (onRetry != null) ...[
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              icon,
+              size: AppSizes.iconXL * 2,
+              color: AppColors.error,
+            ),
             const SizedBox(height: AppSizes.paddingL),
-            ElevatedButton(onPressed: onRetry, child: const Text('Thử lại')),
+            SelectableText.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text: message,
+                    style: AppTextStyles.bodyMedium?.copyWith(
+                      color: AppColors.error,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
+            ),
+            if (onRetry != null) ...[
+              const SizedBox(height: AppSizes.paddingL),
+              ElevatedButton.icon(
+                onPressed: onRetry,
+                icon: const Icon(Icons.refresh_rounded),
+                label: Text(retryLabel ?? 'Thử lại'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

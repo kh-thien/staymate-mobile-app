@@ -6,6 +6,12 @@ import 'package:intl/intl.dart';
 import '../../domain/entities/maintenance.dart';
 import '../../domain/entities/maintenance_request.dart';
 import '../providers/maintenance_request_provider.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../shared/widgets/skeleton_loader.dart';
+import '../../../../shared/widgets/empty_state.dart';
+import '../../../../shared/providers/app_bar_provider.dart';
+
 
 class ReportPage extends HookConsumerWidget {
   const ReportPage({super.key});
@@ -14,6 +20,21 @@ class ReportPage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabController = useTabController(initialLength: 2);
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
+    // Manage AppBar State
+    useEffect(() {
+      final notifier = ref.read(appBarProvider.notifier);
+      // Use a small delay to ensure this runs after any cleanup from previous page
+      Future.microtask(() {
+        notifier.updateTitle(
+          AppLocalizationsHelper.translate('reports', languageCode),
+        );
+      });
+      // Don't reset in cleanup - let the next page set its own title
+      return null;
+    }, const []);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -62,14 +83,14 @@ class ReportPage extends HookConsumerWidget {
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
                     ),
-                    tabs: const [
+                    tabs: [
                       Tab(
-                        icon: Icon(Icons.report_problem_rounded, size: 18),
-                        text: 'Báo cáo sự cố',
+                        icon: const Icon(Icons.report_problem_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('reportIssue', languageCode),
                       ),
                       Tab(
-                        icon: Icon(Icons.construction_rounded, size: 18),
-                        text: 'Công việc bảo trì',
+                        icon: const Icon(Icons.construction_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('maintenanceWork', languageCode),
                       ),
                     ],
                   ),
@@ -114,9 +135,9 @@ class ReportPage extends HookConsumerWidget {
           backgroundColor: const Color(0xFFEF4444),
           foregroundColor: Colors.white,
           icon: const Icon(Icons.report_problem_rounded, size: 22),
-          label: const Text(
-            'Tạo báo cáo sự cố',
-            style: TextStyle(
+          label: Text(
+            AppLocalizationsHelper.translate('createReport', languageCode),
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
             ),
@@ -140,30 +161,89 @@ class _MaintenanceRequestsTab extends ConsumerWidget {
     return maintenanceRequestsAsync.when(
       data: (requests) {
         if (requests.isEmpty) {
-          return _EmptyState();
+          final languageCode = ref.watch(appLocaleProvider).languageCode;
+          return EmptyState(
+            icon: Icons.check_circle_outline_rounded,
+            title: AppLocalizationsHelper.translate('noIssuesToReport', languageCode),
+            subtitle: AppLocalizationsHelper.translate('yourReportedIssuesWillAppearHere', languageCode),
+            onRefresh: () => ref.invalidate(maintenanceRequestsStreamProvider),
+            refreshLabel: AppLocalizationsHelper.translate('refresh', languageCode),
+          );
         }
-        return _MaintenanceRequestsList(requests: requests);
+        final locale = ref.watch(appLocaleProvider);
+        final languageCode = locale.languageCode;
+        return _MaintenanceRequestsList(requests: requests, languageCode: languageCode);
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: SelectableText.rich(
-          TextSpan(
-            children: [
-              const TextSpan(
-                text: 'Lỗi: ',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Colors.red,
-                ),
-              ),
-              TextSpan(
-                text: error.toString(),
-                style: const TextStyle(color: Colors.red),
-              ),
-            ],
-          ),
+            loading: () => ListView.separated(
+        padding: EdgeInsets.only(
+          left: 16,
+          right: 16,
+          top: 24,
+          bottom: MediaQuery.of(context).padding.bottom + 80,
         ),
+        itemCount: 5,
+        separatorBuilder: (_, __) => const SizedBox(height: 16),
+        itemBuilder: (context, index) {
+          return const MaintenanceRequestCardSkeleton();
+        },
       ),
+      error: (error, stack) {
+        final locale = ref.watch(appLocaleProvider);
+        final languageCode = locale.languageCode;
+        
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 64,
+                  color: Colors.red.shade400,
+                ),
+                const SizedBox(height: 16),
+                SelectableText.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 16,
+                        ),
+                      ),
+                      TextSpan(
+                        text: error.toString(),
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ref.invalidate(maintenanceRequestsStreamProvider);
+                  },
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(
+                    AppLocalizationsHelper.translate('tryAgain', languageCode),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
@@ -174,83 +254,95 @@ class _MaintenanceRecordsTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     // Changed from maintenanceRecordsProvider to maintenanceRecordsStreamProvider
     final maintenanceAsync = ref.watch(maintenanceRecordsStreamProvider);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
 
     return maintenanceAsync.when(
       data: (maintenances) {
         if (maintenances.isEmpty) {
-          return _EmptyMaintenanceState();
+          return EmptyState(
+            icon: Icons.construction_rounded,
+            title: AppLocalizationsHelper.translate('noMaintenanceWork', languageCode),
+            subtitle: AppLocalizationsHelper.translate('maintenanceWorkWillShowHere', languageCode),
+            onRefresh: () => ref.invalidate(maintenanceRecordsStreamProvider),
+            refreshLabel: AppLocalizationsHelper.translate('refresh', languageCode),
+          );
         }
-        return _MaintenanceList(maintenances: maintenances);
+        return _MaintenanceList(maintenances: maintenances, languageCode: languageCode);
       },
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stack) => Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: SelectableText.rich(
-            TextSpan(
+            loading: () => ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        itemCount: 4,
+        itemBuilder: (context, index) {
+          return const MaintenanceCardSkeleton();
+        },
+      ),
+      error: (error, stack) {
+        return Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const TextSpan(
-                  text: '❌ Lỗi: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                    fontSize: 16,
-                  ),
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 64,
+                  color: Colors.red.shade400,
                 ),
-                TextSpan(
-                  text: error.toString(),
-                  style: const TextStyle(color: Colors.red, fontSize: 14),
+                const SizedBox(height: 16),
+                SelectableText.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 16,
+                        ),
+                      ),
+                      TextSpan(
+                        text: error.toString(),
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ref.invalidate(maintenanceRecordsStreamProvider);
+                  },
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(
+                    AppLocalizationsHelper.translate('tryAgain', languageCode),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ],
             ),
-            textAlign: TextAlign.center,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
-class _EmptyState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.check_circle_outline_rounded,
-            size: 120,
-            color: Colors.green.shade300,
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Yên ổn',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.green.shade700,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Chưa có sự cố gì',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyLarge?.copyWith(color: Colors.grey.shade600),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MaintenanceRequestsList extends StatelessWidget {
+class _MaintenanceRequestsList extends ConsumerWidget {
   final List<MaintenanceRequest> requests;
+  final String languageCode;
 
-  const _MaintenanceRequestsList({required this.requests});
+  const _MaintenanceRequestsList({required this.requests, required this.languageCode});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return RefreshIndicator(
       onRefresh: () async {
         // Refresh will happen automatically via stream
@@ -275,14 +367,16 @@ class _MaintenanceRequestsList extends StatelessWidget {
   }
 }
 
-class _MaintenanceRequestCard extends StatelessWidget {
+class _MaintenanceRequestCard extends ConsumerWidget {
   final MaintenanceRequest request;
 
   const _MaintenanceRequestCard({required this.request});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
 
     return Container(
       margin: EdgeInsets.zero,
@@ -376,7 +470,7 @@ class _MaintenanceRequestCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    _StatusBadge(status: request.status),
+                    _StatusBadge(status: request.status, languageCode: languageCode),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -407,7 +501,7 @@ class _MaintenanceRequestCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      _formatDate(request.createdAt),
+                      _formatDate(request.createdAt, languageCode),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade600,
                       ),
@@ -433,7 +527,7 @@ class _MaintenanceRequestCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              'Có ảnh',
+                              AppLocalizationsHelper.translate('hasImage', languageCode),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w600,
@@ -452,22 +546,34 @@ class _MaintenanceRequestCard extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, String languageCode) {
     final now = DateTime.now();
     final difference = now.difference(date);
 
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes == 0) {
-          return 'Vừa xong';
+          return AppLocalizationsHelper.translate('justNow', languageCode);
         }
-        return '${difference.inMinutes} phút trước';
+        return AppLocalizationsHelper.translateWithParams(
+          'minutesAgo',
+          languageCode,
+          {'minutes': difference.inMinutes.toString()},
+        );
       }
-      return '${difference.inHours} giờ trước';
+      return AppLocalizationsHelper.translateWithParams(
+        'hoursAgo',
+        languageCode,
+        {'hours': difference.inHours.toString()},
+      );
     } else if (difference.inDays == 1) {
-      return 'Hôm qua';
+      return AppLocalizationsHelper.translate('yesterday', languageCode);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} ngày trước';
+      return AppLocalizationsHelper.translateWithParams(
+        'daysAgo',
+        languageCode,
+        {'days': difference.inDays.toString()},
+      );
     } else {
       return '${date.day}/${date.month}/${date.year}';
     }
@@ -476,8 +582,9 @@ class _MaintenanceRequestCard extends StatelessWidget {
 
 class _StatusBadge extends StatelessWidget {
   final MaintenanceRequestStatus status;
+  final String languageCode;
 
-  const _StatusBadge({required this.status});
+  const _StatusBadge({required this.status, required this.languageCode});
 
   @override
   Widget build(BuildContext context) {
@@ -531,57 +638,24 @@ class _StatusBadge extends StatelessWidget {
   String _getStatusText() {
     switch (status) {
       case MaintenanceRequestStatus.pending:
-        return 'Đang chờ';
+        return AppLocalizationsHelper.translate('pending', languageCode);
       case MaintenanceRequestStatus.approved:
-        return 'Đã duyệt';
+        return AppLocalizationsHelper.translate('approved', languageCode);
       case MaintenanceRequestStatus.rejected:
-        return 'Từ chối';
+        return AppLocalizationsHelper.translate('rejected', languageCode);
       case MaintenanceRequestStatus.cancelled:
-        return 'Đã hủy';
+        return AppLocalizationsHelper.translate('cancelled', languageCode);
     }
   }
 }
 
 // Empty state for Maintenance Records
-class _EmptyMaintenanceState extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.construction_rounded,
-            size: 120,
-            color: Colors.grey.shade300,
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Chưa có công việc bảo trì',
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey.shade600,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Các công việc bảo trì sẽ hiển thị ở đây',
-            style: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade500),
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 // Maintenance List Widget
 class _MaintenanceList extends StatelessWidget {
   final List<Maintenance> maintenances;
+  final String languageCode;
 
-  const _MaintenanceList({required this.maintenances});
+  const _MaintenanceList({required this.maintenances, required this.languageCode});
 
   @override
   Widget build(BuildContext context) {
@@ -592,6 +666,7 @@ class _MaintenanceList extends StatelessWidget {
         final isLastItem = index == maintenances.length - 1;
         return _MaintenanceCard(
           maintenance: maintenances[index],
+          languageCode: languageCode,
           marginBottom: isLastItem ? 80.0 : 16.0,
         );
       },
@@ -602,9 +677,14 @@ class _MaintenanceList extends StatelessWidget {
 // Maintenance Card Widget
 class _MaintenanceCard extends StatelessWidget {
   final Maintenance maintenance;
+  final String languageCode;
   final double marginBottom;
 
-  const _MaintenanceCard({required this.maintenance, this.marginBottom = 16.0});
+  const _MaintenanceCard({
+    required this.maintenance,
+    required this.languageCode,
+    this.marginBottom = 16.0,
+  });
 
   Color _getStatusColor(String status) {
     switch (status.toUpperCase()) {
@@ -619,14 +699,14 @@ class _MaintenanceCard extends StatelessWidget {
     }
   }
 
-  String _getStatusText(String status) {
+  String _getStatusText(String status, String languageCode) {
     switch (status.toUpperCase()) {
       case 'PENDING':
-        return 'Chờ xử lý';
+        return AppLocalizationsHelper.translate('waitingProcess', languageCode);
       case 'IN_PROGRESS':
-        return 'Đang xử lý';
+        return AppLocalizationsHelper.translate('inProgress', languageCode);
       case 'COMPLETED':
-        return 'Hoàn thành';
+        return AppLocalizationsHelper.translate('completed', languageCode);
       default:
         return status;
     }
@@ -699,7 +779,7 @@ class _MaintenanceCard extends StatelessWidget {
                       ],
                     ),
                     child: Text(
-                      _getStatusText(maintenance.status),
+                      _getStatusText(maintenance.status, languageCode),
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 13,
@@ -737,7 +817,7 @@ class _MaintenanceCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 6),
                       Text(
-                        'Từ báo cáo của bạn',
+                        AppLocalizationsHelper.translate('fromYourReport', languageCode),
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.blue.shade700,
@@ -847,16 +927,18 @@ class _MaintenanceCard extends StatelessWidget {
                   Expanded(
                     child: _TimestampChip(
                       icon: Icons.calendar_today_outlined,
-                      label: 'Tạo',
+                      label: AppLocalizationsHelper.translate('created', languageCode),
                       date: dateFormat.format(maintenance.createdAt),
+                      languageCode: languageCode,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: _TimestampChip(
                       icon: Icons.update_outlined,
-                      label: 'Cập nhật',
+                      label: AppLocalizationsHelper.translate('updated', languageCode),
                       date: dateFormat.format(maintenance.updatedAt),
+                      languageCode: languageCode,
                     ),
                   ),
                 ],
@@ -881,7 +963,7 @@ class _MaintenanceCard extends StatelessWidget {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        'Chỉ xem - Bạn không thể chỉnh sửa công việc bảo trì',
+                        AppLocalizationsHelper.translate('viewOnlyCannotEdit', languageCode),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: Colors.amber.shade900,
                           fontStyle: FontStyle.italic,
@@ -945,11 +1027,13 @@ class _TimestampChip extends StatelessWidget {
   final IconData icon;
   final String label;
   final String date;
+  final String languageCode;
 
   const _TimestampChip({
     required this.icon,
     required this.label,
     required this.date,
+    required this.languageCode,
   });
 
   @override

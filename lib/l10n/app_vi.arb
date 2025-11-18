@@ -1,0 +1,112 @@
+{
+  "@@locale": "vi",
+  "appName": "StayMate",
+  "signIn": "Đăng nhập",
+  "signUp": "Đăng ký",
+  "signInWithGoogle": "Đăng nhập bằng Google",
+  "signUpWithGoogle": "Đăng ký bằng Google",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "home": "Trang chủ",
+  "contracts": "Hợp đồng",
+  "chat": "Chat",
+  "invoices": "Hóa đơn",
+  "reports": "Báo cáo và theo dõi sự cố",
+  "profile": "Hồ sơ",
+  "notifications": "Thông báo",
+  "settings": "Cài đặt",
+  "language": "Ngôn ngữ",
+  "vietnamese": "Tiếng Việt",
+  "english": "Tiếng Anh",
+  "logout": "Đăng xuất",
+  "noContracts": "Không có hợp đồng nào",
+  "noInvoices": "Không có hoá đơn nào",
+  "noReports": "Không có báo cáo nào",
+  "noChats": "Không có cuộc trò chuyện nào",
+  "createReport": "Tạo báo cáo sự cố",
+  "reportIssue": "Báo cáo sự cố",
+  "maintenanceWork": "Công việc bảo trì",
+  "pending": "Đang chờ",
+  "approved": "Đã duyệt",
+  "rejected": "Đã từ chối",
+  "cancelled": "Đã hủy",
+  "error": "Lỗi",
+  "tryAgain": "Thử lại",
+  "anErrorOccurred": "Có lỗi xảy ra",
+  "loading": "Đang tải...",
+  "save": "Lưu",
+  "cancel": "Hủy",
+  "delete": "Xóa",
+  "edit": "Chỉnh sửa",
+  "view": "Xem",
+  "send": "Gửi",
+  "pay": "Thanh toán",
+  "paid": "Đã thanh toán",
+  "unpaid": "Chưa thanh toán",
+  "online": "Trực tuyến",
+  "offline": "Ngoại tuyến",
+  "noInternetConnection": "Không có kết nối internet",
+  "reconnected": "Đã kết nối lại",
+  "camera": "Camera",
+  "gallery": "Thư viện",
+  "file": "Tệp",
+  "justNow": "Vừa xong",
+  "minutesAgo": "{count} phút trước",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} giờ trước",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Hôm qua",
+  "daysAgo": "{count} ngày trước",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "Tính năng sắp ra mắt",
+  "@featureComingSoon": {
+    "description": "Tooltip for features that are not yet implemented"
+  },
+  "refresh": "Làm mới",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "startAConversationToSeeItHere": "Bắt đầu một cuộc trò chuyện để xem nó ở đây.",
+  "@startAConversationToSeeItHere": {
+    "description": "Subtitle for empty chat list"
+  },
+  "noInvoicesFound": "Không tìm thấy hoá đơn",
+  "@noInvoicesFound": {
+    "description": "Title for empty invoice list"
+  },
+  "invoicesOfThisCategoryWillAppearHere": "Các hoá đơn trong danh mục này sẽ xuất hiện ở đây.",
+  "@invoicesOfThisCategoryWillAppearHere": {
+    "description": "Subtitle for empty invoice list"
+  },
+  "noIssuesToReport": "Không có sự cố nào",
+  "@noIssuesToReport": {
+    "description": "Title for empty maintenance request list"
+  },
+  "yourReportedIssuesWillAppearHere": "Các sự cố bạn báo cáo sẽ xuất hiện ở đây.",
+  "@yourReportedIssuesWillAppearHere": {
+    "description": "Subtitle for empty maintenance request list"
+  },
+  "reconnecting": "Sự cố kết nối. Đang kết nối lại...",
+  "@reconnecting": {
+    "description": "Message shown when the app is trying to reconnect"
+  }
+}

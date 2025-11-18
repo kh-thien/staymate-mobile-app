@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../bloc/auth_bloc_exports.dart';
 import '../../../../../core/services/connectivity_service.dart';
+import '../../../../../core/services/locale_provider.dart';
+import '../../../../../core/localization/app_localizations_helper.dart';
 import '../../../../../shared/widgets/custom_snackbar.dart';
 import 'auth_text_field.dart';
 import 'auth_primary_button.dart';
@@ -37,6 +39,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       return;
     }
 
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     // Kiểm tra kết nối internet
     final connectivityService = ref.read(connectivityServiceProvider);
     final isConnected = await connectivityService.checkConnectivity();
@@ -45,7 +50,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       if (!mounted) return;
       CustomSnackbar.showError(
         context,
-        'Không có kết nối internet. Vui lòng kiểm tra lại kết nối mạng.',
+        '${AppLocalizationsHelper.translate('noInternetConnection', languageCode)}. ${AppLocalizationsHelper.translate('pleaseCheckInternetConnection', languageCode)}',
       );
       return;
     }
@@ -61,6 +66,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 
   Future<void> _handleSignUpWithGoogle() async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     // Kiểm tra kết nối internet
     final connectivityService = ref.read(connectivityServiceProvider);
     final isConnected = await connectivityService.checkConnectivity();
@@ -69,7 +77,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
       if (!mounted) return;
       CustomSnackbar.showError(
         context,
-        'Không có kết nối internet. Vui lòng kiểm tra lại kết nối mạng.',
+        '${AppLocalizationsHelper.translate('noInternetConnection', languageCode)}. ${AppLocalizationsHelper.translate('pleaseCheckInternetConnection', languageCode)}',
       );
       return;
     }
@@ -80,6 +88,8 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final connectivityAsync = ref.watch(connectivityStreamProvider);
     final isConnected = connectivityAsync.maybeWhen(
       data: (value) => value,
@@ -120,7 +130,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Không có kết nối internet',
+                            AppLocalizationsHelper.translate('noInternetConnection', languageCode),
                             style: TextStyle(
                               color: Colors.red.shade700,
                               fontSize: 12,
@@ -134,13 +144,13 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 // Name field
                 AuthTextField(
                   controller: widget.nameController,
-                  label: 'Họ và tên',
+                  label: AppLocalizationsHelper.translate('fullName', languageCode),
                   icon: Icons.person_outlined,
                   textCapitalization: TextCapitalization.words,
                   isDark: widget.isDark,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập họ và tên';
+                      return AppLocalizationsHelper.translate('pleaseEnterName', languageCode);
                     }
                     return null;
                   },
@@ -151,17 +161,17 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 // Email field
                 AuthTextField(
                   controller: widget.emailController,
-                  label: 'Email',
+                  label: AppLocalizationsHelper.translate('email', languageCode),
                   icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                   textCapitalization: TextCapitalization.none,
                   isDark: widget.isDark,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập email';
+                      return AppLocalizationsHelper.translate('pleaseEnterEmail', languageCode);
                     }
                     if (!value.contains('@')) {
-                      return 'Email không hợp lệ';
+                      return AppLocalizationsHelper.translate('invalidEmail', languageCode);
                     }
                     return null;
                   },
@@ -172,7 +182,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 // Password field
                 AuthTextField(
                   controller: widget.passwordController,
-                  label: 'Mật khẩu',
+                  label: AppLocalizationsHelper.translate('password', languageCode),
                   icon: Icons.lock_outlined,
                   obscureText: _obscurePassword,
                   isDark: widget.isDark,
@@ -192,10 +202,10 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu';
+                      return AppLocalizationsHelper.translate('pleaseEnterPassword', languageCode);
                     }
                     if (value.length < 6) {
-                      return 'Mật khẩu phải có ít nhất 6 ký tự';
+                      return AppLocalizationsHelper.translate('passwordMinLength', languageCode);
                     }
                     return null;
                   },
@@ -205,7 +215,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
 
                 // Sign Up button
                 AuthPrimaryButton(
-                  text: 'Đăng ký',
+                  text: AppLocalizationsHelper.translate('signUp', languageCode),
                   isLoading: isLoading,
                   onPressed: isConnected ? _handleSignUp : null,
                 ),
@@ -219,7 +229,7 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
 
                 // Google Sign Up button
                 AuthGoogleButton(
-                  text: 'Đăng ký với Google',
+                  text: AppLocalizationsHelper.translate('signUpWithGoogle', languageCode),
                   isLoading: isLoading,
                   onPressed: isConnected ? _handleSignUpWithGoogle : null,
                   isDark: widget.isDark,

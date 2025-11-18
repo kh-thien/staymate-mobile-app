@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/contract_entity.dart';
 
 /// Widget hiển thị một hợp đồng dạng card đơn giản, nhỏ gọn
-class ContractCard extends StatelessWidget {
+class ContractCard extends ConsumerWidget {
   const ContractCard({super.key, required this.contract});
 
   final ContractEntity contract;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final statusColor = _getStatusColor(contract.status);
 
     return Container(
@@ -74,16 +79,21 @@ class ContractCard extends StatelessWidget {
             children: [
               Text(
                 contract.contractNumber ??
-                    'Hợp đồng #${contract.id.substring(0, 8)}',
+                    AppLocalizationsHelper.translateWithParams(
+                      'contractNumber',
+                      languageCode,
+                      {'id': contract.id.substring(0, 8)},
+                    ),
                             style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
                             overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           _StatusBadge(
                             status: contract.status,
                             statusInVietnamese: contract.statusInVietnamese,
+                            languageCode: languageCode,
                           ),
                         ],
                       ),
@@ -149,7 +159,7 @@ class ContractCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Tiền thuê',
+                              AppLocalizationsHelper.translate('rent', languageCode),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                                 fontWeight: FontWeight.w500,
@@ -157,7 +167,7 @@ class ContractCard extends StatelessWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_formatCurrency(contract.monthlyRent)}/tháng',
+                              '${_formatCurrency(contract.monthlyRent)}${AppLocalizationsHelper.translate('perMonth', languageCode)}',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: statusColor,
@@ -172,7 +182,7 @@ class ContractCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                'Ngày bắt đầu',
+                                AppLocalizationsHelper.translate('startDate', languageCode),
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
@@ -227,10 +237,12 @@ class ContractCard extends StatelessWidget {
 class _StatusBadge extends StatelessWidget {
   final String status;
   final String statusInVietnamese;
+  final String languageCode;
 
   const _StatusBadge({
     required this.status,
     required this.statusInVietnamese,
+    required this.languageCode,
   });
 
   @override

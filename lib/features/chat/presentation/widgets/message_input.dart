@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stay_mate/core/constants/ui_constants.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Message input widget for sending messages
-class MessageInput extends StatefulWidget {
+class MessageInput extends ConsumerStatefulWidget {
   final TextEditingController controller;
   final VoidCallback onSend;
   final VoidCallback? onPickImage;
@@ -17,10 +20,10 @@ class MessageInput extends StatefulWidget {
   });
 
   @override
-  State<MessageInput> createState() => _MessageInputState();
+  ConsumerState<MessageInput> createState() => _MessageInputState();
 }
 
-class _MessageInputState extends State<MessageInput> {
+class _MessageInputState extends ConsumerState<MessageInput> {
   final FocusNode _focusNode = FocusNode();
   bool _isFocused = false;
 
@@ -99,7 +102,10 @@ class _MessageInputState extends State<MessageInput> {
                     controller: widget.controller,
                     focusNode: _focusNode,
                     decoration: InputDecoration(
-                      hintText: 'Nhập tin nhắn...',
+                      hintText: AppLocalizationsHelper.translate(
+                        'enterMessage',
+                        ref.watch(appLocaleProvider).languageCode,
+                      ),
                       hintStyle: TextStyle(
                         color: Colors.grey[500],
                         fontSize: 15,
@@ -157,6 +163,9 @@ class _MessageInputState extends State<MessageInput> {
   }
 
   void _showAttachmentOptions(BuildContext context) {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -188,7 +197,10 @@ class _MessageInputState extends State<MessageInput> {
                       Icon(Icons.attachment, color: Colors.grey[700]),
                       const SizedBox(width: 8),
                       Text(
-                        'Chọn file đính kèm',
+                        AppLocalizationsHelper.translate(
+                          'chooseAttachment',
+                          languageCode,
+                        ),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -203,8 +215,11 @@ class _MessageInputState extends State<MessageInput> {
                   _buildAttachmentOption(
                     context: context,
                     icon: Icons.photo_library_rounded,
-                    title: 'Hình ảnh',
-                    subtitle: 'Chọn ảnh từ thư viện',
+                    title: AppLocalizationsHelper.translate('image', languageCode),
+                    subtitle: AppLocalizationsHelper.translate(
+                      'selectImageFromLibrary',
+                      languageCode,
+                    ),
                     color: Colors.blue,
                     onTap: () {
                       Navigator.pop(context);
@@ -215,8 +230,11 @@ class _MessageInputState extends State<MessageInput> {
                   _buildAttachmentOption(
                     context: context,
                     icon: Icons.description_rounded,
-                    title: 'File',
-                    subtitle: 'Chọn tài liệu hoặc file khác',
+                    title: AppLocalizationsHelper.translate('file', languageCode),
+                    subtitle: AppLocalizationsHelper.translate(
+                      'selectDocumentOrFile',
+                      languageCode,
+                    ),
                     color: Colors.orange,
                     onTap: () {
                       Navigator.pop(context);

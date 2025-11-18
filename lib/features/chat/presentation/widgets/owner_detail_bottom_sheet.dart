@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Owner Detail Bottom Sheet - Shows property and owner information
-class OwnerDetailBottomSheet extends StatelessWidget {
+class OwnerDetailBottomSheet extends ConsumerWidget {
   final dynamic chatRoom;
 
   const OwnerDetailBottomSheet({super.key, required this.chatRoom});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final owner = chatRoom.room?.properties?.owner;
     final property = chatRoom.room?.properties;
     final room = chatRoom.room;
@@ -43,9 +48,9 @@ class OwnerDetailBottomSheet extends StatelessWidget {
                 ),
                 child: Row(
                   children: [
-                    const Text(
-                      'Thông tin chủ nhà',
-                      style: TextStyle(
+                    Text(
+                      AppLocalizationsHelper.translate('ownerInfo', languageCode),
+                      style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
@@ -89,12 +94,20 @@ class OwnerDetailBottomSheet extends StatelessWidget {
                             // Avatar
                             _buildOwnerAvatar(
                               owner?.avatar,
-                              owner?.displayName ?? 'Chủ nhà',
+                              owner?.displayName ??
+                                  AppLocalizationsHelper.translate(
+                                    'landlord',
+                                    languageCode,
+                                  ),
                             ),
                             const SizedBox(height: 16),
                             // Owner Name
                             Text(
-                              owner?.displayName ?? 'Chủ nhà',
+                              owner?.displayName ??
+                                  AppLocalizationsHelper.translate(
+                                    'landlord',
+                                    languageCode,
+                                  ),
                               style: const TextStyle(
                                 fontSize: 20,
                                 fontWeight: FontWeight.bold,
@@ -187,9 +200,12 @@ class OwnerDetailBottomSheet extends StatelessWidget {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        const Text(
-                                          'Thông tin nhà cho thuê',
-                                          style: TextStyle(
+                                        Text(
+                                          AppLocalizationsHelper.translate(
+                                            'rentalPropertyInfo',
+                                            languageCode,
+                                          ),
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black87,
@@ -212,15 +228,23 @@ class OwnerDetailBottomSheet extends StatelessWidget {
                               // Property Name
                               _buildInfoRow(
                                 Icons.home,
-                                'Tên nhà',
+                                AppLocalizationsHelper.translate(
+                                  'propertyName',
+                                  languageCode,
+                                ),
                                 property.name,
+                                languageCode,
                               ),
                               const Divider(height: 24),
                               // Address
                               _buildInfoRow(
                                 Icons.location_on,
-                                'Địa chỉ',
+                                AppLocalizationsHelper.translate(
+                                  'address',
+                                  languageCode,
+                                ),
                                 property.fullAddress,
+                                languageCode,
                               ),
                             ],
                           ),
@@ -302,7 +326,12 @@ class OwnerDetailBottomSheet extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoRow(IconData icon, String label, String value) {
+  Widget _buildInfoRow(
+    IconData icon,
+    String label,
+    String value,
+    String languageCode,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

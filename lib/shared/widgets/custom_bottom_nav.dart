@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../core/services/locale_provider.dart';
+import '../../core/localization/app_localizations_helper.dart';
 
-class CustomBottomNav extends StatelessWidget {
+class CustomBottomNav extends ConsumerWidget {
   const CustomBottomNav({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final currentLocation = GoRouterState.of(context).uri.path;
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 12),
@@ -32,7 +37,7 @@ class CustomBottomNav extends StatelessWidget {
                 // Hợp đồng
                 _buildNavItem(
                   icon: Icons.description_rounded,
-                  label: 'Hợp đồng',
+                  label: AppLocalizationsHelper.translate('contracts', languageCode),
                   isSelected: currentLocation == '/contract',
                   onTap: () {
                     context.go('/contract');
@@ -42,7 +47,7 @@ class CustomBottomNav extends StatelessWidget {
                 // Hóa đơn
                 _buildNavItem(
                   icon: Icons.receipt_rounded,
-                  label: 'Hóa đơn',
+                  label: AppLocalizationsHelper.translate('invoices', languageCode),
                   isSelected: currentLocation == '/invoice',
                   onTap: () {
                     context.go('/invoice');
@@ -55,7 +60,7 @@ class CustomBottomNav extends StatelessWidget {
                 // Chat
                 _buildNavItem(
                   icon: Icons.chat_rounded,
-                  label: 'Chat',
+                  label: AppLocalizationsHelper.translate('chat', languageCode),
                   isSelected: currentLocation == '/chat',
                   onTap: () {
                     context.go('/chat');
@@ -65,7 +70,7 @@ class CustomBottomNav extends StatelessWidget {
                 // Báo cáo sự cố
                 _buildNavItem(
                   icon: Icons.report_problem_rounded,
-                  label: 'Sự cố',
+                  label: AppLocalizationsHelper.translate('issue', languageCode),
                   isSelected: currentLocation == '/report',
                   onTap: () {
                     context.go('/report');

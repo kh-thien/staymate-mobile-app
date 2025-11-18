@@ -1,7 +1,10 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -12,14 +15,18 @@ import 'core/router/auth_state_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/auth_service.dart';
 import 'core/services/firebase_messaging_service.dart';
+import 'core/services/locale_service.dart';
+import 'core/services/locale_provider.dart';
 import 'features/auth/presentation/bloc/auth_bloc_exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize date formatting for Vietnamese locale
+  // Initialize date formatting for Vietnamese and English locales
   await initializeDateFormatting('vi', null);
   await initializeDateFormatting('vi_VN', null);
+  await initializeDateFormatting('en', null);
+  await initializeDateFormatting('en_US', null);
 
   await dotenv.load(fileName: ".env");
 
@@ -72,6 +79,10 @@ void main() async {
   }
 
   runApp(const ProviderScope(child: StayMateApp()));
+  // runApp(DevicePreview(
+  //   enabled: !kReleaseMode,
+  //   builder: (context) => const ProviderScope(child: StayMateApp()),
+  // ));
 }
 
 class StayMateApp extends StatefulWidget {
@@ -118,13 +129,31 @@ class _StayMateAppState extends State<StayMateApp> {
       ],
       child: AuthStateListener(
         notifier: _authStateNotifier,
-        child: MaterialApp.router(
-          title: 'StayMate',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
-          routerConfig: _router,
+        child: Consumer(
+          builder: (context, ref, child) {
+            // Watch locale provider để MaterialApp rebuild khi locale thay đổi
+            final locale = ref.watch(appLocaleProvider);
+            
+            // Key để force rebuild MaterialApp khi locale thay đổi
+            final localeKey = ValueKey(locale.toString());
+            
+            return MaterialApp.router(
+              key: localeKey,
+              title: 'StayMate',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: ThemeMode.system,
+              locale: locale,
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: LocaleService.getSupportedLocales(),
+              routerConfig: _router,
+            );
+          },
         ),
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -145,43 +146,139 @@ class AuthService {
   // Đăng nhập bằng Google
   Future<AuthResponse> signInWithGoogle() async {
     try {
+      debugPrint('🔵 [Google Sign-In] Starting Google Sign-In process...');
+      
       final GoogleSignIn googleSignIn = GoogleSignIn.instance;
 
       // Initialize with client IDs
-      await googleSignIn.initialize(
-        clientId: iosClientId,
-        serverClientId: webClientId,
-      );
-
-      final googleUser = await googleSignIn.authenticate();
-      final googleAuth = googleUser.authentication;
-      final idToken = googleAuth.idToken;
-
-      if (idToken == null) {
+      debugPrint('🔵 [Google Sign-In] Initializing GoogleSignIn with client IDs...');
+      debugPrint('🔵 [Google Sign-In] iOS Client ID: ${iosClientId.substring(0, 20)}...');
+      debugPrint('🔵 [Google Sign-In] Web Client ID: ${webClientId.substring(0, 20)}...');
+      
+      try {
+        await googleSignIn.initialize(
+          clientId: iosClientId,
+          serverClientId: webClientId,
+        );
+        debugPrint('✅ [Google Sign-In] GoogleSignIn initialized successfully');
+      } catch (initError) {
+        debugPrint('❌ [Google Sign-In] Failed to initialize: $initError');
         throw AuthException(
-          'Không thể lấy ID Token từ Google. Vui lòng thử lại.',
-          statusCode: 'google_signin_failed',
+          'Không thể khởi tạo Google Sign-In. Vui lòng kiểm tra cấu hình.',
+          statusCode: 'google_signin_init_failed',
         );
       }
 
+      debugPrint('🔵 [Google Sign-In] Calling authenticate()...');
+      GoogleSignInAuthentication googleAuth;
+      try {
+        final googleUser = await googleSignIn.authenticate();
+        debugPrint('✅ [Google Sign-In] authenticate() completed');
+        debugPrint('🔵 [Google Sign-In] Getting authentication...');
+        googleAuth = googleUser.authentication;
+        debugPrint('✅ [Google Sign-In] Got authentication');
+      } catch (authError) {
+        debugPrint('❌ [Google Sign-In] Authentication error: $authError');
+        final errorString = authError.toString().toLowerCase();
+        
+        // Check for specific error codes
+        if (errorString.contains('cancelled') || errorString.contains('canceled')) {
+          debugPrint('ℹ️ [Google Sign-In] User cancelled the sign-in');
+          throw AuthException(
+            'Đăng nhập với Google đã bị hủy.',
+            statusCode: 'google_signin_cancelled',
+          );
+        }
+        
+        // Error 28444: Developer console is not set up correctly
+        if (errorString.contains('28444') || 
+            errorString.contains('developer console is not set up correctly') ||
+            errorString.contains('developer_console_not_set_up')) {
+          debugPrint('❌ [Google Sign-In] Error 28444 - Developer console not set up correctly');
+          debugPrint('❌ [Google Sign-In] This usually means:');
+          debugPrint('   1. SHA fingerprint not added to Google Cloud Console');
+          debugPrint('   2. OAuth Client ID for Android not created');
+          debugPrint('   3. Package name mismatch');
+          throw AuthException(
+            'Cấu hình Developer Console chưa đúng. Vui lòng:\n'
+            '1. Thêm SHA fingerprint vào Google Cloud Console\n'
+            '2. Tạo OAuth Client ID cho Android\n'
+            '3. Kiểm tra package name khớp với com.staymate.mobile',
+            statusCode: 'google_signin_developer_console_error',
+          );
+        }
+        
+        // Error 10: DEVELOPER_ERROR (SHA fingerprint issue)
+        if (errorString.contains('10') || 
+            errorString.contains('developer_error') ||
+            errorString.contains('[10]')) {
+          debugPrint('❌ [Google Sign-In] Error 10 - DEVELOPER_ERROR (SHA fingerprint issue)');
+          throw AuthException(
+            'Lỗi cấu hình Google Sign-In (Error 10).\n'
+            'Vui lòng thêm SHA fingerprint của release keystore vào Google Cloud Console.\n'
+            'Xem hướng dẫn trong file SUPABASE_GOOGLE_SIGNIN_FIX.md',
+            statusCode: 'google_signin_developer_error',
+          );
+        }
+        
+        // Credential Manager error
+        if (errorString.contains('credential') || 
+            errorString.contains('credman') ||
+            errorString.contains('getcredentialresponse')) {
+          debugPrint('❌ [Google Sign-In] Credential Manager error');
+          throw AuthException(
+            'Lỗi Credential Manager.\n'
+            'Vui lòng kiểm tra:\n'
+            '1. SHA fingerprint đã được thêm vào Google Cloud Console\n'
+            '2. OAuth Client ID cho Android đã được tạo\n'
+            '3. Package name khớp với com.staymate.mobile',
+            statusCode: 'google_signin_credential_error',
+          );
+        }
+        
+        rethrow;
+      }
+
+      final idToken = googleAuth.idToken;
+      debugPrint('🔵 [Google Sign-In] ID Token: ${idToken != null ? "Received" : "NULL"}');
+
+      if (idToken == null) {
+        debugPrint('❌ [Google Sign-In] ID Token is null');
+        throw AuthException(
+          'Không thể lấy ID Token từ Google. Vui lòng thử lại.',
+          statusCode: 'google_signin_no_id_token',
+        );
+      }
+
+      debugPrint('🔵 [Google Sign-In] Signing in with Supabase...');
       final response = await _supabase.auth.signInWithIdToken(
         provider: OAuthProvider.google,
         idToken: idToken,
       );
+      debugPrint('✅ [Google Sign-In] Supabase sign-in successful');
 
       // Kiểm tra role và block admin
       if (response.user != null) {
+        debugPrint('🔵 [Google Sign-In] Checking admin status...');
         await checkAndBlockAdmin(response.user!.id);
+        debugPrint('✅ [Google Sign-In] Admin check passed');
         
         // Lưu FCM token sau khi đăng nhập thành công (chỉ khi không phải admin)
+        debugPrint('🔵 [Google Sign-In] Saving FCM token...');
         await _fcmTokenService.saveToken(response.user!.id);
+        debugPrint('✅ [Google Sign-In] FCM token saved');
       }
 
+      debugPrint('✅ [Google Sign-In] Google Sign-In completed successfully');
       return response;
-    } on AuthException {
+    } on AuthException catch (e) {
+      debugPrint('❌ [Google Sign-In] AuthException: ${e.message} (${e.statusCode})');
       // Re-throw AuthException để bloc có thể xử lý
       rethrow;
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ [Google Sign-In] Unexpected error: $e');
+      debugPrint('❌ [Google Sign-In] Stack trace: $stackTrace');
+      
       // Wrap các lỗi khác thành AuthException
       final errorString = e.toString().toLowerCase();
       if (errorString.contains('cancelled') ||
@@ -191,8 +288,17 @@ class AuthService {
           statusCode: 'google_signin_cancelled',
         );
       }
+      
+      // Check for network errors
+      if (errorString.contains('network') || errorString.contains('connection')) {
+        throw AuthException(
+          'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.',
+          statusCode: 'google_signin_network_error',
+        );
+      }
+      
       throw AuthException(
-        'Đăng nhập với Google thất bại. Vui lòng thử lại.',
+        'Đăng nhập với Google thất bại: ${e.toString()}',
         statusCode: 'google_signin_failed',
       );
     }

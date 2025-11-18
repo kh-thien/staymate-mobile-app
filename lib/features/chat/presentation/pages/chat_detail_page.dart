@@ -16,6 +16,8 @@ import '../widgets/message_input.dart';
 import '../widgets/chat_empty_state.dart';
 import '../widgets/chat_detail_app_bar.dart';
 import '../widgets/owner_detail_bottom_sheet.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Chat detail page showing messages for a room
 class ChatDetailPage extends HookConsumerWidget {
@@ -70,6 +72,8 @@ class ChatDetailPage extends HookConsumerWidget {
       };
     }, [roomId]);
 
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final property = currentRoom?.room?.properties;
     // Format: address, ward, city (excluding district)
     final address = property != null
@@ -80,7 +84,7 @@ class ChatDetailPage extends HookConsumerWidget {
             if (property.city != null && property.city!.isNotEmpty)
               property.city!,
           ].join(', ')
-        : 'Địa chỉ không xác định';
+        : AppLocalizationsHelper.translate('addressUnknown', languageCode);
     final ownerAvatar = property?.owner?.avatar;
     final propertyName = property?.name;
 
@@ -104,9 +108,9 @@ class ChatDetailPage extends HookConsumerWidget {
                 child: messagesAsync.when(
                   data: (messages) {
                     if (messages.isEmpty) {
-                      return const ChatEmptyState(
+                      return ChatEmptyState(
                         message:
-                            'Chưa có tin nhắn nào\nHãy bắt đầu trò chuyện!',
+                            '${AppLocalizationsHelper.translate('noMessagesYet', languageCode)}\n${AppLocalizationsHelper.translate('startConversation', languageCode)}',
                       );
                     }
 
@@ -170,9 +174,9 @@ class ChatDetailPage extends HookConsumerWidget {
                                       ScaffoldMessenger.of(
                                         context,
                                       ).showSnackBar(
-                                        const SnackBar(
+                                        SnackBar(
                                           content: Text(
-                                            'Không thể gửi lại file. Vui lòng chọn file mới.',
+                                            AppLocalizationsHelper.translate('cannotResendFile', languageCode),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -188,10 +192,57 @@ class ChatDetailPage extends HookConsumerWidget {
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
                   error: (error, stack) => Center(
-                    child: SelectableText.rich(
-                      TextSpan(
-                        text: 'Lỗi: ${error.toString()}',
-                        style: const TextStyle(color: Colors.red),
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.error_outline_rounded,
+                            size: 64,
+                            color: Colors.red.shade400,
+                          ),
+                          const SizedBox(height: 16),
+                          SelectableText.rich(
+                            TextSpan(
+                              children: [
+                                TextSpan(
+                                  text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.red,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: error.toString(),
+                                  style: const TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 24),
+                          ElevatedButton.icon(
+                            onPressed: () {
+                              ref.invalidate(chatMessagesProvider(roomId));
+                            },
+                            icon: const Icon(Icons.refresh_rounded),
+                            label: Text(
+                              AppLocalizationsHelper.translate(
+                                'tryAgain',
+                                languageCode,
+                              ),
+                            ),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red,
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -220,7 +271,7 @@ class ChatDetailPage extends HookConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('Lỗi: ${e.toString()}'),
+                          content: Text('${AppLocalizationsHelper.translate('error', languageCode)}: ${e.toString()}'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -233,19 +284,19 @@ class ChatDetailPage extends HookConsumerWidget {
                     final source = await showDialog<ImageSource>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: const Text('Chọn hình ảnh từ'),
+                        title: Text(AppLocalizationsHelper.translate('selectImageFrom', languageCode)),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
                               leading: const Icon(Icons.camera_alt),
-                              title: const Text('Camera'),
+                              title: Text(AppLocalizationsHelper.translate('camera', languageCode)),
                               onTap: () =>
                                   Navigator.pop(context, ImageSource.camera),
                             ),
                             ListTile(
                               leading: const Icon(Icons.photo_library),
-                              title: const Text('Thư viện'),
+                              title: Text(AppLocalizationsHelper.translate('gallery', languageCode)),
                               onTap: () =>
                                   Navigator.pop(context, ImageSource.gallery),
                             ),

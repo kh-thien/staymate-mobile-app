@@ -1,15 +1,18 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:photo_view/photo_view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/permission/permission.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../data/models/contract_file_model.dart';
 
 /// Full screen viewer for contract files with swipe navigation
-class ContractFilesViewerPage extends StatefulWidget {
+class ContractFilesViewerPage extends ConsumerStatefulWidget {
   const ContractFilesViewerPage({
     super.key,
     required this.files,
@@ -20,11 +23,11 @@ class ContractFilesViewerPage extends StatefulWidget {
   final int initialIndex;
 
   @override
-  State<ContractFilesViewerPage> createState() =>
+  ConsumerState<ContractFilesViewerPage> createState() =>
       _ContractFilesViewerPageState();
 }
 
-class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
+class _ContractFilesViewerPageState extends ConsumerState<ContractFilesViewerPage> {
   late PageController _pageController;
   late int _currentIndex;
   final supabase = Supabase.instance.client;
@@ -57,20 +60,25 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
       if (hasPermission) {
         if (!mounted) return;
 
+        final locale = ref.read(appLocaleProvider);
+        final languageCode = locale.languageCode;
+
         // Show loading dialog and get its context
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (dialogContext) => const Center(
+          builder: (dialogContext) => Center(
             child: Card(
               child: Padding(
-                padding: EdgeInsets.all(24.0),
+                padding: const EdgeInsets.all(24.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Đang tải xuống...'),
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizationsHelper.translate('downloading', languageCode),
+                    ),
                   ],
                 ),
               ),
@@ -93,7 +101,12 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
             if (!await directory.exists()) {
               final externalDir = await getExternalStorageDirectory();
               if (externalDir == null) {
-                throw Exception('Không thể truy cập thư mục lưu trữ');
+                throw Exception(
+                  AppLocalizationsHelper.translate(
+                    'cannotAccessStorage',
+                    languageCode,
+                  ),
+                );
               }
               filePath = '${externalDir.path}/$fileName';
             } else {
@@ -101,7 +114,10 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
             }
 
             await dio.download(url, filePath);
-            successMessage = 'Đã lưu vào thư mục Download';
+            successMessage = AppLocalizationsHelper.translate(
+              'savedToDownload',
+              languageCode,
+            );
           } else if (Platform.isIOS) {
             // iOS: Save to app documents directory
             // User can access via Files app -> On My iPhone -> StayMate
@@ -109,9 +125,17 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
             filePath = '${directory.path}/$fileName';
 
             await dio.download(url, filePath);
-            successMessage = 'Đã lưu vào Files (On My iPhone → StayMate)';
+            successMessage = AppLocalizationsHelper.translate(
+              'savedToFiles',
+              languageCode,
+            );
           } else {
-            throw Exception('Nền tảng không được hỗ trợ');
+            throw Exception(
+              AppLocalizationsHelper.translate(
+                'platformNotSupported',
+                languageCode,
+              ),
+            );
           }
 
           // Close loading dialog - Use rootNavigator to ensure dialog is closed
@@ -124,6 +148,8 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
 
           // Show success message
           if (mounted) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Column(
@@ -136,16 +162,21 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
                 ),
                 duration: const Duration(seconds: 4),
                 action: SnackBarAction(
-                  label: 'Mở',
+                  label: AppLocalizationsHelper.translate('open', languageCode),
                   onPressed: () async {
                     final result = await OpenFilex.open(filePath!);
                     if (result.type != ResultType.done && mounted) {
+                      final locale = ref.read(appLocaleProvider);
+                      final languageCode = locale.languageCode;
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
                             result.message.isNotEmpty
                                 ? result.message
-                                : 'Không thể mở file',
+                                : AppLocalizationsHelper.translate(
+                                    'cannotOpenFile',
+                                    languageCode,
+                                  ),
                           ),
                         ),
                       );
@@ -163,9 +194,13 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
 
           // Show download error
           if (mounted) {
+            final locale = ref.read(appLocaleProvider);
+            final languageCode = locale.languageCode;
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Lỗi khi tải file: ${downloadError.toString()}'),
+                content: Text(
+                  '${AppLocalizationsHelper.translate('errorDownloadingFile', languageCode)} ${downloadError.toString()}',
+                ),
                 duration: const Duration(seconds: 3),
               ),
             );
@@ -186,9 +221,13 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
 
       // Show error message
       if (mounted) {
+        final locale = ref.read(appLocaleProvider);
+        final languageCode = locale.languageCode;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi khi tải file: ${e.toString()}'),
+            content: Text(
+              '${AppLocalizationsHelper.translate('errorDownloadingFile', languageCode)} ${e.toString()}',
+            ),
             duration: const Duration(seconds: 3),
           ),
         );
@@ -198,6 +237,9 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -232,15 +274,18 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
                                 (event.expectedTotalBytes ?? 1),
                     ),
                   ),
-                  errorBuilder: (context, error, stackTrace) => const Center(
+                  errorBuilder: (context, error, stackTrace) => Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.error, size: 64, color: Colors.white54),
-                        SizedBox(height: 16),
+                        const Icon(Icons.error, size: 64, color: Colors.white54),
+                        const SizedBox(height: 16),
                         Text(
-                          'Không thể tải ảnh',
-                          style: TextStyle(color: Colors.white54),
+                          AppLocalizationsHelper.translate(
+                            'cannotLoadImage',
+                            languageCode,
+                          ),
+                          style: const TextStyle(color: Colors.white54),
                         ),
                       ],
                     ),
@@ -297,6 +342,8 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
                                 }
 
                                 // Open file
+                                final locale = ref.read(appLocaleProvider);
+                                final languageCode = locale.languageCode;
                                 final result = await OpenFilex.open(
                                   tempFilePath,
                                 );
@@ -307,23 +354,35 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
                                       content: Text(
                                         result.message.isNotEmpty
                                             ? result.message
-                                            : 'Không thể mở file',
+                                            : AppLocalizationsHelper.translate(
+                                                'cannotOpenFile',
+                                                languageCode,
+                                              ),
                                       ),
                                     ),
                                   );
                                 }
                               } catch (e) {
                                 if (context.mounted) {
+                                  final locale = ref.read(appLocaleProvider);
+                                  final languageCode = locale.languageCode;
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
-                                      content: Text('Lỗi: ${e.toString()}'),
+                                      content: Text(
+                                        '${AppLocalizationsHelper.translate('error', languageCode)}: ${e.toString()}',
+                                      ),
                                     ),
                                   );
                                 }
                               }
                             },
                             icon: const Icon(Icons.open_in_new),
-                            label: const Text('Mở file'),
+                            label: Text(
+                              AppLocalizationsHelper.translate(
+                                'openFile',
+                                languageCode,
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -358,7 +417,10 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
                     IconButton(
                       onPressed: () => Navigator.pop(context),
                       icon: const Icon(Icons.close, color: Colors.white),
-                      tooltip: 'Đóng',
+                      tooltip: AppLocalizationsHelper.translate(
+                        'close',
+                        languageCode,
+                      ),
                     ),
                     // File name and count
                     Expanded(
@@ -391,7 +453,10 @@ class _ContractFilesViewerPageState extends State<ContractFilesViewerPage> {
                     IconButton(
                       onPressed: _downloadCurrentFile,
                       icon: const Icon(Icons.download, color: Colors.white),
-                      tooltip: 'Tải xuống',
+                      tooltip: AppLocalizationsHelper.translate(
+                        'download',
+                        languageCode,
+                      ),
                     ),
                   ],
                 ),

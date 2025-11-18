@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../shared/widgets/custom_snackbar.dart';
+import '../../../../shared/widgets/language_selector.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../bloc/auth_bloc_exports.dart';
 import '../utils/auth_error_handler.dart';
 import '../widgets/auth_header.dart';
@@ -10,7 +14,7 @@ import '../widgets/sign_in_form.dart';
 import '../widgets/sign_up_form.dart';
 
 /// Màn hình đăng nhập/đăng ký với TabBar
-class AuthPage extends StatefulWidget {
+class AuthPage extends ConsumerStatefulWidget {
   final bool initialIsSignIn;
 
   const AuthPage({
@@ -19,10 +23,10 @@ class AuthPage extends StatefulWidget {
   });
 
   @override
-  State<AuthPage> createState() => _AuthPageState();
+  ConsumerState<AuthPage> createState() => _AuthPageState();
 }
 
-class _AuthPageState extends State<AuthPage>
+class _AuthPageState extends ConsumerState<AuthPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _signInFormKey = GlobalKey<FormState>();
@@ -119,10 +123,26 @@ class _AuthPageState extends State<AuthPage>
         decoration: _buildBackgroundDecoration(isDark),
         child: Column(
           children: [
-            // SafeArea chỉ cho phần header
+            // SafeArea với language selector ở góc trên
             SafeArea(
               bottom: false,
-              child: AuthHeader(isDark: isDark),
+              child: Stack(
+                children: [
+                  // Auth Header
+                  AuthHeader(isDark: isDark),
+                  // Language selector ở góc trên bên phải
+                  Positioned(
+                    top: 8,
+                    right: 16,
+                    child: LanguageSelector(
+                      isCompact: true,
+                      iconColor: isDark
+                          ? Colors.white.withOpacity(0.9)
+                          : Colors.grey[700],
+                    ),
+                  ),
+                ],
+              ),
             ),
 
             // Auth Card - Chiếm hết phần còn lại, không có SafeArea
@@ -165,9 +185,11 @@ class _AuthPageState extends State<AuthPage>
         _lastErrorMessage = null;
 
         // Hiển thị thông báo thành công
+        final locale = ref.read(appLocaleProvider);
+        final languageCode = locale.languageCode;
         CustomSnackbar.showSuccess(
           context,
-          'Đăng nhập thành công!',
+          AppLocalizationsHelper.translate('signInSuccess', languageCode),
         );
 
         // Navigate đến home sau khi đăng nhập thành công
@@ -188,9 +210,11 @@ class _AuthPageState extends State<AuthPage>
         _lastErrorMessage = null;
 
         // Hiển thị thông báo thành công
+        final locale = ref.read(appLocaleProvider);
+        final languageCode = locale.languageCode;
         CustomSnackbar.showSuccess(
           context,
-          'Đăng ký thành công! Chào mừng đến với StayMate!',
+          AppLocalizationsHelper.translate('signUpSuccess', languageCode),
         );
 
         // Navigate đến home sau khi đăng ký thành công

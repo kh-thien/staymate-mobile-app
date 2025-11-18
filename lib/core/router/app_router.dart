@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'auth_state_notifier.dart';
 import 'package:stay_mate/features/invoice/presentation/pages/invoice_page.dart';
+import 'package:stay_mate/features/invoice/presentation/pages/invoice_detail_page.dart';
 import 'package:stay_mate/features/report/presentation/pages/report_page.dart';
 import 'package:stay_mate/features/report/presentation/pages/create_report_page.dart';
 import 'package:stay_mate/features/report/presentation/pages/report_detail_page.dart';
@@ -15,9 +16,12 @@ import '../../features/chat/presentation/pages/chat_list_page.dart';
 import '../../features/chat/presentation/pages/chat_detail_page.dart';
 import '../../shared/widgets/custom_app_bar.dart';
 import '../../shared/widgets/custom_bottom_nav.dart';
+import '../../shared/widgets/connectivity_snackbar.dart';
 import '../guards/auth_guard.dart';
 import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/profile/presentation/pages/notification_settings_page.dart';
+import '../../features/profile/presentation/pages/language_settings_page.dart';
+import '../../features/profile/presentation/pages/app_info_page.dart';
 import '../../features/home/presentation/pages/notifications_page.dart';
 
 class AppRouter {
@@ -31,7 +35,9 @@ class AppRouter {
   static const String invoiceDetail = '/invoice/:invoiceId';
   static const String report = '/report';
   static const String notificationSettings = '/notification-settings';
+  static const String languageSettings = '/language-settings';
   static const String notifications = '/notifications';
+  static const String appInfo = '/app-info';
 
   static GoRouter createRouter(AuthStateNotifier authStateNotifier) {
 
@@ -82,25 +88,27 @@ class AppRouter {
           // Height = safe area + logo (56) + padding (8*2) = safe area + 72
           final appBarHeight = topSafeArea + 72.0;
           
-          return Scaffold(
-            resizeToAvoidBottomInset: true,
-            backgroundColor: Colors.amberAccent,
-            appBar: PreferredSize(
-              preferredSize: Size.fromHeight(appBarHeight),
-              child: const CustomAppBar(),
-            ),
-            body: Stack(
-              children: [
-                // Main Content with AuthGuard
-                child,
-                // Floating Bottom Navigation Bar
-                const Positioned(
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  child: CustomBottomNav(),
-                ),
-              ],
+          return ConnectivitySnackbar(
+            child: Scaffold(
+              resizeToAvoidBottomInset: true,
+              backgroundColor: Colors.amberAccent,
+              appBar: PreferredSize(
+                preferredSize: Size.fromHeight(appBarHeight),
+                child: const CustomAppBar(),
+              ),
+              body: Stack(
+                children: [
+                  // Main Content with AuthGuard
+                  child,
+                  // Floating Bottom Navigation Bar
+                  const Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    child: CustomBottomNav(),
+                  ),
+                ],
+              ),
             ),
           );
         },
@@ -166,6 +174,18 @@ class AppRouter {
             builder: (context, state) => const AuthGuard(
               child: InvoicePage(),
             ),
+            routes: [
+              GoRoute(
+                path: ':invoiceId',
+                name: 'invoiceDetail',
+                builder: (context, state) {
+                  final invoiceId = state.pathParameters['invoiceId']!;
+                  return AuthGuard(
+                    child: InvoiceDetailPage(billId: invoiceId),
+                  );
+                },
+              ),
+            ],
           ),
           GoRoute(
             path: report,
@@ -193,21 +213,35 @@ class AppRouter {
               ),
             ],
           ),
-          GoRoute(
-            path: notificationSettings,
-            name: 'notificationSettings',
-            builder: (context, state) => const AuthGuard(
-              child: NotificationSettingsPage(),
-            ),
-          ),
         ],
       ),
-      // Notification page - Full screen (not in ShellRoute)
+      // Full screen pages (not in ShellRoute)
       GoRoute(
         path: notifications,
         name: 'notifications',
         builder: (context, state) => const AuthGuard(
           child: NotificationsPage(),
+        ),
+      ),
+      GoRoute(
+        path: notificationSettings,
+        name: 'notificationSettings',
+        builder: (context, state) => const AuthGuard(
+          child: NotificationSettingsPage(),
+        ),
+      ),
+      GoRoute(
+        path: languageSettings,
+        name: 'languageSettings',
+        builder: (context, state) => const AuthGuard(
+          child: LanguageSettingsPage(),
+        ),
+      ),
+      GoRoute(
+        path: appInfo,
+        name: 'appInfo',
+        builder: (context, state) => const AuthGuard(
+          child: AppInfoPage(),
         ),
       ),
     ];

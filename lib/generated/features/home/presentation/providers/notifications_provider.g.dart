@@ -141,6 +141,129 @@ final class AllNotificationsProvider
 
 String _$allNotificationsHash() => r'ddb99a421da56f651800c01ed8319b221781854c';
 
+/// Stream provider for realtime notifications updates
+
+@ProviderFor(allNotificationsStream)
+const allNotificationsStreamProvider = AllNotificationsStreamProvider._();
+
+/// Stream provider for realtime notifications updates
+
+final class AllNotificationsStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<NotificationModel>>,
+          List<NotificationModel>,
+          Stream<List<NotificationModel>>
+        >
+    with
+        $FutureModifier<List<NotificationModel>>,
+        $StreamProvider<List<NotificationModel>> {
+  /// Stream provider for realtime notifications updates
+  const AllNotificationsStreamProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'allNotificationsStreamProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$allNotificationsStreamHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<NotificationModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<NotificationModel>> create(Ref ref) {
+    return allNotificationsStream(ref);
+  }
+}
+
+String _$allNotificationsStreamHash() =>
+    r'18cd4fab1c3ca9ecd050c324e6ad8ab7edac08cf';
+
+@ProviderFor(unreadNotificationsCount)
+const unreadNotificationsCountProvider = UnreadNotificationsCountProvider._();
+
+final class UnreadNotificationsCountProvider
+    extends $FunctionalProvider<AsyncValue<int>, int, Stream<int>>
+    with $FutureModifier<int>, $StreamProvider<int> {
+  const UnreadNotificationsCountProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'unreadNotificationsCountProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$unreadNotificationsCountHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<int> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<int> create(Ref ref) {
+    return unreadNotificationsCount(ref);
+  }
+}
+
+String _$unreadNotificationsCountHash() =>
+    r'e919d4b26178f8665b5c8824a5fede09c1502009';
+
+@ProviderFor(recentNotificationsStream)
+const recentNotificationsStreamProvider = RecentNotificationsStreamProvider._();
+
+final class RecentNotificationsStreamProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<NotificationModel>>,
+          List<NotificationModel>,
+          Stream<List<NotificationModel>>
+        >
+    with
+        $FutureModifier<List<NotificationModel>>,
+        $StreamProvider<List<NotificationModel>> {
+  const RecentNotificationsStreamProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'recentNotificationsStreamProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$recentNotificationsStreamHash();
+
+  @$internal
+  @override
+  $StreamProviderElement<List<NotificationModel>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<NotificationModel>> create(Ref ref) {
+    return recentNotificationsStream(ref);
+  }
+}
+
+String _$recentNotificationsStreamHash() =>
+    r'62d9752f112583c7456a1e9fa6cdd5e9aff38396';
+
 @ProviderFor(markNotificationAsRead)
 const markNotificationAsReadProvider = MarkNotificationAsReadFamily._();
 
@@ -192,7 +315,7 @@ final class MarkNotificationAsReadProvider
 }
 
 String _$markNotificationAsReadHash() =>
-    r'd962c6debe96c751c1e694b03a30677f840a6366';
+    r'f67759f494bcd1de4b1bbf114a08e31d6fec020a';
 
 final class MarkNotificationAsReadFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<void>, String> {

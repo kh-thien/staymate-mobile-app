@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Widget hiển thị trạng thái lỗi với nút retry
-class ContractErrorState extends StatelessWidget {
+class ContractErrorState extends ConsumerWidget {
   const ContractErrorState({
     super.key,
     required this.message,
@@ -12,7 +15,10 @@ class ContractErrorState extends StatelessWidget {
   final VoidCallback onRetry;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+    
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -20,7 +26,7 @@ class ContractErrorState extends StatelessWidget {
           Icon(Icons.error_outline, size: 80, color: Colors.red.shade300),
           const SizedBox(height: 16),
           Text(
-            'Có lỗi xảy ra',
+            AppLocalizationsHelper.translate('anErrorOccurred', languageCode),
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -40,7 +46,7 @@ class ContractErrorState extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Thử lại'),
+            label: Text(AppLocalizationsHelper.translate('tryAgain', languageCode)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF4F46E5),
               foregroundColor: Colors.white,

@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../data/models/notification_model.dart';
 import '../providers/notifications_provider.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Widget hiển thị danh sách thông báo gần đây
 class NotificationList extends ConsumerWidget {
@@ -11,7 +13,8 @@ class NotificationList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notificationsAsync = ref.watch(recentNotificationsProvider);
+    final notificationsAsync = ref.watch(recentNotificationsStreamProvider);
+    final languageCode = ref.watch(appLocaleProvider).languageCode;
 
     return notificationsAsync.when(
       data: (notifications) {
@@ -24,7 +27,10 @@ class NotificationList extends ConsumerWidget {
             ),
             child: Center(
               child: Text(
-                'Chưa có thông báo nào',
+                AppLocalizationsHelper.translate(
+                  'noNotificationsYet',
+                  languageCode,
+                ),
                 style: TextStyle(
                   fontSize: 14,
                   color: Colors.grey[600],
@@ -38,9 +44,12 @@ class NotificationList extends ConsumerWidget {
           children: notifications.map((notification) {
             return _NotificationItem(
               notification: notification,
-              onTap: () {
-                context.push('/notifications');
-              },
+              languageCode: languageCode,
+              onTap: () => _handleNotificationTap(
+                context,
+                ref,
+                notification,
+              ),
             );
           }).toList(),
         );
@@ -69,15 +78,93 @@ class NotificationList extends ConsumerWidget {
       ),
     );
   }
+
+  Future<void> _handleNotificationTap(
+    BuildContext context,
+    WidgetRef ref,
+    NotificationModel notification,
+  ) async {
+    // Mark as read if not already read
+    if (!notification.isRead) {
+      try {
+        await ref.read(
+          markNotificationAsReadProvider(notification.id).future,
+        );
+      } catch (e) {
+        // Handle error silently or show snackbar
+        if (context.mounted) {
+          final locale = ref.read(appLocaleProvider);
+          final languageCode = locale.languageCode;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                '${AppLocalizationsHelper.translate('error', languageCode)}: $e',
+              ),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+
+    // Navigate based on actionUrl only
+    if (!context.mounted) return;
+
+    // If no actionUrl, do nothing
+    if (notification.actionUrl == null || notification.actionUrl!.isEmpty) {
+      return;
+    }
+
+    final router = GoRouter.of(context);
+    final currentLocation = router.routerDelegate.currentConfiguration.uri.path;
+
+    try {
+      final url = notification.actionUrl!;
+      String targetRoute;
+
+      // Parse /bills/ to /invoice/
+      if (url.startsWith('/bills/')) {
+        final billId = url.replaceFirst('/bills/', '');
+        targetRoute = '/invoice/$billId';
+      } else if (url.startsWith('/')) {
+        targetRoute = url;
+      } else {
+        // Invalid URL format, do nothing
+        return;
+      }
+
+      // Only navigate if target route is different from current location
+      if (targetRoute != currentLocation) {
+        // Use go instead of push to avoid duplicate keys
+        context.go(targetRoute);
+      }
+    } catch (e) {
+      // Handle navigation errors
+      if (context.mounted) {
+        final locale = ref.read(appLocaleProvider);
+        final languageCode = locale.languageCode;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${AppLocalizationsHelper.translate('cannotNavigate', languageCode)}: $e',
+            ),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    }
+  }
 }
 
 /// Widget hiển thị một thông báo
 class _NotificationItem extends StatelessWidget {
   final NotificationModel notification;
+  final String languageCode;
   final VoidCallback? onTap;
 
   const _NotificationItem({
     required this.notification,
+    required this.languageCode,
     this.onTap,
   });
 
@@ -129,18 +216,78 @@ class _NotificationItem extends StatelessWidget {
     if (difference.inDays == 0) {
       if (difference.inHours == 0) {
         if (difference.inMinutes == 0) {
-          return 'Vừa xong';
+          return AppLocalizationsHelper.translate('justNow', languageCode);
         }
-        return '${difference.inMinutes} phút trước';
+        return AppLocalizationsHelper.translateWithParams(
+          'minutesAgo',
+          languageCode,
+          {'minutes': difference.inMinutes.toString()},
+        );
       }
-      return '${difference.inHours} giờ trước';
+      return AppLocalizationsHelper.translateWithParams(
+        'hoursAgo',
+        languageCode,
+        {'hours': difference.inHours.toString()},
+      );
     } else if (difference.inDays == 1) {
-      return 'Hôm qua';
+      return AppLocalizationsHelper.translate('yesterday', languageCode);
     } else if (difference.inDays < 7) {
-      return '${difference.inDays} ngày trước';
+      return AppLocalizationsHelper.translateWithParams(
+        'daysAgo',
+        languageCode,
+        {'days': difference.inDays.toString()},
+      );
     } else {
       return DateFormat('dd/MM/yyyy').format(localTimestamp);
     }
+  }
+
+  String _translateNotificationContent(String content, String type) {
+    // Nếu đang ở tiếng Việt, trả về nguyên bản
+    if (languageCode == 'vi') {
+      return content;
+    }
+
+    // Translate dựa trên type và một số pattern matching
+    final lowerContent = content.toLowerCase();
+    final lowerType = type.toLowerCase();
+
+    // Pattern matching cho các loại notification phổ biến
+    if (lowerType.contains('invoice') || lowerType.contains('bill')) {
+      if (lowerContent.contains('hóa đơn mới')) {
+        return 'New invoice';
+      }
+      if (lowerContent.contains('hóa đơn')) {
+        return content.replaceAll('hóa đơn', 'invoice');
+      }
+    }
+
+    if (lowerType.contains('contract')) {
+      if (lowerContent.contains('hợp đồng mới')) {
+        return 'New contract';
+      }
+      if (lowerContent.contains('hợp đồng')) {
+        return content.replaceAll('hợp đồng', 'contract');
+      }
+    }
+
+    if (lowerType.contains('payment')) {
+      if (lowerContent.contains('thanh toán')) {
+        return content.replaceAll('thanh toán', 'payment');
+      }
+    }
+
+    if (lowerType.contains('maintenance') || lowerType.contains('report')) {
+      if (lowerContent.contains('báo cáo')) {
+        return content.replaceAll('báo cáo', 'report');
+      }
+      if (lowerContent.contains('bảo trì')) {
+        return content.replaceAll('bảo trì', 'maintenance');
+      }
+    }
+
+    // Nếu không match được, trả về nguyên bản
+    return content;
   }
 
   @override
@@ -192,7 +339,10 @@ class _NotificationItem extends StatelessWidget {
                 children: [
                   // Title
                   Text(
-                    notification.title,
+                    _translateNotificationContent(
+                      notification.title,
+                      notification.type,
+                    ),
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: notification.isRead
@@ -206,7 +356,10 @@ class _NotificationItem extends StatelessWidget {
                   const SizedBox(height: 4),
                   // Message
                   Text(
-                    notification.message,
+                    _translateNotificationContent(
+                      notification.message,
+                      notification.type,
+                    ),
                     style: TextStyle(
                       fontSize: 13,
                       color: Colors.grey[700],

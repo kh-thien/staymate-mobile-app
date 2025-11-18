@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:stay_mate/core/permission/permission_service.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
-class NotificationSettingsPage extends StatefulWidget {
+class NotificationSettingsPage extends ConsumerStatefulWidget {
   const NotificationSettingsPage({super.key});
 
   @override
-  State<NotificationSettingsPage> createState() =>
+  ConsumerState<NotificationSettingsPage> createState() =>
       _NotificationSettingsPageState();
 }
 
-class _NotificationSettingsPageState extends State<NotificationSettingsPage>
+class _NotificationSettingsPageState extends ConsumerState<NotificationSettingsPage>
     with SingleTickerProviderStateMixin {
   bool _isLoading = false;
   NotificationSettings? _notificationSettings;
@@ -229,62 +233,40 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
+    final languageCode = ref.watch(appLocaleProvider).languageCode;
 
     return Scaffold(
       backgroundColor: isDark ? Colors.grey[900] : Colors.grey[50],
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios_rounded,
+            color: Color(0xFF2D3748),
+          ),
+          onPressed: () => context.go('/'),
+        ),
+        title: Text(
+          AppLocalizationsHelper.translate('notifications', languageCode),
+          style: const TextStyle(
+            color: Color(0xFF2D3748),
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        centerTitle: false,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Container(
+            height: 1,
+            color: Colors.grey[200],
+          ),
+        ),
+      ),
       body: SafeArea(
         child: Column(
           children: [
-            // Custom App Bar
-            Container(
-              decoration: BoxDecoration(
-                color: isDark ? Colors.grey[850] : Colors.white,
-                borderRadius: const BorderRadius.only(
-                  bottomLeft: Radius.circular(24),
-                  bottomRight: Radius.circular(24),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.08),
-                    blurRadius: 15,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 24.0),
-                child: Row(
-                  children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: isDark ? Colors.grey[800] : Colors.grey[100],
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: const Icon(Icons.arrow_back_ios_new),
-                        onPressed: () => Navigator.pop(context),
-                        iconSize: 18,
-                        padding: EdgeInsets.zero,
-                      ),
-                    ),
-                    const SizedBox(width: 16),
-                    const Expanded(
-                      child: Text(
-                        'Cài đặt thông báo',
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: -0.8,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
             // Content
             Expanded(
               child: _isLoading && _notificationSettings == null

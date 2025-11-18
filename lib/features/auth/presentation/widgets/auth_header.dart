@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/constants/app_styles.dart';
 import '../../../../core/constants/logo_app.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
-class AuthHeader extends StatelessWidget {
+class AuthHeader extends ConsumerWidget {
   final bool isDark;
 
   const AuthHeader({
@@ -12,7 +15,10 @@ class AuthHeader extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+    
     return Padding(
       padding: const EdgeInsets.fromLTRB(24.0, 32.0, 24.0, 16.0),
       child: Column(
@@ -38,12 +44,10 @@ class AuthHeader extends StatelessWidget {
               ],
             ),
             child: Image.asset(
-              LogoApp.logo,
+              LogoApp.logoIcon,
               fit: BoxFit.contain,
-             
             ),
           ),
-       
           
           // Logo Text - Tăng size lên
           SizedBox(
@@ -68,9 +72,9 @@ class AuthHeader extends StatelessWidget {
             ),
           ),
                
-          // Description text
+          // Description text - Sử dụng localization
           Text(
-            'Ứng dụng theo dõi phòng trọ tiện lợi',
+            AppLocalizationsHelper.translate('appDescription', languageCode),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
@@ -82,8 +86,8 @@ class AuthHeader extends StatelessWidget {
               height: 1.4,
             ),
           ),
-           Text(
-            'dành riêng cho người thuê',
+          Text(
+            AppLocalizationsHelper.translate('appDescriptionSubtitle', languageCode),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,

@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stay_mate/core/services/auth_service.dart';
+import 'package:stay_mate/core/services/locale_provider.dart';
+import 'package:stay_mate/core/localization/app_localizations_helper.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
 
 
-class ProfileBottomSheet extends StatelessWidget {
+class ProfileBottomSheet extends ConsumerWidget {
   const ProfileBottomSheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final authService = AuthService();
     final user = authService.currentUser;
 
@@ -64,7 +69,11 @@ class ProfileBottomSheet extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              user?.userMetadata?['full_name'] ?? 'Người dùng',
+                              user?.userMetadata?['full_name'] ??
+                                  AppLocalizationsHelper.translate(
+                                    'user',
+                                    languageCode,
+                                  ),
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -100,7 +109,10 @@ class ProfileBottomSheet extends StatelessWidget {
                       children: [
                         _buildMenuItem(
                           icon: Icons.person_outline,
-                          title: 'Thông tin cá nhân',
+                          title: AppLocalizationsHelper.translate(
+                            'personalInfo',
+                            languageCode,
+                          ),
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
@@ -110,7 +122,10 @@ class ProfileBottomSheet extends StatelessWidget {
                         ),
                         _buildMenuItem(
                           icon: Icons.settings_outlined,
-                          title: 'Tài khoản',
+                          title: AppLocalizationsHelper.translate(
+                            'account',
+                            languageCode,
+                          ),
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
@@ -120,7 +135,10 @@ class ProfileBottomSheet extends StatelessWidget {
                         ),
                         _buildMenuItem(
                           icon: Icons.notifications_outlined,
-                          title: 'Thông báo',
+                          title: AppLocalizationsHelper.translate(
+                            'notifications',
+                            languageCode,
+                          ),
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
@@ -129,26 +147,65 @@ class ProfileBottomSheet extends StatelessWidget {
                           },
                         ),
                         _buildMenuItem(
+                          icon: Icons.language,
+                          title: AppLocalizationsHelper.translate(
+                            'language',
+                            languageCode,
+                          ),
+                          onTap: () {
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              context.push('/language-settings');
+                            }
+                          },
+                        ),
+                        _buildMenuItem(
+                          icon: Icons.info_outline,
+                          title: AppLocalizationsHelper.translate(
+                            'appInfo',
+                            languageCode,
+                          ),
+                          onTap: () {
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              context.push('/app-info');
+                            }
+                          },
+                        ),
+                        _buildMenuItem(
                           icon: Icons.help_outline,
-                          title: 'Trợ giúp',
+                          title: AppLocalizationsHelper.translate(
+                            'help',
+                            languageCode,
+                          ),
                           onTap: () async {
                             if (context.mounted) {
                               Navigator.pop(context);
-                              await _openEmailSupport(context);
+                              await _openEmailSupport(context, ref);
                             }
                           },
                         ),
                         _buildMenuItem(
                           icon: Icons.logout,
-                          title: 'Đăng xuất',
+                          title: AppLocalizationsHelper.translate(
+                            'logout',
+                            languageCode,
+                          ),
                           onTap: () async {
                             if (context.mounted) {
                               Navigator.pop(context);
                               await authService.signOut();
                               if (context.mounted) {
+                                final locale = ref.read(appLocaleProvider);
+                                final languageCode = locale.languageCode;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Đã đăng xuất thành công!'),
+                                  SnackBar(
+                                    content: Text(
+                                      AppLocalizationsHelper.translate(
+                                        'loggedOutSuccessfully',
+                                        languageCode,
+                                      ),
+                                    ),
                                   ),
                                 );
                               }
@@ -195,9 +252,17 @@ class ProfileBottomSheet extends StatelessWidget {
     );
   }
 
-  Future<void> _openEmailSupport(BuildContext context) async {
+  Future<void> _openEmailSupport(
+    BuildContext context,
+    WidgetRef ref,
+  ) async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final String email = 'staymate.home@gmail.com';
-    final String subject = 'Hỗ trợ từ ứng dụng Stay Mate';
+    final String subject = AppLocalizationsHelper.translate(
+      'supportFromStayMate',
+      languageCode,
+    );
     final Uri emailUri = Uri.parse('mailto:$email?subject=${Uri.encodeComponent(subject)}');
 
     try {
@@ -209,9 +274,12 @@ class ProfileBottomSheet extends StatelessWidget {
       } else {
         if (context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Không thể mở ứng dụng email. Vui lòng kiểm tra cài đặt của bạn.',
+                AppLocalizationsHelper.translate(
+                  'cannotOpenEmailApp',
+                  languageCode,
+                ),
               ),
             ),
           );
@@ -221,7 +289,9 @@ class ProfileBottomSheet extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Đã xảy ra lỗi: $e'),
+            content: Text(
+              '${AppLocalizationsHelper.translate('anErrorOccurredMessage', languageCode)}: $e',
+            ),
           ),
         );
       }

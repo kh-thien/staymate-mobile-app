@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../bloc/auth_bloc_exports.dart';
 import '../../../../../core/services/connectivity_service.dart';
+import '../../../../../core/services/locale_provider.dart';
+import '../../../../../core/localization/app_localizations_helper.dart';
 import '../../../../../shared/widgets/custom_snackbar.dart';
 import 'auth_text_field.dart';
 import 'auth_primary_button.dart';
@@ -35,6 +37,9 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       return;
     }
 
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     // Kiểm tra kết nối internet
     final connectivityService = ref.read(connectivityServiceProvider);
     final isConnected = await connectivityService.checkConnectivity();
@@ -43,7 +48,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       if (!mounted) return;
       CustomSnackbar.showError(
         context,
-        'Không có kết nối internet. Vui lòng kiểm tra lại kết nối mạng.',
+        '${AppLocalizationsHelper.translate('noInternetConnection', languageCode)}. ${AppLocalizationsHelper.translate('pleaseCheckInternetConnection', languageCode)}',
       );
       return;
     }
@@ -58,6 +63,9 @@ class _SignInFormState extends ConsumerState<SignInForm> {
   }
 
   Future<void> _handleSignInWithGoogle() async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     // Kiểm tra kết nối internet
     final connectivityService = ref.read(connectivityServiceProvider);
     final isConnected = await connectivityService.checkConnectivity();
@@ -66,7 +74,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
       if (!mounted) return;
       CustomSnackbar.showError(
         context,
-        'Không có kết nối internet. Vui lòng kiểm tra lại kết nối mạng.',
+        '${AppLocalizationsHelper.translate('noInternetConnection', languageCode)}. ${AppLocalizationsHelper.translate('pleaseCheckInternetConnection', languageCode)}',
       );
       return;
     }
@@ -77,6 +85,8 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final connectivityAsync = ref.watch(connectivityStreamProvider);
     final isConnected = connectivityAsync.maybeWhen(
       data: (value) => value,
@@ -117,7 +127,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: Text(
-                            'Không có kết nối internet',
+                            AppLocalizationsHelper.translate('noInternetConnection', languageCode),
                             style: TextStyle(
                               color: Colors.red.shade700,
                               fontSize: 12,
@@ -131,17 +141,17 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                 // Email field
                 AuthTextField(
                   controller: widget.emailController,
-                  label: 'Email',
+                  label: AppLocalizationsHelper.translate('email', languageCode),
                   icon: Icons.email_outlined,
                   keyboardType: TextInputType.emailAddress,
                   textCapitalization: TextCapitalization.none,
                   isDark: widget.isDark,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập email';
+                      return AppLocalizationsHelper.translate('pleaseEnterEmail', languageCode);
                     }
                     if (!value.contains('@')) {
-                      return 'Email không hợp lệ';
+                      return AppLocalizationsHelper.translate('invalidEmail', languageCode);
                     }
                     return null;
                   },
@@ -152,7 +162,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                 // Password field
                 AuthTextField(
                   controller: widget.passwordController,
-                  label: 'Mật khẩu',
+                  label: AppLocalizationsHelper.translate('password', languageCode),
                   icon: Icons.lock_outlined,
                   obscureText: _obscurePassword,
                   isDark: widget.isDark,
@@ -172,7 +182,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Vui lòng nhập mật khẩu';
+                      return AppLocalizationsHelper.translate('pleaseEnterPassword', languageCode);
                     }
                     return null;
                   },
@@ -182,7 +192,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
                 // Sign In button
                 AuthPrimaryButton(
-                  text: 'Đăng nhập',
+                  text: AppLocalizationsHelper.translate('signIn', languageCode),
                   isLoading: isLoading,
                   onPressed: isConnected ? _handleSignIn : null,
                 ),
@@ -196,7 +206,7 @@ class _SignInFormState extends ConsumerState<SignInForm> {
 
                 // Google Sign In button
                 AuthGoogleButton(
-                  text: 'Đăng nhập với Google',
+                  text: AppLocalizationsHelper.translate('signInWithGoogle', languageCode),
                   isLoading: isLoading,
                   onPressed: isConnected ? _handleSignInWithGoogle : null,
                   isDark: widget.isDark,

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:368416591679:android:f36ac203d7dd3960680d8a",
+        "mobilesdk_app_id": "1:368416591679:android:efc9fd0b8f0bc940680d8a",
         "android_client_info": {
-          "package_name": "com.staymate.app"
+          "package_name": "com.staymate.mobile"
         }
       },
       "oauth_client": [],

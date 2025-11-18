@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../../../../core/constants/ui_constants.dart';
-import '../../../../shared/widgets/custom_snackbar.dart';
-import '../widgets/notification_list.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../shared/providers/app_bar_provider.dart';
+import '../widgets/home_greeting_card.dart';
+import '../widgets/home_summary_row.dart';
+import '../widgets/home_quick_actions.dart';
 
 class HomePage extends HookConsumerWidget {
   const HomePage({super.key});
@@ -11,10 +13,10 @@ class HomePage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final animationController = useAnimationController(
-      duration: const Duration(milliseconds: 800),
+      duration: const Duration(milliseconds: 700),
     );
     final fadeAnimation = useMemoized(
-      () => Tween<double>(begin: 0.0, end: 1.0).animate(
+      () => Tween<double>(begin: 0, end: 1).animate(
         CurvedAnimation(
           parent: animationController,
           curve: Curves.easeInOut,
@@ -24,70 +26,57 @@ class HomePage extends HookConsumerWidget {
     );
     final slideAnimation = useMemoized(
       () => Tween<Offset>(
-        begin: const Offset(0, 0.3),
+        begin: const Offset(0, 0.1),
         end: Offset.zero,
       ).animate(
         CurvedAnimation(
           parent: animationController,
-          curve: Curves.easeOutCubic,
+          curve: Curves.easeOut,
         ),
       ),
       [animationController],
     );
 
     useEffect(() {
+      final notifier = ref.read(appBarProvider.notifier);
+      Future.microtask(notifier.reset);
       animationController.forward();
       return null;
-    }, [animationController]);
+    }, const []);
+
+    final languageCode = ref.watch(appLocaleProvider).languageCode;
 
     return FadeTransition(
       opacity: fadeAnimation,
       child: SlideTransition(
         position: slideAnimation,
         child: Container(
-          width: double.infinity,
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
             ),
           ),
           child: ClipRRect(
             borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(30),
-              topRight: Radius.circular(30),
+              topLeft: Radius.circular(28),
+              topRight: Radius.circular(28),
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(20),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 24,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Welcome Section
-                  _buildWelcomeSection(context),
-
-                  const SizedBox(height: 30),
-
-                  // Notifications Section
-                  const Text(
-                    'Thông báo gần đây',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D3748),
-                    ),
-                  ),
+                  HomeGreetingCard(languageCode: languageCode),
                   const SizedBox(height: 20),
-
-                  // Notifications List - Có thể cuộn
-                  Expanded(
-                    child: SingleChildScrollView(
-                      padding: const EdgeInsets.only(
-                        bottom: UIConstants.contentBottomPadding,
-                      ),
-                      child: const NotificationList(),
-                    ),
-                  ),
+                  HomeSummaryRow(languageCode: languageCode),
+                  const SizedBox(height: 24),
+                  HomeQuickActions(languageCode: languageCode),
+                  const SizedBox(height: 120),
                 ],
               ),
             ),
@@ -96,105 +85,4 @@ class HomePage extends HookConsumerWidget {
       ),
     );
   }
-
-  Widget _buildWelcomeSection(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          colors: [Color(0xFF667eea), Color(0xFF764ba2)],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0xFF667eea).withOpacity(0.3),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Theo dõi hợp đồng trọ',
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Quét QR code hoặc nhập mã để kết nối với chủ nhà',
-            style: TextStyle(color: Colors.white70, fontSize: 14),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      CustomSnackbar.showInfo(
-                        context,
-                        'Tính năng đang phát triển',
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.qr_code_scanner_rounded,
-                      color: Color(0xFF667eea),
-                    ),
-                    label: const Text(
-                      'Quét QR Code',
-                      style: TextStyle(
-                        color: Color(0xFF667eea),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: TextButton.icon(
-                    onPressed: () {
-                      CustomSnackbar.showInfo(
-                        context,
-                        'Tính năng đang phát triển',
-                      );
-                    },
-                    icon: const Icon(
-                      Icons.keyboard_rounded,
-                      color: Color(0xFF667eea),
-                    ),
-                    label: const Text(
-                      'Nhập mã',
-                      style: TextStyle(
-                        color: Color(0xFF667eea),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
 }

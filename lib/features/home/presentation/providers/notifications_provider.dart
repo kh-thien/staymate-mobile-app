@@ -24,6 +24,30 @@ Future<List<NotificationModel>> allNotifications(Ref ref) async {
   return await datasource.getAllNotifications();
 }
 
+/// Stream provider for realtime notifications updates
+@riverpod
+Stream<List<NotificationModel>> allNotificationsStream(Ref ref) {
+  final datasource = ref.watch(notificationRemoteDatasourceProvider);
+  return datasource.streamNotifications();
+}
+
+@riverpod
+Stream<int> unreadNotificationsCount(Ref ref) {
+  final datasource = ref.watch(notificationRemoteDatasourceProvider);
+  return datasource.streamNotifications().map(
+    (notifications) =>
+        notifications.where((notification) => !notification.isRead).length,
+  );
+}
+
+@riverpod
+Stream<List<NotificationModel>> recentNotificationsStream(Ref ref) {
+  final datasource = ref.watch(notificationRemoteDatasourceProvider);
+  return datasource.streamNotifications().map(
+    (notifications) => notifications.take(5).toList(),
+  );
+}
+
 @riverpod
 Future<void> markNotificationAsRead(
   Ref ref,
@@ -35,10 +59,7 @@ Future<void> markNotificationAsRead(
   final datasource = ref.watch(notificationRemoteDatasourceProvider);
   await datasource.markAsRead(notificationId);
   
-  // Check mounted again after async operation before invalidating
-  if (ref.mounted) {
-    ref.invalidate(allNotificationsProvider);
-    ref.invalidate(recentNotificationsProvider);
-  }
+  // Stream provider will automatically update via realtime subscription
+  // No need to invalidate manually
 }
 

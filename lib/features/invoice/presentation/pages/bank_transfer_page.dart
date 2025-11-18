@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:stay_mate/core/constants/ui_constants.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/invoice.dart';
 import '../../domain/entities/payment_account.dart';
 import '../providers/invoice_provider.dart';
@@ -12,11 +14,24 @@ class BankTransferPage extends ConsumerWidget {
 
   const BankTransferPage({super.key, required this.invoice});
 
-  void _copyToClipboard(BuildContext context, String text, String label) {
+  void _copyToClipboard(
+    BuildContext context,
+    WidgetRef ref,
+    String text,
+    String label,
+  ) {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
     Clipboard.setData(ClipboardData(text: text));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Đã sao chép $label'),
+        content: Text(
+          AppLocalizationsHelper.translateWithParams(
+            'copiedToClipboard',
+            languageCode,
+            {'label': label},
+          ),
+        ),
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 2),
       ),
@@ -25,10 +40,12 @@ class BankTransferPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final theme = Theme.of(context);
     final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
+      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
+      symbol: languageCode == 'vi' ? '₫' : '\$',
       decimalDigits: 0,
     );
 
@@ -55,9 +72,9 @@ class BankTransferPage extends ConsumerWidget {
           icon: const Icon(Icons.close, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Thông tin chuyển khoản',
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        title: Text(
+          AppLocalizationsHelper.translate('bankTransferInfo', languageCode),
+          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -75,14 +92,20 @@ class BankTransferPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    'Không tìm thấy thông tin tài khoản',
+                    AppLocalizationsHelper.translate(
+                      'accountInfoNotFound',
+                      languageCode,
+                    ),
                     style: theme.textTheme.titleMedium?.copyWith(
                       color: Colors.grey.shade600,
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Vui lòng liên hệ chủ nhà để được hỗ trợ',
+                    AppLocalizationsHelper.translate(
+                      'contactLandlordForSupport',
+                      languageCode,
+                    ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.grey.shade500,
                     ),
@@ -97,6 +120,7 @@ class BankTransferPage extends ConsumerWidget {
             paymentAccount: paymentAccount,
             onCopy: _copyToClipboard,
             currencyFormatter: currencyFormatter,
+            languageCode: languageCode,
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -109,7 +133,10 @@ class BankTransferPage extends ConsumerWidget {
                 Icon(Icons.error_outline, size: 64, color: Colors.red.shade300),
                 const SizedBox(height: 16),
                 Text(
-                  'Lỗi khi tải thông tin',
+                  AppLocalizationsHelper.translate(
+                    'errorLoadingInfo',
+                    languageCode,
+                  ),
                   style: theme.textTheme.titleMedium?.copyWith(
                     color: Colors.red.shade700,
                   ),
@@ -134,14 +161,16 @@ class BankTransferPage extends ConsumerWidget {
 class _BankTransferContent extends ConsumerWidget {
   final Invoice invoice;
   final PaymentAccount paymentAccount;
-  final void Function(BuildContext, String, String) onCopy;
+  final void Function(BuildContext, WidgetRef, String, String) onCopy;
   final NumberFormat currencyFormatter;
+  final String languageCode;
 
   const _BankTransferContent({
     required this.invoice,
     required this.paymentAccount,
     required this.onCopy,
     required this.currencyFormatter,
+    required this.languageCode,
   });
 
   @override
@@ -185,7 +214,10 @@ class _BankTransferContent extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Số tiền cần chuyển',
+                          AppLocalizationsHelper.translate(
+                            'amountToTransfer',
+                            languageCode,
+                          ),
                           style: theme.textTheme.titleSmall?.copyWith(
                             color: Colors.white.withOpacity(0.9),
                           ),
@@ -204,11 +236,15 @@ class _BankTransferContent extends ConsumerWidget {
                   IconButton(
                     onPressed: () => onCopy(
                       context,
+                      ref,
                       invoice.finalAmount.toString(),
-                      'số tiền',
+                      AppLocalizationsHelper.translate('amount', languageCode),
                     ),
                     icon: const Icon(Icons.copy, color: Colors.white),
-                    tooltip: 'Sao chép số tiền',
+                    tooltip: AppLocalizationsHelper.translate(
+                      'copyAmount',
+                      languageCode,
+                    ),
                     style: IconButton.styleFrom(
                       backgroundColor: Colors.white.withOpacity(0.2),
                     ),
@@ -221,7 +257,10 @@ class _BankTransferContent extends ConsumerWidget {
 
             // Bank info section
             Text(
-              'Thông tin chuyển khoản',
+              AppLocalizationsHelper.translate(
+                'bankTransferInfo',
+                languageCode,
+              ),
               style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -232,10 +271,15 @@ class _BankTransferContent extends ConsumerWidget {
             _InfoCard(
               icon: Icons.account_balance,
               iconColor: Colors.blue,
-              label: 'Ngân hàng',
+              label: AppLocalizationsHelper.translate('bank', languageCode),
               value: paymentAccount.bankName,
-              onCopy: () =>
-                  onCopy(context, paymentAccount.bankName, 'tên ngân hàng'),
+              languageCode: languageCode,
+              onCopy: () => onCopy(
+                context,
+                ref,
+                paymentAccount.bankName,
+                AppLocalizationsHelper.translate('bankName', languageCode),
+              ),
             ),
 
             const SizedBox(height: 10),
@@ -244,15 +288,26 @@ class _BankTransferContent extends ConsumerWidget {
             _InfoCard(
               icon: Icons.credit_card,
               iconColor: Colors.green,
-              label: 'Số tài khoản',
+              label: AppLocalizationsHelper.translate(
+                'accountNumber',
+                languageCode,
+              ),
               value: paymentAccount.accountNumber,
               valueStyle: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 letterSpacing: 1.2,
               ),
-              onCopy: () =>
-                  onCopy(context, paymentAccount.accountNumber, 'số tài khoản'),
+              languageCode: languageCode,
+              onCopy: () => onCopy(
+                context,
+                ref,
+                paymentAccount.accountNumber,
+                AppLocalizationsHelper.translate(
+                  'accountNumber',
+                  languageCode,
+                ),
+              ),
             ),
 
             const SizedBox(height: 10),
@@ -261,12 +316,20 @@ class _BankTransferContent extends ConsumerWidget {
             _InfoCard(
               icon: Icons.person,
               iconColor: Colors.orange,
-              label: 'Tên tài khoản',
+              label: AppLocalizationsHelper.translate(
+                'accountHolder',
+                languageCode,
+              ),
               value: paymentAccount.accountHolder,
+              languageCode: languageCode,
               onCopy: () => onCopy(
                 context,
+                ref,
                 paymentAccount.accountHolder,
-                'tên tài khoản',
+                AppLocalizationsHelper.translate(
+                  'accountHolder',
+                  languageCode,
+                ),
               ),
             ),
 
@@ -276,15 +339,26 @@ class _BankTransferContent extends ConsumerWidget {
             _InfoCard(
               icon: Icons.description,
               iconColor: Colors.purple,
-              label: 'Nội dung chuyển khoản',
+              label: AppLocalizationsHelper.translate(
+                'transferContent',
+                languageCode,
+              ),
               value: transferContent,
               valueStyle: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 color: Colors.red,
               ),
-              onCopy: () =>
-                  onCopy(context, transferContent, 'nội dung chuyển khoản'),
+              languageCode: languageCode,
+              onCopy: () => onCopy(
+                context,
+                ref,
+                transferContent,
+                AppLocalizationsHelper.translate(
+                  'transferContent',
+                  languageCode,
+                ),
+              ),
               highlightValue: true,
             ),
 
@@ -294,9 +368,10 @@ class _BankTransferContent extends ConsumerWidget {
               _InfoCard(
                 icon: Icons.location_on,
                 iconColor: Colors.teal,
-                label: 'Chi nhánh',
+                label: AppLocalizationsHelper.translate('branch', languageCode),
                 value: paymentAccount.branch!,
                 showCopyButton: false,
+                languageCode: languageCode,
               ),
             ],
 
@@ -324,7 +399,10 @@ class _BankTransferContent extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Lưu ý',
+                          AppLocalizationsHelper.translate(
+                            'noteLabel',
+                            languageCode,
+                          ),
                           style: theme.textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.amber.shade900,
@@ -332,7 +410,10 @@ class _BankTransferContent extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Ghi đúng nội dung chuyển khoản. Khi đã chắc chắn chuyển khoản, hãy bấm nút xác nhận bên dưới.',
+                          AppLocalizationsHelper.translate(
+                            'transferNote',
+                            languageCode,
+                          ),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.amber.shade900,
                           ),
@@ -354,22 +435,44 @@ class _BankTransferContent extends ConsumerWidget {
                   // Show confirmation dialog
                   final confirmed = await showDialog<bool>(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Xác nhận thanh toán'),
-                      content: const Text(
-                        'Bạn đã chuyển khoản theo đúng thông tin?\n\nHóa đơn sẽ chuyển sang trạng thái "Chờ duyệt" và chủ nhà sẽ xác nhận sau khi nhận được tiền.',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Chưa'),
+                    builder: (context) {
+                      final locale = ref.read(appLocaleProvider);
+                      final languageCode = locale.languageCode;
+                      return AlertDialog(
+                        title: Text(
+                          AppLocalizationsHelper.translate(
+                            'confirmPayment',
+                            languageCode,
+                          ),
                         ),
-                        FilledButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text('Đã chuyển khoản'),
+                        content: Text(
+                          AppLocalizationsHelper.translate(
+                            'confirmPaymentMessage',
+                            languageCode,
+                          ),
                         ),
-                      ],
-                    ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text(
+                              AppLocalizationsHelper.translate(
+                                'notYet',
+                                languageCode,
+                              ),
+                            ),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: Text(
+                              AppLocalizationsHelper.translate(
+                                'transferred',
+                                languageCode,
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
                   );
 
                   if (confirmed == true && context.mounted) {
@@ -406,9 +509,13 @@ class _BankTransferContent extends ConsumerWidget {
                     } catch (e) {
                       print('❌ Error updating bill status: $e');
                       if (context.mounted) {
+                        final locale = ref.read(appLocaleProvider);
+                        final languageCode = locale.languageCode;
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Lỗi: $e'),
+                            content: Text(
+                              '${AppLocalizationsHelper.translate('error', languageCode)}: $e',
+                            ),
                             backgroundColor: Colors.red,
                             behavior: SnackBarBehavior.floating,
                           ),
@@ -423,9 +530,12 @@ class _BankTransferContent extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
-                child: const Text(
-                  'Xác nhận đã thanh toán',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Text(
+                  AppLocalizationsHelper.translate(
+                    'confirmTransferred',
+                    languageCode,
+                  ),
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
@@ -437,7 +547,7 @@ class _BankTransferContent extends ConsumerWidget {
   }
 }
 
-class _InfoCard extends StatelessWidget {
+class _InfoCard extends ConsumerWidget {
   final IconData icon;
   final Color iconColor;
   final String label;
@@ -446,6 +556,7 @@ class _InfoCard extends StatelessWidget {
   final VoidCallback? onCopy;
   final bool showCopyButton;
   final bool highlightValue;
+  final String languageCode;
 
   const _InfoCard({
     required this.icon,
@@ -456,10 +567,11 @@ class _InfoCard extends StatelessWidget {
     this.onCopy,
     this.showCopyButton = true,
     this.highlightValue = false,
+    required this.languageCode,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
 
     return Container(
@@ -513,7 +625,7 @@ class _InfoCard extends StatelessWidget {
             IconButton(
               onPressed: onCopy,
               icon: const Icon(Icons.copy, size: 20),
-              tooltip: 'Sao chép',
+              tooltip: AppLocalizationsHelper.translate('copy', languageCode),
               style: IconButton.styleFrom(
                 backgroundColor: iconColor.withOpacity(0.1),
                 foregroundColor: iconColor,

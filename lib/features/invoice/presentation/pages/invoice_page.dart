@@ -3,10 +3,18 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/invoice.dart';
 import '../providers/invoice_filter_provider.dart';
 import '../providers/filtered_invoices_provider.dart';
 import 'invoice_detail_page.dart';
+import '../../../../shared/widgets/skeleton_loader.dart';
+import '../../../../shared/widgets/empty_state.dart';
+import '../../../../shared/providers/app_bar_provider.dart';
+
+
+
 
 class InvoicePage extends HookConsumerWidget {
   const InvoicePage({super.key});
@@ -15,6 +23,21 @@ class InvoicePage extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final tabController = useTabController(initialLength: 5);
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
+    // Manage AppBar State
+    useEffect(() {
+      final notifier = ref.read(appBarProvider.notifier);
+      // Use a small delay to ensure this runs after any cleanup from previous page
+      Future.microtask(() {
+        notifier.updateTitle(
+          AppLocalizationsHelper.translate('invoices', languageCode),
+        );
+      });
+      // Don't reset in cleanup - let the next page set its own title
+      return null;
+    }, const []);
 
     // Listen to tab changes and update filter
     useEffect(() {
@@ -90,26 +113,26 @@ class InvoicePage extends HookConsumerWidget {
                       fontWeight: FontWeight.w500,
                       fontSize: 13,
                     ),
-                    tabs: const [
+                    tabs: [
                       Tab(
-                        icon: Icon(Icons.receipt_long_rounded, size: 18),
-                        text: 'Tất cả',
+                        icon: const Icon(Icons.receipt_long_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('all', languageCode),
                       ),
                       Tab(
-                        icon: Icon(Icons.pending_actions_rounded, size: 18),
-                        text: 'Chưa TT',
+                        icon: const Icon(Icons.pending_actions_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('unpaidShort', languageCode),
                       ),
                       Tab(
-                        icon: Icon(Icons.hourglass_empty_rounded, size: 18),
-                        text: 'Chờ duyệt',
+                        icon: const Icon(Icons.hourglass_empty_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('processing', languageCode),
                       ),
                       Tab(
-                        icon: Icon(Icons.check_circle_rounded, size: 18),
-                        text: 'Đã TT',
+                        icon: const Icon(Icons.check_circle_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('paidShort', languageCode),
                       ),
                       Tab(
-                        icon: Icon(Icons.error_rounded, size: 18),
-                        text: 'Quá hạn',
+                        icon: const Icon(Icons.error_rounded, size: 18),
+                        text: AppLocalizationsHelper.translate('overdue', languageCode),
                       ),
                     ],
                   ),
@@ -156,6 +179,8 @@ class _InvoiceListView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final invoicesAsync = ref.watch(filteredInvoicesStreamProvider);
 
     return RefreshIndicator(
@@ -165,26 +190,12 @@ class _InvoiceListView extends ConsumerWidget {
       child: invoicesAsync.when(
         data: (invoices) {
           if (invoices.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.receipt_long_outlined,
-                    size: 80,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurfaceVariant.withOpacity(0.3),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Không có hoá đơn nào',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
+            return EmptyState(
+              icon: Icons.receipt_long_outlined,
+              title: AppLocalizationsHelper.translate('noInvoicesFound', languageCode),
+              subtitle: AppLocalizationsHelper.translate('invoicesOfThisCategoryWillAppearHere', languageCode),
+              onRefresh: () => ref.invalidate(filteredInvoicesStreamProvider),
+              refreshLabel: AppLocalizationsHelper.translate('refresh', languageCode),
             );
           }
 
@@ -205,21 +216,63 @@ class _InvoiceListView extends ConsumerWidget {
             },
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => ListView.builder(
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: UIConstants.contentBottomPadding,
+          ),
+          itemCount: 5, // Display 5 skeleton items while loading
+          itemBuilder: (context, index) => const InvoiceCardSkeleton(),
+        ),
         error: (error, stack) => Center(
-          child: SelectableText.rich(
-            TextSpan(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const TextSpan(
-                  text: 'Lỗi: ',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
-                  ),
+                Icon(
+                  Icons.error_outline_rounded,
+                  size: 64,
+                  color: Colors.red.shade400,
                 ),
-                TextSpan(
-                  text: error.toString(),
-                  style: const TextStyle(color: Colors.red),
+                const SizedBox(height: 16),
+                SelectableText.rich(
+                  TextSpan(
+                    children: [
+                      TextSpan(
+                        text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.red,
+                          fontSize: 16,
+                        ),
+                      ),
+                      TextSpan(
+                        text: error.toString(),
+                        style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    ref.invalidate(filteredInvoicesStreamProvider);
+                  },
+                  icon: const Icon(Icons.refresh_rounded),
+                  label: Text(
+                    AppLocalizationsHelper.translate('tryAgain', languageCode),
+                  ),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
                 ),
               ],
             ),
@@ -239,9 +292,11 @@ class _InvoiceCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final currencyFormatter = NumberFormat.currency(
-      locale: 'vi_VN',
-      symbol: '₫',
+      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
+      symbol: languageCode == 'vi' ? '₫' : '\$',
       decimalDigits: 0,
     );
     final dateFormatter = DateFormat('dd/MM/yyyy');
@@ -287,10 +342,12 @@ class _InvoiceCard extends ConsumerWidget {
 
               // Show success message
               if (context.mounted) {
+                final locale = ref.read(appLocaleProvider);
+                final languageCode = locale.languageCode;
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
+                  SnackBar(
                     content: Text(
-                      'Đã ghi nhận thanh toán. Chủ nhà sẽ xác nhận trong thời gian sớm nhất.',
+                      AppLocalizationsHelper.translate('paymentRecorded', languageCode),
                     ),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
@@ -375,14 +432,14 @@ class _InvoiceCard extends ConsumerWidget {
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Tổng tiền',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontWeight: FontWeight.w500,
-                            ),
+                      children: [
+                        Text(
+                          AppLocalizationsHelper.translate('totalAmount', languageCode),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
                           ),
+                        ),
                           const SizedBox(height: 4),
                           Text(
                             currencyFormatter.format(invoice.finalAmount),
@@ -411,7 +468,7 @@ class _InvoiceCard extends ConsumerWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      'Hạn: ${dateFormatter.format(invoice.dueDate ?? DateTime.now())}',
+                      '${AppLocalizationsHelper.translate('dueDate', languageCode)}: ${dateFormatter.format(invoice.dueDate ?? DateTime.now())}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: invoice.isOverdue
                             ? theme.colorScheme.error
@@ -440,14 +497,16 @@ class _InvoiceCard extends ConsumerWidget {
   }
 }
 
-class _StatusBadge extends StatelessWidget {
+class _StatusBadge extends ConsumerWidget {
   final BillStatus status;
 
   const _StatusBadge({required this.status});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     Color backgroundColor;
     Color textColor;
     IconData icon;
@@ -458,37 +517,37 @@ class _StatusBadge extends StatelessWidget {
         backgroundColor = const Color(0xFF10B981);
         textColor = Colors.white;
         icon = Icons.check_circle_rounded;
-        text = 'Đã TT';
+        text = AppLocalizationsHelper.translate('paidShort', languageCode);
         break;
       case BillStatus.unpaid:
         backgroundColor = const Color(0xFFF59E0B);
         textColor = Colors.white;
         icon = Icons.schedule_rounded;
-        text = 'Chưa TT';
+        text = AppLocalizationsHelper.translate('unpaidShort', languageCode);
         break;
       case BillStatus.processing:
         backgroundColor = const Color(0xFF8B5CF6);
         textColor = Colors.white;
         icon = Icons.hourglass_empty_rounded;
-        text = 'Chờ duyệt';
+        text = AppLocalizationsHelper.translate('processing', languageCode);
         break;
       case BillStatus.overdue:
         backgroundColor = const Color(0xFFEF4444);
         textColor = Colors.white;
         icon = Icons.error_rounded;
-        text = 'Quá hạn';
+        text = AppLocalizationsHelper.translate('overdue', languageCode);
         break;
       case BillStatus.cancelled:
         backgroundColor = theme.colorScheme.surfaceContainerHighest;
         textColor = theme.colorScheme.onSurfaceVariant;
         icon = Icons.cancel_rounded;
-        text = 'Đã huỷ';
+        text = AppLocalizationsHelper.translate('cancelled', languageCode);
         break;
       case BillStatus.partiallyPaid:
         backgroundColor = const Color(0xFF3B82F6);
         textColor = Colors.white;
         icon = Icons.payments_rounded;
-        text = 'TT 1 phần';
+        text = AppLocalizationsHelper.translate('partiallyPaid', languageCode);
         break;
     }
 

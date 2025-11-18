@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
-class AuthCard extends StatelessWidget {
+class AuthCard extends ConsumerWidget {
   final bool isDark;
   final TabController tabController;
   final Widget signInTab;
@@ -16,7 +19,10 @@ class AuthCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+    
     return Container(
       margin: const EdgeInsets.only(top: 24),
       decoration: BoxDecoration(
@@ -74,9 +80,9 @@ class AuthCard extends StatelessWidget {
                 ),
                 dividerColor: Colors.transparent,
                 indicatorSize: TabBarIndicatorSize.tab,
-                tabs: const [
-                  Tab(text: 'Đăng nhập'),
-                  Tab(text: 'Đăng ký'),
+                tabs: [
+                  Tab(text: AppLocalizationsHelper.translate('signIn', languageCode)),
+                  Tab(text: AppLocalizationsHelper.translate('signUp', languageCode)),
                 ],
               ),
             ),

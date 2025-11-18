@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../providers/contract_provider.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Widget hiển thị tổng quan trạng thái hợp đồng
-class ContractStatusCard extends StatelessWidget {
+class ContractStatusCard extends ConsumerWidget {
   const ContractStatusCard({super.key, required this.state});
 
   final ContractState state;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
     final contractCount = state is ContractLoaded ? state.contractCount : 0;
     final hasContracts = contractCount > 0;
     final isLoading = state is ContractLoading;
@@ -37,13 +42,13 @@ class ContractStatusCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             children: [
-              Icon(Icons.description_rounded, color: Colors.white, size: 24),
-              SizedBox(width: 12),
+              const Icon(Icons.description_rounded, color: Colors.white, size: 24),
+              const SizedBox(width: 12),
               Text(
-                'Trạng thái hợp đồng',
-                style: TextStyle(
+                AppLocalizationsHelper.translate('contractStatus', languageCode),
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -53,16 +58,16 @@ class ContractStatusCard extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           if (isLoading)
-            const Text(
-              'Đang tải...',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
+            Text(
+              AppLocalizationsHelper.translate('loading', languageCode),
+              style: const TextStyle(color: Colors.white70, fontSize: 16),
             )
           else if (hasContracts)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Số hợp đồng: $contractCount',
+                  '${AppLocalizationsHelper.translate('contractCount', languageCode)}: $contractCount',
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,
@@ -71,23 +76,27 @@ class ContractStatusCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Bạn có $contractCount hợp đồng thuê trọ',
+                  AppLocalizationsHelper.translateWithParams(
+                    'youHaveContracts',
+                    languageCode,
+                    {'count': contractCount.toString()},
+                  ),
                   style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             )
           else
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Chưa có hợp đồng',
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                  AppLocalizationsHelper.translate('noContractYet', languageCode),
+                  style: const TextStyle(color: Colors.white70, fontSize: 16),
                 ),
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Text(
-                  'Liên hệ với chủ nhà để tạo hợp đồng thuê trọ',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                  AppLocalizationsHelper.translate('contactLandlordToCreateRentalContract', languageCode),
+                  style: const TextStyle(color: Colors.white70, fontSize: 14),
                 ),
               ],
             ),
