@@ -294,6 +294,7 @@ class AppLocalizationsHelper {
       'quickActions': 'Truy cập nhanh',
       'upcomingPayment': 'Thanh toán sắp tới',
       'dueSoon': 'Đến hạn trong 3 ngày',
+      'noUpcomingPayments': 'Không có thanh toán sắp tới',
       'openReports': 'Báo cáo đang mở',
       'reportsPending': 'Đang chờ xử lý',
       'viewAll': 'Xem tất cả',
@@ -346,6 +347,34 @@ class AppLocalizationsHelper {
       'newVersionAvailable': 'Có phiên bản mới, vui lòng cập nhật',
       'updateCheckNotAvailable': 'Không thể kiểm tra cập nhật',
       'updateCheckNotAvailableMessage': 'Tính năng này chỉ hoạt động với app được cài từ Play Store',
+      
+      // Contract Status Values
+      'contractStatusDraft': 'Nháp',
+      'contractStatusActive': 'Đang hoạt động',
+      'contractStatusExpired': 'Hết hạn',
+      'contractStatusTerminated': 'Đã chấm dứt',
+      
+      // Contract Type Values
+      'contractTypeRental': 'Hợp đồng thuê',
+      'contractTypeUnknown': 'Không xác định',
+      
+      // Payment Cycle Values
+      'paymentCycleMonthly': 'Hàng tháng',
+      'paymentCycleQuarterly': 'Hàng quý',
+      'paymentCycleYearly': 'Hàng năm',
+      'paymentCycleUnknown': 'Không xác định',
+      
+      // Payment Day Type Values
+      'paymentDayTypeFixedDays': 'Ngày cố định',
+      'paymentDayTypeCustomDays': 'Ngày tùy chỉnh',
+      'paymentDayTypeUnknown': 'Không xác định',
+      
+      // Termination Reason Values
+      'terminationReasonExpired': 'Hết hạn',
+      'terminationReasonViolation': 'Vi phạm',
+      'terminationReasonTenantRequest': 'Yêu cầu của khách thuê',
+      'terminationReasonLandlordRequest': 'Yêu cầu của chủ nhà',
+      'terminationReasonOther': 'Khác',
     },
     'en': {
       // Auth
@@ -635,6 +664,7 @@ class AppLocalizationsHelper {
       'quickActions': 'Quick Actions',
       'upcomingPayment': 'Upcoming payment',
       'dueSoon': 'Due within 3 days',
+      'noUpcomingPayments': 'No upcoming payments',
       'openReports': 'Open reports',
       'reportsPending': 'Pending resolution',
       'viewAll': 'View all',
@@ -687,6 +717,34 @@ class AppLocalizationsHelper {
       'newVersionAvailable': 'New version available, please update',
       'updateCheckNotAvailable': 'Update check not available',
       'updateCheckNotAvailableMessage': 'This feature only works with apps installed from Play Store',
+      
+      // Contract Status Values
+      'contractStatusDraft': 'Draft',
+      'contractStatusActive': 'Active',
+      'contractStatusExpired': 'Expired',
+      'contractStatusTerminated': 'Terminated',
+      
+      // Contract Type Values
+      'contractTypeRental': 'Rental Contract',
+      'contractTypeUnknown': 'Unknown',
+      
+      // Payment Cycle Values
+      'paymentCycleMonthly': 'Monthly',
+      'paymentCycleQuarterly': 'Quarterly',
+      'paymentCycleYearly': 'Yearly',
+      'paymentCycleUnknown': 'Unknown',
+      
+      // Payment Day Type Values
+      'paymentDayTypeFixedDays': 'Fixed Days',
+      'paymentDayTypeCustomDays': 'Custom Days',
+      'paymentDayTypeUnknown': 'Unknown',
+      
+      // Termination Reason Values
+      'terminationReasonExpired': 'Expired',
+      'terminationReasonViolation': 'Violation',
+      'terminationReasonTenantRequest': 'Tenant Request',
+      'terminationReasonLandlordRequest': 'Landlord Request',
+      'terminationReasonOther': 'Other',
     },
   };
 

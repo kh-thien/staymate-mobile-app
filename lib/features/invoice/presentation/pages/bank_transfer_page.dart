@@ -43,9 +43,10 @@ class BankTransferPage extends ConsumerWidget {
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final theme = Theme.of(context);
+    // Format currency - Always use VND
     final currencyFormatter = NumberFormat.currency(
-      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
-      symbol: languageCode == 'vi' ? '₫' : '\$',
+      locale: 'vi_VN',
+      symbol: '₫',
       decimalDigits: 0,
     );
 

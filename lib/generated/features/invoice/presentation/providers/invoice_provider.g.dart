@@ -409,6 +409,50 @@ final class InvoicesByStatusFamily extends $Family
   String toString() => r'invoicesByStatusProvider';
 }
 
+/// Get upcoming invoices (unpaid/processing/overdue with dueDate within 3 days)
+
+@ProviderFor(upcomingInvoices)
+const upcomingInvoicesProvider = UpcomingInvoicesProvider._();
+
+/// Get upcoming invoices (unpaid/processing/overdue with dueDate within 3 days)
+
+final class UpcomingInvoicesProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Invoice>>,
+          List<Invoice>,
+          FutureOr<List<Invoice>>
+        >
+    with $FutureModifier<List<Invoice>>, $FutureProvider<List<Invoice>> {
+  /// Get upcoming invoices (unpaid/processing/overdue with dueDate within 3 days)
+  const UpcomingInvoicesProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'upcomingInvoicesProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$upcomingInvoicesHash();
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Invoice>> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Invoice>> create(Ref ref) {
+    return upcomingInvoices(ref);
+  }
+}
+
+String _$upcomingInvoicesHash() => r'faacc713ddab967d95e2d7a05e77c3a118708dd4';
+
 /// Get landlord's payment account for an invoice
 
 @ProviderFor(landlordPaymentAccount)

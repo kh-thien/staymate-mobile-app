@@ -261,33 +261,36 @@ class _ContractFilesViewerPageState extends ConsumerState<ContractFilesViewerPag
 
               if (file.isImage) {
                 // Image viewer with zoom
-                return PhotoView(
-                  imageProvider: NetworkImage(imageUrl),
-                  minScale: PhotoViewComputedScale.contained,
-                  maxScale: PhotoViewComputedScale.covered * 2,
-                  heroAttributes: PhotoViewHeroAttributes(tag: imageUrl),
-                  loadingBuilder: (context, event) => Center(
-                    child: CircularProgressIndicator(
-                      value: event == null
-                          ? null
-                          : event.cumulativeBytesLoaded /
-                                (event.expectedTotalBytes ?? 1),
+                return SafeArea(
+                  bottom: true,
+                  child: PhotoView(
+                    imageProvider: NetworkImage(imageUrl),
+                    minScale: PhotoViewComputedScale.contained,
+                    maxScale: PhotoViewComputedScale.covered * 2,
+                    heroAttributes: PhotoViewHeroAttributes(tag: imageUrl),
+                    loadingBuilder: (context, event) => Center(
+                      child: CircularProgressIndicator(
+                        value: event == null
+                            ? null
+                            : event.cumulativeBytesLoaded /
+                                  (event.expectedTotalBytes ?? 1),
+                      ),
                     ),
-                  ),
-                  errorBuilder: (context, error, stackTrace) => Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.error, size: 64, color: Colors.white54),
-                        const SizedBox(height: 16),
-                        Text(
-                          AppLocalizationsHelper.translate(
-                            'cannotLoadImage',
-                            languageCode,
+                    errorBuilder: (context, error, stackTrace) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error, size: 64, color: Colors.white54),
+                          const SizedBox(height: 16),
+                          Text(
+                            AppLocalizationsHelper.translate(
+                              'cannotLoadImage',
+                              languageCode,
+                            ),
+                            style: const TextStyle(color: Colors.white54),
                           ),
-                          style: const TextStyle(color: Colors.white54),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 );
@@ -467,22 +470,27 @@ class _ContractFilesViewerPageState extends ConsumerState<ContractFilesViewerPag
           // Page indicators (dots) - only show if multiple files
           if (widget.files.length > 1)
             Positioned(
-              bottom: 32,
+              bottom: 0,
               left: 0,
               right: 0,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  widget.files.length,
-                  (index) => Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    width: 8,
-                    height: 8,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _currentIndex == index
-                          ? Colors.white
-                          : Colors.white38,
+              child: SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      widget.files.length,
+                      (index) => Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: _currentIndex == index
+                              ? Colors.white
+                              : Colors.white38,
+                        ),
+                      ),
                     ),
                   ),
                 ),

@@ -165,9 +165,10 @@ class _InvoiceDetailContent extends ConsumerWidget {
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final theme = Theme.of(context);
+    // Format currency - Always use VND
     final currencyFormatter = NumberFormat.currency(
-      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
-      symbol: languageCode == 'vi' ? '₫' : '\$',
+      locale: 'vi_VN',
+      symbol: '₫',
       decimalDigits: 0,
     );
     final dateFormatter = DateFormat('dd/MM/yyyy');
@@ -891,9 +892,10 @@ class _PaymentMethodModal extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    // Format currency - Always use VND
     final currencyFormatter = NumberFormat.currency(
-      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
-      symbol: languageCode == 'vi' ? '₫' : '\$',
+      locale: 'vi_VN',
+      symbol: '₫',
       decimalDigits: 0,
     );
 

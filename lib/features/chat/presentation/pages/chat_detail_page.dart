@@ -6,6 +6,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import '../../../../core/permission/permission.dart';
 import '../providers/chat_messages_provider.dart';
 import '../providers/chat_room_provider.dart';
 import '../providers/realtime_messages_provider.dart';
@@ -310,7 +311,23 @@ class ChatDetailPage extends HookConsumerWidget {
                     // Make sure keyboard is hidden before opening system pickers
                     FocusScope.of(context).unfocus();
 
-                    // Pick image - image_picker handles permissions automatically on iOS
+                    // Request appropriate permission based on source
+                    bool hasPermission = false;
+                    if (source == ImageSource.camera) {
+                      hasPermission = await PermissionHelper.requestCameraWithFeedback(
+                        context,
+                      );
+                    } else {
+                      hasPermission = await PermissionHelper.requestPhotosWithFeedback(
+                        context,
+                      );
+                    }
+
+                    if (!hasPermission) {
+                      return;
+                    }
+
+                    // Pick image
                     final picker = ImagePicker();
                     final pickedFile = await picker.pickImage(
                       source: source,

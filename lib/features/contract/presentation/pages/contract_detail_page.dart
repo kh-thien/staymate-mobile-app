@@ -77,9 +77,10 @@ class _LoadedView extends ConsumerWidget {
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final dateFormat = DateFormat('dd/MM/yyyy');
+    // Format currency - Always use VND
     final currencyFormat = NumberFormat.currency(
-      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
-      symbol: languageCode == 'vi' ? '₫' : '\$',
+      locale: 'vi_VN',
+      symbol: '₫',
       decimalDigits: 0,
     );
     final statusColor = _getStatusColor(contract.status);
@@ -219,7 +220,7 @@ class _LoadedView extends ConsumerWidget {
                                 const SizedBox(height: 4),
                                 _StatusBadge(
                                   status: contract.status,
-                                  statusInVietnamese: contract.statusInVietnamese,
+                                  statusTranslated: contract.getStatusTranslated(languageCode),
                                   languageCode: languageCode,
                                 ),
                               ],
@@ -275,7 +276,7 @@ class _LoadedView extends ConsumerWidget {
                   children: [
                     _InfoRow(
                       label: AppLocalizationsHelper.translate('contractType', languageCode),
-                      value: contract.contractTypeInVietnamese,
+                      value: contract.getContractTypeTranslated(languageCode),
                       languageCode: languageCode,
                     ),
                     if (contract.startDate != null)
@@ -380,7 +381,7 @@ class _LoadedView extends ConsumerWidget {
                     const SizedBox(height: 12),
                     _InfoRow(
                       label: AppLocalizationsHelper.translate('paymentCycle', languageCode),
-                      value: contract.paymentCycleInVietnamese,
+                      value: contract.getPaymentCycleTranslated(languageCode),
                       languageCode: languageCode,
                     ),
                     if (contract.paymentFrequency != null)
@@ -391,7 +392,7 @@ class _LoadedView extends ConsumerWidget {
                       ),
                     _InfoRow(
                       label: AppLocalizationsHelper.translate('paymentDayType', languageCode),
-                      value: contract.paymentDayTypeInVietnamese,
+                      value: contract.getPaymentDayTypeTranslated(languageCode),
                       languageCode: languageCode,
                     ),
                     if (contract.paymentDay != null)
@@ -481,7 +482,7 @@ class _LoadedView extends ConsumerWidget {
                         if (contract.terminationReason != null)
                           _InfoRow(
                             label: AppLocalizationsHelper.translate('reason', languageCode),
-                            value: contract.terminationReason!.displayName,
+                            value: contract.terminationReason!.getTranslated(languageCode),
                             languageCode: languageCode,
                           ),
                         if (contract.terminationNote != null) ...[
@@ -678,12 +679,12 @@ class _SignatureRow extends StatelessWidget {
 // Status Badge Widget
 class _StatusBadge extends StatelessWidget {
   final String status;
-  final String statusInVietnamese;
+  final String statusTranslated;
   final String languageCode;
 
   const _StatusBadge({
     required this.status,
-    required this.statusInVietnamese,
+    required this.statusTranslated,
     required this.languageCode,
   });
 
@@ -732,7 +733,7 @@ class _StatusBadge extends StatelessWidget {
           Icon(icon, size: 13, color: textColor),
           const SizedBox(width: 4),
           Text(
-            statusInVietnamese,
+            statusTranslated,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

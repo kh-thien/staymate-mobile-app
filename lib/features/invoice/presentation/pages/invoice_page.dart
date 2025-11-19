@@ -294,9 +294,10 @@ class _InvoiceCard extends ConsumerWidget {
     final theme = Theme.of(context);
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
+    // Format currency - Always use VND
     final currencyFormatter = NumberFormat.currency(
-      locale: languageCode == 'vi' ? 'vi_VN' : 'en_US',
-      symbol: languageCode == 'vi' ? '₫' : '\$',
+      locale: 'vi_VN',
+      symbol: '₫',
       decimalDigits: 0,
     );
     final dateFormatter = DateFormat('dd/MM/yyyy');

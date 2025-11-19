@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 /// Service để quản lý các quyền (permissions) của ứng dụng
 class PermissionService {
@@ -109,9 +110,14 @@ class PermissionService {
   static Future<bool> _isAndroid13OrAbove() async {
     if (!Platform.isAndroid) return false;
 
-    // Có thể sử dụng device_info_plus để kiểm tra chính xác
-    // Tạm thời return false để dùng storage permission cho tất cả Android
-    return false;
+    try {
+      final deviceInfo = DeviceInfoPlugin();
+      final androidInfo = await deviceInfo.androidInfo;
+      return androidInfo.version.sdkInt >= 33; // Android 13 (API 33)
+    } catch (e) {
+      // Nếu không kiểm tra được, giả định là Android cũ (cần storage permission)
+      return false;
+    }
   }
 
   /// Xin tất cả quyền cần thiết cho chat feature

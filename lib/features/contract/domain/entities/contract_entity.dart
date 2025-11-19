@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 
 enum TerminationReason {
   @JsonValue('EXPIRED')
@@ -14,19 +15,26 @@ enum TerminationReason {
 }
 
 extension TerminationReasonExtension on TerminationReason {
-  String get displayName {
+  /// Get translated termination reason based on language code
+  String getTranslated(String languageCode) {
     switch (this) {
       case TerminationReason.expired:
-        return 'Hết hạn';
+        return AppLocalizationsHelper.translate('terminationReasonExpired', languageCode);
       case TerminationReason.violation:
-        return 'Vi phạm';
+        return AppLocalizationsHelper.translate('terminationReasonViolation', languageCode);
       case TerminationReason.tenantRequest:
-        return 'Yêu cầu của khách thuê';
+        return AppLocalizationsHelper.translate('terminationReasonTenantRequest', languageCode);
       case TerminationReason.landlordRequest:
-        return 'Yêu cầu của chủ nhà';
+        return AppLocalizationsHelper.translate('terminationReasonLandlordRequest', languageCode);
       case TerminationReason.other:
-        return 'Khác';
+        return AppLocalizationsHelper.translate('terminationReasonOther', languageCode);
     }
+  }
+
+  // Deprecated: Keep for backward compatibility, but use getTranslated instead
+  @Deprecated('Use getTranslated instead')
+  String get displayName {
+    return getTranslated('vi');
   }
 }
 
@@ -104,52 +112,80 @@ class ContractEntity {
   final String? propertyCity;
   final String? propertyName;
 
-  String get statusInVietnamese {
+  /// Get translated status based on language code
+  String getStatusTranslated(String languageCode) {
     switch (status.toUpperCase()) {
       case 'DRAFT':
-        return 'Nháp';
+        return AppLocalizationsHelper.translate('contractStatusDraft', languageCode);
       case 'ACTIVE':
-        return 'Đang hoạt động';
+        return AppLocalizationsHelper.translate('contractStatusActive', languageCode);
       case 'EXPIRED':
-        return 'Hết hạn';
+        return AppLocalizationsHelper.translate('contractStatusExpired', languageCode);
       case 'TERMINATED':
-        return 'Đã chấm dứt';
+        return AppLocalizationsHelper.translate('contractStatusTerminated', languageCode);
       default:
         return status;
     }
   }
 
-  String get contractTypeInVietnamese {
+  /// Get translated contract type based on language code
+  String getContractTypeTranslated(String languageCode) {
     switch (contractType?.toUpperCase()) {
       case 'RENTAL':
-        return 'Hợp đồng thuê';
+        return AppLocalizationsHelper.translate('contractTypeRental', languageCode);
       default:
-        return contractType ?? 'Không xác định';
+        return AppLocalizationsHelper.translate('contractTypeUnknown', languageCode);
     }
   }
 
-  String get paymentCycleInVietnamese {
+  /// Get translated payment cycle based on language code
+  String getPaymentCycleTranslated(String languageCode) {
     switch (paymentCycle?.toUpperCase()) {
       case 'MONTHLY':
-        return 'Hàng tháng';
+        return AppLocalizationsHelper.translate('paymentCycleMonthly', languageCode);
       case 'QUARTERLY':
-        return 'Hàng quý';
+        return AppLocalizationsHelper.translate('paymentCycleQuarterly', languageCode);
       case 'YEARLY':
-        return 'Hàng năm';
+        return AppLocalizationsHelper.translate('paymentCycleYearly', languageCode);
       default:
-        return paymentCycle ?? 'Không xác định';
+        return AppLocalizationsHelper.translate('paymentCycleUnknown', languageCode);
     }
   }
 
-  String get paymentDayTypeInVietnamese {
+  /// Get translated payment day type based on language code
+  String getPaymentDayTypeTranslated(String languageCode) {
     switch (paymentDayType?.toUpperCase()) {
       case 'FIXED_DAYS':
-        return 'Ngày cố định';
+        return AppLocalizationsHelper.translate('paymentDayTypeFixedDays', languageCode);
       case 'CUSTOM_DAYS':
-        return 'Ngày tùy chỉnh';
+        return AppLocalizationsHelper.translate('paymentDayTypeCustomDays', languageCode);
       default:
-        return paymentDayType ?? 'Không xác định';
+        return AppLocalizationsHelper.translate('paymentDayTypeUnknown', languageCode);
     }
+  }
+
+  // Deprecated: Keep for backward compatibility, but use getStatusTranslated instead
+  @Deprecated('Use getStatusTranslated instead')
+  String get statusInVietnamese {
+    return getStatusTranslated('vi');
+  }
+
+  // Deprecated: Keep for backward compatibility, but use getContractTypeTranslated instead
+  @Deprecated('Use getContractTypeTranslated instead')
+  String get contractTypeInVietnamese {
+    return getContractTypeTranslated('vi');
+  }
+
+  // Deprecated: Keep for backward compatibility, but use getPaymentCycleTranslated instead
+  @Deprecated('Use getPaymentCycleTranslated instead')
+  String get paymentCycleInVietnamese {
+    return getPaymentCycleTranslated('vi');
+  }
+
+  // Deprecated: Keep for backward compatibility, but use getPaymentDayTypeTranslated instead
+  @Deprecated('Use getPaymentDayTypeTranslated instead')
+  String get paymentDayTypeInVietnamese {
+    return getPaymentDayTypeTranslated('vi');
   }
 
   bool get isTerminated => terminationReason != null || terminationNote != null;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/contract_entity.dart';
@@ -92,7 +93,7 @@ class ContractCard extends ConsumerWidget {
                           const SizedBox(height: 4),
                           _StatusBadge(
                             status: contract.status,
-                            statusInVietnamese: contract.statusInVietnamese,
+                            statusTranslated: contract.getStatusTranslated(languageCode),
                             languageCode: languageCode,
                           ),
                         ],
@@ -167,7 +168,7 @@ class ContractCard extends ConsumerWidget {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${_formatCurrency(contract.monthlyRent)}${AppLocalizationsHelper.translate('perMonth', languageCode)}',
+                              '${_formatCurrency(contract.monthlyRent)} ${AppLocalizationsHelper.translate('perMonth', languageCode)}',
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: statusColor,
@@ -229,19 +230,25 @@ class ContractCard extends ConsumerWidget {
   }
 
   String _formatCurrency(double amount) {
-    return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ';
+    // Format currency - Always use VND
+    final currencyFormat = NumberFormat.currency(
+      locale: 'vi_VN',
+      symbol: '₫',
+      decimalDigits: 0,
+    );
+    return currencyFormat.format(amount);
   }
 }
 
 // Status badge widget
 class _StatusBadge extends StatelessWidget {
   final String status;
-  final String statusInVietnamese;
+  final String statusTranslated;
   final String languageCode;
 
   const _StatusBadge({
     required this.status,
-    required this.statusInVietnamese,
+    required this.statusTranslated,
     required this.languageCode,
   });
 
@@ -290,7 +297,7 @@ class _StatusBadge extends StatelessWidget {
           Icon(icon, size: 13, color: textColor),
           const SizedBox(width: 4),
           Text(
-            statusInVietnamese,
+            statusTranslated,
             style: TextStyle(
               fontSize: 12,
               fontWeight: FontWeight.w600,

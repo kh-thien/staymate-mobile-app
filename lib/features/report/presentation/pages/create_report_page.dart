@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/permission/permission.dart';
 import '../../domain/entities/contract.dart';
 import '../providers/maintenance_request_provider.dart';
 
@@ -44,6 +45,15 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
     }
 
     try {
+      // Request photos permission before picking image
+      final hasPermission = await PermissionHelper.requestPhotosWithFeedback(
+        context,
+      );
+
+      if (!hasPermission) {
+        return;
+      }
+
       final XFile? image = await _imagePicker.pickImage(
         source: ImageSource.gallery,
         maxWidth: 1920,

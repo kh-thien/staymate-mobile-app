@@ -62,6 +62,31 @@ Future<List<Invoice>> invoicesByStatus(Ref ref, BillStatus? status) async {
   return repository.getInvoicesByStatus(status);
 }
 
+/// Get upcoming invoices (unpaid/processing/overdue with dueDate within 3 days)
+@riverpod
+Future<List<Invoice>> upcomingInvoices(Ref ref) async {
+  final allInvoices = await ref.watch(invoicesProvider.future);
+  final now = DateTime.now();
+  final threeDaysLater = now.add(const Duration(days: 3));
+
+  return allInvoices.where((invoice) {
+    // Only show unpaid, processing, overdue, or partially paid invoices
+    final isPending = invoice.status == BillStatus.unpaid ||
+        invoice.status == BillStatus.processing ||
+        invoice.status == BillStatus.overdue ||
+        invoice.status == BillStatus.partiallyPaid;
+
+    // Check if dueDate is within 3 days
+    if (invoice.dueDate == null) return false;
+    final dueDate = invoice.dueDate!;
+    final isUpcoming = dueDate.isAfter(now) && dueDate.isBefore(threeDaysLater) ||
+        dueDate.isAtSameMomentAs(now) ||
+        (dueDate.isBefore(now) && invoice.status == BillStatus.overdue);
+
+    return isPending && isUpcoming;
+  }).toList();
+}
+
 /// Get landlord's payment account for an invoice
 @riverpod
 Future<PaymentAccount?> landlordPaymentAccount(Ref ref, String billId) async {
