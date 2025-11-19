@@ -97,6 +97,9 @@ class AppLocalizationsHelper {
       'offline': 'Ngoại tuyến',
       'noInternetConnection': 'Không có kết nối internet',
       'reconnected': 'Đã kết nối lại',
+      'networkError': 'Lỗi kết nối mạng',
+      'networkErrorTryAgain': 'Lỗi kết nối mạng. Vui lòng thử lại.',
+      'networkErrorCheckConnection': 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet và thử lại.',
       
       // Media
       'camera': 'Camera',
@@ -467,6 +470,9 @@ class AppLocalizationsHelper {
       'offline': 'Offline',
       'noInternetConnection': 'No internet connection',
       'reconnected': 'Reconnected',
+      'networkError': 'Network error',
+      'networkErrorTryAgain': 'Network error. Please try again.',
+      'networkErrorCheckConnection': 'Network error. Please check your internet connection and try again.',
       
       // Media
       'camera': 'Camera',

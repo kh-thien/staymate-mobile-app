@@ -71,7 +71,7 @@ class ErrorWidget extends StatelessWidget {
                 children: [
                   TextSpan(
                     text: message,
-                    style: AppTextStyles.bodyMedium?.copyWith(
+                    style: AppTextStyles.bodyMedium.copyWith(
                       color: AppColors.error,
                       fontWeight: FontWeight.w500,
                     ),

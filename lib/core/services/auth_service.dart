@@ -292,7 +292,7 @@ class AuthService {
       // Check for network errors
       if (errorString.contains('network') || errorString.contains('connection')) {
         throw AuthException(
-          'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet.',
+          'NETWORK_ERROR_CHECK_CONNECTION',
           statusCode: 'google_signin_network_error',
         );
       }

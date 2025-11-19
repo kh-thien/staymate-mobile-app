@@ -5,6 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:stay_mate/features/profile/presentation/profile_bottom_sheet.dart';
 import '../../features/auth/presentation/bloc/auth_bloc_exports.dart';
 import '../../features/home/presentation/providers/notifications_provider.dart';
+import '../../core/services/locale_provider.dart';
+import '../../core/localization/app_localizations_helper.dart';
 import '../providers/app_bar_provider.dart';
 import 'user_avatar.dart';
 
@@ -17,12 +19,38 @@ class CustomAppBar extends ConsumerWidget {
     final title = appBarState.title;
     final actions = appBarState.actions;
 
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     return BlocConsumer<AuthBloc, AuthBlocState>(
       listener: (context, state) {
         if (state is AuthError) {
+          // Translate error message if it's a known network error key
+          String errorMessage = state.message;
+          if (state.message == 'NETWORK_ERROR_TRY_AGAIN') {
+            errorMessage = AppLocalizationsHelper.translate(
+              'networkErrorTryAgain',
+              languageCode,
+            );
+          } else if (state.message == 'NETWORK_ERROR_CHECK_CONNECTION') {
+            errorMessage = AppLocalizationsHelper.translate(
+              'networkErrorCheckConnection',
+              languageCode,
+            );
+          } else if (state.message.contains('Lỗi kết nối mạng') ||
+              state.message.contains('kết nối mạng') ||
+              state.message.contains('Network error') ||
+              state.message.toLowerCase().contains('network')) {
+            // Fallback for old hardcoded messages
+            errorMessage = AppLocalizationsHelper.translate(
+              'networkErrorTryAgain',
+              languageCode,
+            );
+          }
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(state.message),
+              content: Text(errorMessage),
               backgroundColor: Colors.red,
             ),
           );

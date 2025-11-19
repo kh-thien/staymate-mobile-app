@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/connectivity_service.dart';
+import '../../core/services/locale_provider.dart';
+import '../../core/localization/app_localizations_helper.dart';
 
 /// Widget hiển thị snackbar cố định ở trên cùng khi mất kết nối mạng
 class ConnectivitySnackbar extends ConsumerStatefulWidget {
@@ -56,6 +58,9 @@ class _ConnectivitySnackbarState
 
   @override
   Widget build(BuildContext context) {
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
     // Listen to changes and handle side effects
     // ref.listen can only be called in build method
     ref.listen<AsyncValue<bool>>(
@@ -65,7 +70,11 @@ class _ConnectivitySnackbarState
           // Lần đầu tiên (previous == null) - kiểm tra trạng thái ban đầu
           if (previous == null) {
             if (!isConnected && mounted) {
-              _showConnectionSnackbar('Lỗi kết nối mạng', Colors.red, false);
+              _showConnectionSnackbar(
+                AppLocalizationsHelper.translate('networkError', languageCode),
+                Colors.red,
+                false,
+              );
             }
             return;
           }
@@ -75,10 +84,18 @@ class _ConnectivitySnackbarState
             if (wasConnected != isConnected && mounted) {
               if (!isConnected) {
                 // Mất kết nối - hiển thị snackbar "Lỗi kết nối mạng"
-                _showConnectionSnackbar('Lỗi kết nối mạng', Colors.red, false);
+                _showConnectionSnackbar(
+                  AppLocalizationsHelper.translate('networkError', languageCode),
+                  Colors.red,
+                  false,
+                );
               } else {
                 // Có kết nối trở lại - hiển thị "Đã kết nối lại" rồi ẩn sau 2 giây
-                _showConnectionSnackbar('Đã kết nối lại', Colors.green, true);
+                _showConnectionSnackbar(
+                  AppLocalizationsHelper.translate('reconnected', languageCode),
+                  Colors.green,
+                  true,
+                );
               }
             }
           });

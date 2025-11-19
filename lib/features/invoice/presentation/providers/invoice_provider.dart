@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../domain/entities/invoice.dart';
@@ -90,18 +91,17 @@ Future<List<Invoice>> upcomingInvoices(Ref ref) async {
 /// Get landlord's payment account for an invoice
 @riverpod
 Future<PaymentAccount?> landlordPaymentAccount(Ref ref, String billId) async {
-  print(
-    '🎯 Provider START: landlordPaymentAccount called with billId: $billId',
-  );
   try {
     final repository = ref.watch(invoiceRepositoryProvider);
-    print('🎯 Provider: Got repository, calling getLandlordPaymentAccount...');
     final result = await repository.getLandlordPaymentAccount(billId);
-    print('🎯 Provider SUCCESS: Got result: ${result != null}');
     return result;
   } catch (e, stack) {
-    print('🎯 Provider ERROR: $e');
-    print('🎯 Provider STACK: $stack');
+    developer.log(
+      'Error getting landlord payment account',
+      name: 'InvoiceProvider',
+      error: e,
+      stackTrace: stack,
+    );
     rethrow;
   }
 }
@@ -112,20 +112,17 @@ Future<PaymentAccount?> paymentAccountFromPayment(
   Ref ref,
   String billId,
 ) async {
-  print(
-    '🎯 Provider START: paymentAccountFromPayment called with billId: $billId',
-  );
   try {
     final repository = ref.watch(invoiceRepositoryProvider);
-    print(
-      '🎯 Provider: Got repository, calling getPaymentAccountFromPayment...',
-    );
     final result = await repository.getPaymentAccountFromPayment(billId);
-    print('🎯 Provider SUCCESS: Got result: ${result != null}');
     return result;
   } catch (e, stack) {
-    print('🎯 Provider ERROR: $e');
-    print('🎯 Provider STACK: $stack');
+    developer.log(
+      'Error getting payment account from payment',
+      name: 'InvoiceProvider',
+      error: e,
+      stackTrace: stack,
+    );
     rethrow;
   }
 }

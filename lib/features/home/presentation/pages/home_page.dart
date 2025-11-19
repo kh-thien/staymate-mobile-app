@@ -38,8 +38,12 @@ class HomePage extends HookConsumerWidget {
     );
 
     useEffect(() {
+      // Capture notifier before async operation
       final notifier = ref.read(appBarProvider.notifier);
-      Future.microtask(notifier.reset);
+      Future.microtask(() {
+        // Notifier is already captured, safe to use
+        notifier.reset();
+      });
       animationController.forward();
       return null;
     }, const []);
