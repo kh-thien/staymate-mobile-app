@@ -43,7 +43,7 @@ class AuthHeader extends ConsumerWidget {
                 ),
               ],
             ),
-            child: Image.asset(
+            child: SvgPicture.asset(
               LogoApp.logoIcon,
               fit: BoxFit.contain,
             ),

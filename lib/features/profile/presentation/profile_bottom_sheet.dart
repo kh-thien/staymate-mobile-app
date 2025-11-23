@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:stay_mate/core/services/auth_service.dart';
 import 'package:stay_mate/core/services/locale_provider.dart';
+import 'package:stay_mate/core/services/theme_provider.dart';
 import 'package:stay_mate/core/localization/app_localizations_helper.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:stay_mate/core/constants/app_styles.dart';
 import 'package:go_router/go_router.dart';
 
 
@@ -12,6 +13,8 @@ class ProfileBottomSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final authService = AuthService();
@@ -19,9 +22,11 @@ class ProfileBottomSheet extends ConsumerWidget {
 
     return Container(
       height: MediaQuery.of(context).size.height * 0.6,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
         ),
@@ -34,7 +39,9 @@ class ProfileBottomSheet extends ConsumerWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey[300],
+              color: isDark 
+                  ? AppColors.dividerDark 
+                  : Colors.grey[300]!,
               borderRadius: BorderRadius.circular(2),
             ),
           ),
@@ -50,16 +57,20 @@ class ProfileBottomSheet extends ConsumerWidget {
                     children: [
                       CircleAvatar(
                         radius: 30,
-                        backgroundColor: Colors.grey[200],
+                        backgroundColor: isDark 
+                            ? AppColors.surfaceDark 
+                            : Colors.grey[200]!,
                         backgroundImage:
                             user?.userMetadata?['avatar_url'] != null
                             ? NetworkImage(user!.userMetadata!['avatar_url'])
                             : null,
                         child: user?.userMetadata?['avatar_url'] == null
-                            ? const Icon(
+                            ? Icon(
                                 Icons.person,
                                 size: 40,
-                                color: Colors.grey,
+                                color: isDark 
+                                    ? AppColors.textSecondaryDark 
+                                    : Colors.grey,
                               )
                             : null,
                       ),
@@ -74,17 +85,22 @@ class ProfileBottomSheet extends ConsumerWidget {
                                     'user',
                                     languageCode,
                                   ),
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
+                                color: isDark 
+                                    ? AppColors.textPrimaryDark 
+                                    : Colors.black,
                               ),
                             ),
                             const SizedBox(height: 4),
                             Text(
                               user?.email ?? 'user@example.com',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey,
+                                color: isDark 
+                                    ? AppColors.textSecondaryDark 
+                                    : Colors.grey,
                               ),
                             ),
                           ],
@@ -96,7 +112,12 @@ class ProfileBottomSheet extends ConsumerWidget {
                             Navigator.pop(context);
                           }
                         },
-                        icon: const Icon(Icons.close),
+                        icon: Icon(
+                          Icons.close,
+                          color: isDark 
+                              ? AppColors.textPrimaryDark 
+                              : Colors.black,
+                        ),
                       ),
                     ],
                   ),
@@ -116,9 +137,10 @@ class ProfileBottomSheet extends ConsumerWidget {
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
-                              // TODO: Navigate to profile page
+                              context.push('/profile/personal-info');
                             }
                           },
+                          context: context,
                         ),
                         _buildMenuItem(
                           icon: Icons.settings_outlined,
@@ -129,9 +151,10 @@ class ProfileBottomSheet extends ConsumerWidget {
                           onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
-                              // TODO: Navigate to settings page
+                              context.push('/profile/account');
                             }
                           },
+                          context: context,
                         ),
                         _buildMenuItem(
                           icon: Icons.notifications_outlined,
@@ -145,6 +168,7 @@ class ProfileBottomSheet extends ConsumerWidget {
                               context.push('/notification-settings');
                             }
                           },
+                          context: context,
                         ),
                         _buildMenuItem(
                           icon: Icons.language,
@@ -158,6 +182,21 @@ class ProfileBottomSheet extends ConsumerWidget {
                               context.push('/language-settings');
                             }
                           },
+                          context: context,
+                        ),
+                        _buildMenuItem(
+                          icon: Icons.palette_outlined,
+                          title: AppLocalizationsHelper.translate(
+                            'theme',
+                            languageCode,
+                          ),
+                          onTap: () {
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                              _showThemeSelector(context, ref);
+                            }
+                          },
+                          context: context,
                         ),
                         _buildMenuItem(
                           icon: Icons.info_outline,
@@ -171,19 +210,21 @@ class ProfileBottomSheet extends ConsumerWidget {
                               context.push('/app-info');
                             }
                           },
+                          context: context,
                         ),
                         _buildMenuItem(
-                          icon: Icons.help_outline,
+                          icon: Icons.feedback_outlined,
                           title: AppLocalizationsHelper.translate(
-                            'help',
+                            'sendFeedback',
                             languageCode,
                           ),
-                          onTap: () async {
+                          onTap: () {
                             if (context.mounted) {
                               Navigator.pop(context);
-                              await _openEmailSupport(context, ref);
+                              context.push('/feedback');
                             }
                           },
+                          context: context,
                         ),
                         _buildMenuItem(
                           icon: Icons.logout,
@@ -212,6 +253,7 @@ class ProfileBottomSheet extends ConsumerWidget {
                             }
                           },
                           isDestructive: true,
+                          context: context,
                         ),
                       ],
                     ),
@@ -230,71 +272,223 @@ class ProfileBottomSheet extends ConsumerWidget {
     required String title,
     required VoidCallback onTap,
     bool isDestructive = false,
+    required BuildContext context,
   }) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
         leading: Icon(
           icon,
-          color: isDestructive ? Colors.red : Colors.grey[600],
+          color: isDestructive 
+              ? Colors.red 
+              : (isDark 
+                  ? AppColors.textSecondaryDark 
+                  : Colors.grey[600]!),
         ),
         title: Text(
           title,
           style: TextStyle(
-            color: isDestructive ? Colors.red : Colors.black,
+            color: isDestructive 
+                ? Colors.red 
+                : (isDark 
+                    ? AppColors.textPrimaryDark 
+                    : Colors.black),
             fontWeight: FontWeight.w500,
           ),
         ),
         onTap: onTap,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        tileColor: Colors.grey[50],
+        tileColor: isDark 
+            ? AppColors.surfaceDark 
+            : Colors.grey[50],
       ),
     );
   }
 
-  Future<void> _openEmailSupport(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  void _showThemeSelector(BuildContext context, WidgetRef ref) {
     final locale = ref.read(appLocaleProvider);
     final languageCode = locale.languageCode;
-    final String email = 'staymate.home@gmail.com';
-    final String subject = AppLocalizationsHelper.translate(
-      'supportFromStayMate',
-      languageCode,
+    final themeModeAsync = ref.read(themeModeProvider);
+    
+    // Get current theme mode, default to system if loading or error
+    final currentThemeMode = themeModeAsync.when(
+      data: (mode) => mode,
+      loading: () => ThemeMode.system,
+      error: (_, __) => ThemeMode.system,
     );
-    final Uri emailUri = Uri.parse('mailto:$email?subject=${Uri.encodeComponent(subject)}');
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => _ThemeSelectorBottomSheet(
+        currentThemeMode: currentThemeMode,
+        languageCode: languageCode,
+      ),
+    );
+  }
 
-    try {
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(
-          emailUri,
-          mode: LaunchMode.externalApplication,
-        );
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizationsHelper.translate(
-                  'cannotOpenEmailApp',
-                  languageCode,
-                ),
-              ),
-            ),
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${AppLocalizationsHelper.translate('anErrorOccurredMessage', languageCode)}: $e',
+}
+
+/// Theme Selector Bottom Sheet
+class _ThemeSelectorBottomSheet extends ConsumerWidget {
+  final ThemeMode currentThemeMode;
+  final String languageCode;
+
+  const _ThemeSelectorBottomSheet({
+    required this.currentThemeMode,
+    required this.languageCode,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Handle bar
+          Container(
+            margin: const EdgeInsets.only(top: 12, bottom: 8),
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: isDark 
+                  ? AppColors.dividerDark 
+                  : Colors.grey[300]!,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-        );
-      }
-    }
+          // Title
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Row(
+              children: [
+                Text(
+                  AppLocalizationsHelper.translate('selectTheme', languageCode),
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: isDark 
+                        ? AppColors.textPrimaryDark 
+                        : Colors.black87,
+                  ),
+                ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(
+                    Icons.close,
+                    color: isDark 
+                        ? AppColors.textSecondaryDark 
+                        : Colors.grey[600]!,
+                  ),
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ],
+            ),
+          ),
+          const Divider(height: 1),
+          // Theme options
+          _ThemeOption(
+            themeMode: ThemeMode.light,
+            icon: Icons.light_mode_outlined,
+            title: AppLocalizationsHelper.translate('themeLight', languageCode),
+            isSelected: currentThemeMode == ThemeMode.light,
+            languageCode: languageCode,
+          ),
+          _ThemeOption(
+            themeMode: ThemeMode.dark,
+            icon: Icons.dark_mode_outlined,
+            title: AppLocalizationsHelper.translate('themeDark', languageCode),
+            isSelected: currentThemeMode == ThemeMode.dark,
+            languageCode: languageCode,
+          ),
+          _ThemeOption(
+            themeMode: ThemeMode.system,
+            icon: Icons.brightness_auto_outlined,
+            title: AppLocalizationsHelper.translate('themeSystem', languageCode),
+            isSelected: currentThemeMode == ThemeMode.system,
+            languageCode: languageCode,
+          ),
+          SizedBox(height: MediaQuery.of(context).padding.bottom),
+        ],
+      ),
+    );
+  }
+}
+
+class _ThemeOption extends ConsumerWidget {
+  final ThemeMode themeMode;
+  final IconData icon;
+  final String title;
+  final bool isSelected;
+  final String languageCode;
+
+  const _ThemeOption({
+    required this.themeMode,
+    required this.icon,
+    required this.title,
+    required this.isSelected,
+    required this.languageCode,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    return ListTile(
+      leading: Icon(
+        icon,
+        color: isSelected
+            ? theme.colorScheme.primary
+            : (isDark 
+                ? AppColors.textSecondaryDark 
+                : Colors.grey[600]!),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected
+              ? theme.colorScheme.primary
+              : (isDark 
+                  ? AppColors.textPrimaryDark 
+                  : Colors.black87),
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+        ),
+      ),
+      trailing: isSelected
+          ? Icon(
+              Icons.check_circle,
+              color: theme.colorScheme.primary,
+            )
+          : null,
+      onTap: () async {
+        final notifier = ref.read(themeModeProvider.notifier);
+        await notifier.setThemeMode(themeMode);
+        if (context.mounted) {
+          Navigator.pop(context);
+        }
+      },
+      tileColor: isDark 
+          ? AppColors.surfaceDark 
+          : Colors.grey[50],
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+    );
   }
 }

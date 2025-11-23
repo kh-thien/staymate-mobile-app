@@ -16,6 +16,7 @@ import 'core/services/auth_service.dart';
 import 'core/services/firebase_messaging_service.dart';
 import 'core/services/locale_service.dart';
 import 'core/services/locale_provider.dart';
+import 'core/services/theme_provider.dart';
 import 'features/auth/presentation/bloc/auth_bloc_exports.dart';
 
 void main() async {
@@ -128,9 +129,18 @@ class _StayMateAppState extends State<StayMateApp> {
           builder: (context, ref, child) {
             // Watch locale provider để MaterialApp rebuild khi locale thay đổi
             final locale = ref.watch(appLocaleProvider);
+            // Watch theme mode provider
+            final themeModeAsync = ref.watch(themeModeProvider);
             
             // Key để force rebuild MaterialApp khi locale thay đổi
             final localeKey = ValueKey(locale.toString());
+            
+            // Get theme mode, default to system if loading or error
+            final themeMode = themeModeAsync.when(
+              data: (mode) => mode,
+              loading: () => ThemeMode.system,
+              error: (_, __) => ThemeMode.system,
+            );
             
             return MaterialApp.router(
               key: localeKey,
@@ -138,7 +148,7 @@ class _StayMateAppState extends State<StayMateApp> {
               debugShowCheckedModeBanner: false,
               theme: AppTheme.lightTheme,
               darkTheme: AppTheme.darkTheme,
-              themeMode: ThemeMode.system,
+              themeMode: themeMode,
               locale: locale,
               localizationsDelegates: const [
                 GlobalMaterialLocalizations.delegate,

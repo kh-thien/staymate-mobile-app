@@ -235,7 +235,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
         // Emit with a key that UI layer will translate
         emit(AuthError(message: 'NETWORK_ERROR_TRY_AGAIN', code: e.statusCode));
       } else {
-        emit(AuthError(message: e.message, code: e.statusCode));
+      emit(AuthError(message: e.message, code: e.statusCode));
       }
     } catch (e) {
       emit(AuthError(message: 'Sign out failed: $e'));

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:stay_mate/core/constants/ui_constants.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../domain/entities/invoice.dart';
 import '../providers/invoice_provider.dart';
 import 'bank_transfer_page.dart';
@@ -16,6 +17,8 @@ class InvoiceDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final invoiceAsync = ref.watch(invoiceDetailProvider(billId));
 
     return Scaffold(
@@ -23,7 +26,12 @@ class InvoiceDetailPage extends ConsumerWidget {
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        foregroundColor: isDark 
+            ? AppColors.textPrimaryDark 
+            : Colors.black,
         centerTitle: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -32,8 +40,10 @@ class InvoiceDetailPage extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 24),
-          color: Colors.black,
+          icon: Icon(Icons.arrow_back_ios_new_rounded, size: 24),
+          color: isDark 
+              ? AppColors.textPrimaryDark 
+              : Colors.black,
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Builder(
@@ -42,10 +52,12 @@ class InvoiceDetailPage extends ConsumerWidget {
             final languageCode = locale.languageCode;
             return Text(
               AppLocalizationsHelper.translate('invoiceDetail', languageCode),
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
-                color: Colors.black,
+                color: isDark 
+                    ? AppColors.textPrimaryDark 
+                    : Colors.black,
               ),
             );
           },
@@ -54,7 +66,9 @@ class InvoiceDetailPage extends ConsumerWidget {
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark 
+              ? AppColors.surfaceDark 
+              : Colors.white,
           // borderRadius: const BorderRadius.only(
           //   topLeft: Radius.circular(30),
           //   topRight: Radius.circular(30),
@@ -892,6 +906,7 @@ class _PaymentMethodModal extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     // Format currency - Always use VND
     final currencyFormatter = NumberFormat.currency(
       locale: 'vi_VN',
@@ -900,11 +915,14 @@ class _PaymentMethodModal extends ConsumerWidget {
     );
 
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      decoration: BoxDecoration(
+        color: isDark
+            ? AppColors.surfaceDarkElevated
+            : Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
+        top: false,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -914,7 +932,9 @@ class _PaymentMethodModal extends ConsumerWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: Colors.grey.shade300,
+                color: isDark
+                    ? Colors.grey.shade600
+                    : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -955,7 +975,9 @@ class _PaymentMethodModal extends ConsumerWidget {
                           Text(
                             '${AppLocalizationsHelper.translate('invoiceNumber', languageCode)}: ${invoice.billNumber}',
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: Colors.grey.shade700,
+                              color: isDark
+                                  ? AppColors.textSecondaryDark
+                                  : Colors.grey.shade700,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -975,7 +997,12 @@ class _PaymentMethodModal extends ConsumerWidget {
               ),
             ),
 
-            const Divider(height: 1),
+            Divider(
+              height: 1,
+              color: isDark
+                  ? AppColors.dividerDark
+                  : Colors.grey.shade200,
+            ),
 
             // Payment methods
             ListView.separated(
@@ -983,8 +1010,13 @@ class _PaymentMethodModal extends ConsumerWidget {
               physics: const NeverScrollableScrollPhysics(),
               padding: const EdgeInsets.symmetric(vertical: 8),
               itemCount: PaymentMethod.values.length,
-              separatorBuilder: (context, index) =>
-                  const Divider(height: 1, indent: 72),
+              separatorBuilder: (context, index) => Divider(
+                height: 1,
+                indent: 72,
+                color: isDark
+                    ? AppColors.dividerDark
+                    : Colors.grey.shade200,
+              ),
               itemBuilder: (context, index) {
                 final method = PaymentMethod.values[index];
                 return _PaymentMethodTile(
@@ -995,7 +1027,7 @@ class _PaymentMethodModal extends ConsumerWidget {
               },
             ),
 
-            const SizedBox(height: 8),
+            SizedBox(height: UIConstants.bottomNavTotalHeight + 16),
           ],
         ),
       ),
@@ -1068,6 +1100,7 @@ class _PaymentMethodTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final isAvailable = method.isAvailable;
 
     return Material(
@@ -1085,14 +1118,18 @@ class _PaymentMethodTile extends ConsumerWidget {
                   decoration: BoxDecoration(
                     color: isAvailable
                         ? theme.colorScheme.primaryContainer
-                        : Colors.grey.shade200,
+                        : (isDark
+                            ? AppColors.surfaceDark
+                            : Colors.grey.shade200),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
                     method.icon,
                     color: isAvailable
                         ? theme.colorScheme.primary
-                        : Colors.grey.shade500,
+                        : (isDark
+                            ? AppColors.textSecondaryDark
+                            : Colors.grey.shade500),
                     size: 24,
                   ),
                 ),
@@ -1105,7 +1142,11 @@ class _PaymentMethodTile extends ConsumerWidget {
                         method.displayName,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
-                          color: isAvailable ? null : Colors.grey.shade600,
+                          color: isAvailable
+                              ? null
+                              : (isDark
+                                  ? AppColors.textSecondaryDark
+                                  : Colors.grey.shade600),
                         ),
                       ),
                       if (!isAvailable && method.comingSoonText != null) ...[
@@ -1124,7 +1165,9 @@ class _PaymentMethodTile extends ConsumerWidget {
                 Icon(
                   isAvailable ? Icons.arrow_forward_ios : Icons.lock_outline,
                   size: 16,
-                  color: Colors.grey.shade400,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : Colors.grey.shade400,
                 ),
               ],
             ),

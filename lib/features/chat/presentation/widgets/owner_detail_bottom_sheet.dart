@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 
 /// Owner Detail Bottom Sheet - Shows property and owner information
 class OwnerDetailBottomSheet extends ConsumerWidget {
@@ -11,6 +12,8 @@ class OwnerDetailBottomSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final owner = chatRoom.room?.properties?.owner;
@@ -19,7 +22,9 @@ class OwnerDetailBottomSheet extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[50],
+        color: isDark 
+            ? AppColors.surfaceDark 
+            : Colors.grey[50],
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: DraggableScrollableSheet(
@@ -36,7 +41,9 @@ class OwnerDetailBottomSheet extends ConsumerWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: isDark 
+                      ? AppColors.dividerDark 
+                      : Colors.grey[300]!,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -50,17 +57,21 @@ class OwnerDetailBottomSheet extends ConsumerWidget {
                   children: [
                     Text(
                       AppLocalizationsHelper.translate('ownerInfo', languageCode),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: isDark 
+                            ? AppColors.textPrimaryDark 
+                            : Colors.black87,
                       ),
                     ),
                     const Spacer(),
                     IconButton(
                       icon: const Icon(Icons.close),
                       onPressed: () => Navigator.pop(context),
-                      color: Colors.grey[600],
+                      color: isDark 
+                          ? AppColors.textSecondaryDark 
+                          : Colors.grey[600]!,
                     ),
                   ],
                 ),
@@ -79,9 +90,13 @@ class OwnerDetailBottomSheet extends ConsumerWidget {
                         padding: const EdgeInsets.all(24),
                         margin: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: isDark 
+                              ? AppColors.surfaceDarkElevated 
+                              : Colors.white,
                           borderRadius: BorderRadius.circular(16),
-                          boxShadow: [
+                          boxShadow: isDark
+                              ? []
+                              : [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.05),
                               blurRadius: 10,
@@ -167,9 +182,13 @@ class OwnerDetailBottomSheet extends ConsumerWidget {
                           padding: const EdgeInsets.all(20),
                           margin: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: isDark 
+                                ? AppColors.surfaceDarkElevated 
+                                : Colors.white,
                             borderRadius: BorderRadius.circular(16),
-                            boxShadow: [
+                            boxShadow: isDark
+                                ? []
+                                : [
                               BoxShadow(
                                 color: Colors.black.withOpacity(0.05),
                                 blurRadius: 10,

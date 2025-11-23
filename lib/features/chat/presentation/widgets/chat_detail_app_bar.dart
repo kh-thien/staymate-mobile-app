@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../core/constants/app_styles.dart';
 
 /// Chat AppBar with address information
 class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -22,8 +23,16 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     return AppBar(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark 
+          ? AppColors.surfaceDarkElevated 
+          : Colors.white,
+      foregroundColor: isDark 
+          ? AppColors.textPrimaryDark 
+          : Colors.black87,
       elevation: 0,
       surfaceTintColor: Colors.transparent,
       shape: const RoundedRectangleBorder(
@@ -34,10 +43,20 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       bottom: PreferredSize(
         preferredSize: const Size.fromHeight(1),
-        child: Container(height: 1, color: Colors.grey[200]),
+        child: Container(
+          height: 1, 
+          color: isDark 
+              ? AppColors.dividerDark 
+              : Colors.grey[200]!,
+        ),
       ),
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: Colors.black87),
+        icon: Icon(
+          Icons.arrow_back, 
+          color: isDark 
+              ? AppColors.textPrimaryDark 
+              : Colors.black87,
+        ),
         onPressed: () => Navigator.pop(context),
       ),
       title: InkWell(
@@ -54,10 +73,12 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   Text(
                     address,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: Colors.black87,
+                      color: isDark 
+                          ? AppColors.textPrimaryDark 
+                          : Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -65,7 +86,12 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
                   if (propertyName != null)
                     Text(
                       propertyName!,
-                      style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      style: TextStyle(
+                        fontSize: 12, 
+                        color: isDark 
+                            ? AppColors.textSecondaryDark 
+                            : Colors.grey[600]!,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -77,7 +103,12 @@ class ChatDetailAppBar extends StatelessWidget implements PreferredSizeWidget {
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.info_outline, color: Colors.grey[700]),
+          icon: Icon(
+            Icons.info_outline, 
+            color: isDark 
+                ? AppColors.textSecondaryDark 
+                : Colors.grey[700]!,
+          ),
           onPressed: onInfoTap,
           tooltip: 'Thông tin',
         ),

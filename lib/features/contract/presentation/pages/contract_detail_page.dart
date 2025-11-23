@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/contract_entity.dart';
@@ -84,12 +85,19 @@ class _LoadedView extends ConsumerWidget {
       decimalDigits: 0,
     );
     final statusColor = _getStatusColor(contract.status);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: Colors.amberAccent,
+      backgroundColor: isDark
+          ? AppColors.surfaceDark
+          : AppColors.background,
       appBar:  AppBar(
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        backgroundColor: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        foregroundColor: isDark 
+            ? AppColors.textPrimaryDark 
+            : Colors.black,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
         shape: const RoundedRectangleBorder(
@@ -100,24 +108,30 @@ class _LoadedView extends ConsumerWidget {
         ),
         title: Text(
           AppLocalizationsHelper.translate('contractDetail', languageCode),
-          style: const TextStyle(
-            color: Colors.black87,
+          style: TextStyle(
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : Colors.black87,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.black87,
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : Colors.black87,
           ),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
           IconButton(
-            icon: const Icon(
+            icon: Icon(
               Icons.insert_drive_file,
-              color: Colors.black87,
+              color: isDark 
+                  ? AppColors.textPrimaryDark 
+                  : Colors.black87,
             ),
             tooltip: AppLocalizationsHelper.translateWithParams(
               'viewContractFiles',
@@ -154,7 +168,9 @@ class _LoadedView extends ConsumerWidget {
           context.read<ContractDetailCubit>().loadContractDetail(contract.id);
         },
         child: Container(
-          color: Colors.white,
+          color: isDark 
+              ? AppColors.surfaceDark 
+              : Colors.white,
           child: SingleChildScrollView(
             padding: EdgeInsets.only(
               left: 16.0,
@@ -169,19 +185,26 @@ class _LoadedView extends ConsumerWidget {
               Container(
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [Colors.white, Colors.grey.shade50],
-                  ),
+                  gradient: isDark
+                      ? null
+                      : LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [Colors.white, Colors.grey.shade50],
+                        ),
+                  color: isDark 
+                      ? AppColors.surfaceDarkElevated 
+                      : null,
                   borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.08),
-                      blurRadius: 12,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
+                  boxShadow: isDark
+                      ? []
+                      : [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 12,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(14),
@@ -546,18 +569,26 @@ class _SectionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Colors.white, Colors.grey.shade50],
-        ),
+        gradient: isDark
+            ? null
+            : LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Colors.white, Colors.grey.shade50],
+              ),
+        color: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : null,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
+        boxShadow: isDark
+            ? []
+            : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 3),
           ),

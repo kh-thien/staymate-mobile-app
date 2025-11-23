@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:stay_mate/core/constants/ui_constants.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../domain/entities/invoice.dart';
 import '../../domain/entities/payment_account.dart';
 import '../providers/invoice_provider.dart';
@@ -43,6 +44,7 @@ class BankTransferPage extends ConsumerWidget {
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     // Format currency - Always use VND
     final currencyFormatter = NumberFormat.currency(
       locale: 'vi_VN',
@@ -65,17 +67,34 @@ class BankTransferPage extends ConsumerWidget {
     );
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark 
+          ? AppColors.surfaceDark 
+          : Colors.white,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: Colors.white,
+        backgroundColor: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        foregroundColor: isDark 
+            ? AppColors.textPrimaryDark 
+            : Colors.black,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon: Icon(
+            Icons.close, 
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : Colors.black,
+          ),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           AppLocalizationsHelper.translate('bankTransferInfo', languageCode),
-          style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : Colors.black, 
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
       ),

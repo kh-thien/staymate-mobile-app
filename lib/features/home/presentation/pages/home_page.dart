@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import '../../../../core/services/locale_provider.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../../../shared/providers/app_bar_provider.dart';
 import '../widgets/home_greeting_card.dart';
 import '../widgets/home_summary_row.dart';
@@ -49,15 +50,19 @@ class HomePage extends HookConsumerWidget {
     }, const []);
 
     final languageCode = ref.watch(appLocaleProvider).languageCode;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return FadeTransition(
       opacity: fadeAnimation,
       child: SlideTransition(
         position: slideAnimation,
         child: Container(
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
+          decoration: BoxDecoration(
+            color: isDark 
+                ? AppColors.surfaceDark 
+                : Colors.white,
+            borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(28),
               topRight: Radius.circular(28),
             ),

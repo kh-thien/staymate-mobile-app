@@ -1,7 +1,7 @@
 name: stay_mate
 description: "Stay Mate – An mobile app for tenants to monitor and manage their rental rooms."
 publish_to: "none"
-version: 1.0.8+8
+version: 1.0.13+13
 
 environment:
   sdk: ^3.8.1
@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
+  cupertino_icons: ^1.0.8
   flutter_bloc: ^9.1.1
   flutter_dotenv: ^6.0.0
   flutter_svg: ^2.0.10
@@ -46,6 +47,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   shimmer: ^3.0.0
   liquid_glass_renderer: ^0.2.0-dev.4
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -63,6 +65,21 @@ flutter:
   assets:
     - .env
     - lib/core/assets/images/
-  
-  # CupertinoIcons không được sử dụng, nhưng có thể thêm để tránh warning
-  # (không bắt buộc nếu không dùng CupertinoIcons)
+
+
+#SPLASH SCREEN CONFIG
+flutter_native_splash:
+  android: true
+  ios: true
+
+  color: "#ffffff"
+  image: lib/core/assets/images/logo_staymate.png
+
+  color_dark: "#000000"
+  image_dark: lib/core/assets/images/logo_staymate_dark_theme.png
+
+  android_12:
+    image: lib/core/assets/images/logo_staymate.png
+    color: "#ffffff"
+    image_dark: lib/core/assets/images/logo_staymate_dark_theme.png
+    color_dark: "#000000"

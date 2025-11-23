@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../domain/entities/contract_entity.dart';
 
 /// Widget hiển thị một hợp đồng dạng card đơn giản, nhỏ gọn
@@ -19,16 +20,24 @@ class ContractCard extends ConsumerWidget {
     final languageCode = locale.languageCode;
     final statusColor = _getStatusColor(contract.status);
 
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey.shade300,
+          color: isDark 
+              ? AppColors.borderDark 
+              : Colors.grey.shade300,
           width: 1.5,
         ),
-        boxShadow: [
+        boxShadow: isDark
+            ? []
+            : [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
             blurRadius: 8,

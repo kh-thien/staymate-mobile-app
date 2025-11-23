@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:stay_mate/features/auth/presentation/widgets/sign_in_bottom_sheet.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/services/locale_provider.dart';
 import '../bloc/auth_bloc_exports.dart';
+import '../utils/auth_error_handler.dart';
 
-class SignUpBottomSheet extends StatefulWidget {
+class SignUpBottomSheet extends ConsumerStatefulWidget {
   const SignUpBottomSheet({super.key});
 
   @override
-  State<SignUpBottomSheet> createState() => _SignUpBottomSheetState();
+  ConsumerState<SignUpBottomSheet> createState() => _SignUpBottomSheetState();
 }
 
-class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
+class _SignUpBottomSheetState extends ConsumerState<SignUpBottomSheet> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
@@ -27,14 +31,21 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = ref.watch(appLocaleProvider).languageCode;
+
     return BlocListener<AuthBloc, AuthBlocState>(
       listener: (context, state) {
         if (state is AuthSignUpSuccess) {
           // Đăng ký thành công
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Đăng ký thành công!'),
+              SnackBar(
+                content: Text(
+                  AppLocalizationsHelper.translate(
+                    'signUpSuccessShort',
+                    languageCode,
+                  ),
+                ),
                 backgroundColor: Colors.green,
               ),
             );
@@ -49,9 +60,16 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
         } else if (state is AuthError) {
           // Hiển thị lỗi
           if (mounted) {
+            final errorMessage = AuthErrorHandler.getErrorMessageFromCode(
+              state.message,
+              state.code,
+              languageCode,
+            );
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Lỗi đăng ký: ${state.message}'),
+                content: Text(
+                  '${AppLocalizationsHelper.translate('signUpErrorPrefix', languageCode)}: $errorMessage',
+                ),
                 backgroundColor: Colors.red,
               ),
             );
@@ -90,7 +108,10 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                   child: Column(
                     children: [
                       Text(
-                        'Đăng ký tài khoản',
+                        AppLocalizationsHelper.translate(
+                          'signUpAccountTitle',
+                          languageCode,
+                        ),
                         style: Theme.of(context).textTheme.headlineSmall
                             ?.copyWith(
                               fontWeight: FontWeight.bold,
@@ -99,7 +120,10 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tạo tài khoản mới để sử dụng StayMate',
+                        AppLocalizationsHelper.translate(
+                          'signUpAccountSubtitle',
+                          languageCode,
+                        ),
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: Colors.grey[600],
                         ),
@@ -118,14 +142,20 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                           // Name field
                           TextFormField(
                             controller: _nameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Họ và tên',
-                              prefixIcon: Icon(Icons.person_outlined),
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: AppLocalizationsHelper.translate(
+                                'fullName',
+                                languageCode,
+                              ),
+                              prefixIcon: const Icon(Icons.person_outlined),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập họ và tên';
+                                return AppLocalizationsHelper.translate(
+                                  'pleaseEnterName',
+                                  languageCode,
+                                );
                               }
                               return null;
                             },
@@ -137,17 +167,26 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                           TextFormField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              prefixIcon: Icon(Icons.email_outlined),
-                              border: OutlineInputBorder(),
+                            decoration: InputDecoration(
+                              labelText: AppLocalizationsHelper.translate(
+                                'email',
+                                languageCode,
+                              ),
+                              prefixIcon: const Icon(Icons.email_outlined),
+                              border: const OutlineInputBorder(),
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập email';
+                                return AppLocalizationsHelper.translate(
+                                  'pleaseEnterEmail',
+                                  languageCode,
+                                );
                               }
                               if (!value.contains('@')) {
-                                return 'Email không hợp lệ';
+                                return AppLocalizationsHelper.translate(
+                                  'invalidEmail',
+                                  languageCode,
+                                );
                               }
                               return null;
                             },
@@ -160,7 +199,10 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                             controller: _passwordController,
                             obscureText: _obscurePassword,
                             decoration: InputDecoration(
-                              labelText: 'Mật khẩu',
+                              labelText: AppLocalizationsHelper.translate(
+                                'password',
+                                languageCode,
+                              ),
                               prefixIcon: const Icon(Icons.lock_outlined),
                               suffixIcon: IconButton(
                                 icon: Icon(
@@ -178,10 +220,16 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                             ),
                             validator: (value) {
                               if (value == null || value.isEmpty) {
-                                return 'Vui lòng nhập mật khẩu';
+                                return AppLocalizationsHelper.translate(
+                                  'pleaseEnterPassword',
+                                  languageCode,
+                                );
                               }
                               if (value.length < 6) {
-                                return 'Mật khẩu phải có ít nhất 6 ký tự';
+                                return AppLocalizationsHelper.translate(
+                                  'passwordMinLength',
+                                  languageCode,
+                                );
                               }
                               return null;
                             },
@@ -203,7 +251,12 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                                   ? const CircularProgressIndicator(
                                       color: Colors.white,
                                     )
-                                  : const Text('Đăng ký'),
+                                  : Text(
+                                      AppLocalizationsHelper.translate(
+                                        'signUp',
+                                        languageCode,
+                                      ),
+                                    ),
                             ),
                           ),
 
@@ -218,7 +271,10 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                                   horizontal: 16,
                                 ),
                                 child: Text(
-                                  'hoặc',
+                                  AppLocalizationsHelper.translate(
+                                    'orLabel',
+                                    languageCode,
+                                  ),
                                   style: TextStyle(color: Colors.grey[600]),
                                 ),
                               ),
@@ -235,7 +291,12 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                             child: OutlinedButton.icon(
                               onPressed: isLoading ? null : _signUpWithGoogle,
                               icon: const Icon(Icons.g_mobiledata, size: 24),
-                              label: const Text('Đăng ký với Google'),
+                              label: Text(
+                                AppLocalizationsHelper.translate(
+                                  'signUpWithGoogle',
+                                  languageCode,
+                                ),
+                              ),
                             ),
                           ),
                         ],
@@ -251,7 +312,10 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        'Đã có tài khoản? ',
+                        AppLocalizationsHelper.translate(
+                          'alreadyHaveAccount',
+                          languageCode,
+                        ),
                         style: TextStyle(color: Colors.grey[600]),
                       ),
                       GestureDetector(
@@ -264,9 +328,9 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
                             builder: (context) => const SignInBottomSheet(),
                           );
                         },
-                        child: const Text(
-                          'Đăng nhập',
-                          style: TextStyle(
+                        child: Text(
+                          AppLocalizationsHelper.translate('signIn', languageCode),
+                          style: const TextStyle(
                             color: Colors.blue,
                             fontWeight: FontWeight.w600,
                           ),
@@ -288,7 +352,14 @@ class _SignUpBottomSheetState extends State<SignUpBottomSheet> {
         _passwordController.text.isEmpty ||
         _nameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vui lòng nhập đầy đủ thông tin')),
+        SnackBar(
+          content: Text(
+            AppLocalizationsHelper.translate(
+              'pleaseFillAllFields',
+              ref.read(appLocaleProvider).languageCode,
+            ),
+          ),
+        ),
       );
       return;
     }

@@ -322,6 +322,40 @@ class AuthService {
     await _supabase.auth.signOut();
   }
 
+  /// Đổi mật khẩu cho tài khoản email/password
+  Future<void> changePassword({
+    required String currentPassword,
+    required String newPassword,
+    required String languageCode,
+  }) async {
+    final user = _supabase.auth.currentUser;
+    if (user == null) {
+      throw AuthException(
+        'auth.not_logged_in',
+        statusCode: 'not_logged_in',
+      );
+    }
+
+    final email = user.email;
+    if (email == null) {
+      throw AuthException(
+        'auth.email_not_available',
+        statusCode: 'email_not_available',
+      );
+    }
+
+    // Xác thực lại mật khẩu hiện tại
+    await _supabase.auth.signInWithPassword(
+      email: email,
+      password: currentPassword,
+    );
+
+    // Cập nhật mật khẩu mới
+    await _supabase.auth.updateUser(
+      UserAttributes(password: newPassword),
+    );
+  }
+
   // Stream để lắng nghe thay đổi trạng thái đăng nhập
   Stream<AuthState> get authStateChanges => _supabase.auth.onAuthStateChange;
 }

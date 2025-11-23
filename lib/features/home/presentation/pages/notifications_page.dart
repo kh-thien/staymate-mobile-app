@@ -6,33 +6,44 @@ import '../../data/models/notification_model.dart';
 import '../providers/notifications_provider.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 
 class NotificationsPage extends ConsumerWidget {
   const NotificationsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     // Use stream provider for realtime updates
     final notificationsAsync = ref.watch(allNotificationsStreamProvider);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark 
+          ? AppColors.surfaceDark 
+          : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_rounded,
-            color: Color(0xFF2D3748),
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : const Color(0xFF2D3748),
           ),
           onPressed: () => context.go('/'),
         ),
         title: Text(
           AppLocalizationsHelper.translate('notifications', languageCode),
-          style: const TextStyle(
-            color: Color(0xFF2D3748),
+          style: TextStyle(
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : const Color(0xFF2D3748),
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -42,7 +53,9 @@ class NotificationsPage extends ConsumerWidget {
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            color: Colors.grey[200],
+            color: isDark 
+                ? AppColors.dividerDark 
+                : Colors.grey[200]!,
           ),
         ),
       ),
@@ -56,14 +69,18 @@ class NotificationsPage extends ConsumerWidget {
                   Icon(
                     Icons.notifications_none_rounded,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: isDark 
+                        ? AppColors.textSecondaryDark 
+                        : Colors.grey[400]!,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     AppLocalizationsHelper.translate('noNotificationsYet', languageCode),
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: isDark 
+                          ? AppColors.textSecondaryDark 
+                          : Colors.grey[600]!,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -170,7 +187,7 @@ class NotificationsPage extends ConsumerWidget {
     final currentLocation = router.routerDelegate.currentConfiguration.uri.path;
 
     try {
-      final url = notification.actionUrl!;
+            final url = notification.actionUrl!;
       String targetRoute;
 
       // Parse /bills/ to /invoice/
@@ -179,7 +196,7 @@ class NotificationsPage extends ConsumerWidget {
         targetRoute = '/invoice/$billId';
       } else if (url.startsWith('/')) {
         targetRoute = url;
-      } else {
+            } else {
         // Invalid URL format, do nothing
         return;
       }
@@ -340,6 +357,8 @@ class _NotificationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final icon = _getIconByType(notification.type);
     final color = _getColorByType(notification.type);
 
@@ -350,15 +369,25 @@ class _NotificationCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 12),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: notification.isRead ? Colors.white : const Color(0xFFEFF6FF),
+          color: notification.isRead
+              ? (isDark 
+                  ? AppColors.surfaceDarkElevated 
+                  : Colors.white)
+              : (isDark
+                  ? color.withOpacity(0.15)
+                  : const Color(0xFFEFF6FF)),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: notification.isRead
-                ? Colors.grey[300]!
+                ? (isDark 
+                    ? AppColors.borderDark 
+                    : Colors.grey[300]!)
                 : const Color(0xFF3B82F6),
             width: notification.isRead ? 1 : 1.5,
           ),
-          boxShadow: [
+          boxShadow: isDark
+              ? []
+              : [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
               blurRadius: 4,
@@ -388,7 +417,7 @@ class _NotificationCard extends StatelessWidget {
                   // Title
                   Text(
                     _translateNotificationContent(
-                      notification.title,
+                    notification.title,
                       notification.type,
                     ),
                     style: TextStyle(
@@ -396,7 +425,9 @@ class _NotificationCard extends StatelessWidget {
                       fontWeight: notification.isRead
                           ? FontWeight.w600
                           : FontWeight.bold,
-                      color: Colors.black87,
+                      color: isDark 
+                          ? AppColors.textPrimaryDark 
+                          : Colors.black87,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -405,12 +436,14 @@ class _NotificationCard extends StatelessWidget {
                   // Message
                   Text(
                     _translateNotificationContent(
-                      notification.message,
+                    notification.message,
                       notification.type,
                     ),
                     style: TextStyle(
                       fontSize: 13,
-                      color: Colors.grey[700],
+                      color: isDark 
+                          ? AppColors.textSecondaryDark 
+                          : Colors.grey[700]!,
                       height: 1.4,
                     ),
                     maxLines: 3,
@@ -422,7 +455,9 @@ class _NotificationCard extends StatelessWidget {
                     _formatTimestamp(notification.createdAt),
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[500],
+                      color: isDark 
+                          ? AppColors.textSecondaryDark 
+                          : Colors.grey[500]!,
                     ),
                   ),
                 ],

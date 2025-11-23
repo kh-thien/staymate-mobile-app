@@ -4,6 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../domain/entities/maintenance_request.dart';
 import '../providers/maintenance_request_provider.dart';
 
@@ -174,10 +175,19 @@ class ReportDetailPage extends ConsumerWidget {
       maintenanceRequestsStreamProvider,
     );
 
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.grey[50],
+      backgroundColor: isDark 
+          ? AppColors.surfaceDark 
+          : Colors.grey[50],
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        foregroundColor: isDark 
+            ? AppColors.textPrimaryDark 
+            : Colors.black87,
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -186,9 +196,11 @@ class ReportDetailPage extends ConsumerWidget {
           ),
         ),
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_new_rounded,
-            color: Colors.black87,
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : Colors.black87,
           ),
           onPressed: () => context.pop(),
         ),
@@ -198,8 +210,10 @@ class ReportDetailPage extends ConsumerWidget {
             final languageCode = locale.languageCode;
             return Text(
               AppLocalizationsHelper.translate('reportDetail', languageCode),
-              style: const TextStyle(
-                color: Colors.black87,
+              style: TextStyle(
+                color: isDark 
+                    ? AppColors.textPrimaryDark 
+                    : Colors.black87,
                 fontWeight: FontWeight.bold,
               ),
             );
@@ -224,9 +238,11 @@ class ReportDetailPage extends ConsumerWidget {
               // Show cancel button if status is pending
               if (request.status == MaintenanceRequestStatus.pending)
                 IconButton(
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.cancel_outlined,
-                    color: Colors.black87,
+                    color: isDark 
+                        ? AppColors.textPrimaryDark 
+                        : Colors.black87,
                   ),
                   onPressed: () => _showCancelDialog(context, ref, request.id),
                   tooltip: AppLocalizationsHelper.translate(
@@ -237,7 +253,12 @@ class ReportDetailPage extends ConsumerWidget {
               // Show delete button if status is cancelled
               if (request.status == MaintenanceRequestStatus.cancelled)
                 IconButton(
-                  icon: const Icon(Icons.delete_outline, color: Colors.black87),
+                  icon: Icon(
+                    Icons.delete_outline, 
+                    color: isDark 
+                        ? AppColors.textPrimaryDark 
+                        : Colors.black87,
+                  ),
                   onPressed: () => _showDeleteDialog(context, ref, request.id),
                   tooltip: AppLocalizationsHelper.translate(
                     'deleteReport',
@@ -251,7 +272,9 @@ class ReportDetailPage extends ConsumerWidget {
         ),
       ),
       body: Container(
-        color: Colors.white,
+        color: isDark 
+            ? AppColors.surfaceDark 
+            : Colors.white,
         child: maintenanceRequestsAsync.when(
           data: (requests) {
             final locale = ref.read(appLocaleProvider);

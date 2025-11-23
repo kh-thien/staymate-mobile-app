@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
 import '../../../invoice/presentation/providers/invoice_provider.dart';
 
-class HomeSummaryRow extends ConsumerWidget {
+class HomeSummaryRow extends HookConsumerWidget {
   const HomeSummaryRow({
     super.key,
     required this.languageCode,
@@ -16,19 +17,22 @@ class HomeSummaryRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final upcomingInvoicesAsync = ref.watch(upcomingInvoicesProvider);
 
+    // Memoize currency format to avoid recreating on every build
+    final currencyFormat = useMemoized(
+      () => NumberFormat.currency(
+        locale: 'vi_VN',
+        symbol: '₫',
+        decimalDigits: 0,
+      ),
+      [],
+    );
+
     return upcomingInvoicesAsync.when(
       data: (invoices) {
         // Calculate total amount
         final totalAmount = invoices.fold<double>(
           0.0,
           (sum, invoice) => sum + invoice.totalAmount,
-        );
-
-        // Format currency - Always use VND
-        final currencyFormat = NumberFormat.currency(
-          locale: 'vi_VN',
-          symbol: '₫',
-          decimalDigits: 0,
         );
 
         return _UpcomingPaymentCard(

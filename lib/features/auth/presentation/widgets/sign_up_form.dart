@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../bloc/auth_bloc_exports.dart';
 import '../../../../../core/services/connectivity_service.dart';
 import '../../../../../core/services/locale_provider.dart';
@@ -33,6 +34,7 @@ class SignUpForm extends ConsumerStatefulWidget {
 
 class _SignUpFormState extends ConsumerState<SignUpForm> {
   bool _obscurePassword = true;
+  bool _agreeToTerms = false;
 
   Future<void> _handleSignUp() async {
     if (!widget.formKey.currentState!.validate()) {
@@ -41,6 +43,18 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
 
     final locale = ref.read(appLocaleProvider);
     final languageCode = locale.languageCode;
+
+    if (!_agreeToTerms) {
+      if (!mounted) return;
+      CustomSnackbar.showError(
+        context,
+        AppLocalizationsHelper.translate(
+          'mustAgreeToTerms',
+          languageCode,
+        ),
+      );
+      return;
+    }
 
     // Kiểm tra kết nối internet
     final connectivityService = ref.read(connectivityServiceProvider);
@@ -211,6 +225,11 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                   },
                 ),
 
+                const SizedBox(height: 16),
+
+                // Terms and Privacy Policy checkbox
+                _buildTermsCheckbox(languageCode, widget.isDark),
+
                 const SizedBox(height: 24),
 
                 // Sign Up button
@@ -240,6 +259,129 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
         );
       },
     );
+  }
+
+  Widget _buildTermsCheckbox(String languageCode, bool isDark) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Transform.translate(
+          offset: const Offset(0, -4),
+          child: Checkbox(
+            value: _agreeToTerms,
+            onChanged: (value) {
+              setState(() {
+                _agreeToTerms = value ?? false;
+              });
+            },
+            activeColor: Colors.blue,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            visualDensity: VisualDensity.compact,
+          ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                _agreeToTerms = !_agreeToTerms;
+              });
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: _buildTermsText(languageCode, isDark),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTermsText(String languageCode, bool isDark) {
+    final privacyPolicyUrl =
+        'https://kh-thien.github.io/privacy-policy-staymate-mobile-app/';
+    final termsUrl = 'https://kh-thien.github.io/terms-of-service-staymate/';
+
+    return RichText(
+      text: TextSpan(
+        style: TextStyle(
+          fontSize: 13,
+          color: isDark ? Colors.grey[300] : Colors.grey[700],
+          height: 1.4,
+        ),
+        children: [
+          TextSpan(
+            text: AppLocalizationsHelper.translate(
+              'iAgreeTo',
+              languageCode,
+            ),
+          ),
+          const TextSpan(text: ' '),
+          WidgetSpan(
+            child: GestureDetector(
+              onTap: () => _openUrl(termsUrl, languageCode),
+              child: Text(
+                AppLocalizationsHelper.translate(
+                  'termsOfService',
+                  languageCode,
+                ),
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+          TextSpan(
+            text: ' ${AppLocalizationsHelper.translate('and', languageCode)} ',
+          ),
+          WidgetSpan(
+            child: GestureDetector(
+              onTap: () => _openUrl(privacyPolicyUrl, languageCode),
+              child: Text(
+                AppLocalizationsHelper.translate(
+                  'privacyPolicy',
+                  languageCode,
+                ),
+                style: TextStyle(
+                  color: Colors.blue,
+                  decoration: TextDecoration.underline,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openUrl(String url, String languageCode) async {
+    final Uri uri = Uri.parse(url);
+
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(
+          uri,
+          mode: LaunchMode.platformDefault,
+        );
+      } else {
+        if (mounted) {
+          CustomSnackbar.showError(
+            context,
+            AppLocalizationsHelper.translate('error', languageCode),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        CustomSnackbar.showError(
+          context,
+          '${AppLocalizationsHelper.translate('anErrorOccurredMessage', languageCode)}: $e',
+        );
+      }
+    }
   }
 }
 

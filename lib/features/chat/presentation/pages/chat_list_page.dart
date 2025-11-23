@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
 import '../providers/chat_rooms_provider.dart';
@@ -28,8 +29,8 @@ class ChatListPage extends HookConsumerWidget {
       // Use a small delay to ensure this runs after any cleanup from previous page
       Future.microtask(() {
         notifier.updateTitle(
-          AppLocalizationsHelper.translate('chat', languageCode),
-        );
+              AppLocalizationsHelper.translate('chat', languageCode),
+            );
       });
       // Don't reset in cleanup - let the next page set its own title
       return null;
@@ -44,12 +45,17 @@ class ChatListPage extends HookConsumerWidget {
       print('🔔 [ChatListPage] Realtime update detected');
     });
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: isDark 
+              ? AppColors.surfaceDark 
+              : Colors.white,
           borderRadius: const BorderRadius.only(
             topLeft: Radius.circular(30),
             topRight: Radius.circular(30),

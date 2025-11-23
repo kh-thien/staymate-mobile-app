@@ -9,20 +9,17 @@ import 'dart:io';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
 import '../../../../core/constants/logo_app.dart';
-
-enum UpdateStatus {
-  checking,
-  upToDate,
-  updateAvailable,
-  error,
-  notSupported,
-}
+import '../../../../core/constants/app_styles.dart';
+import '../widgets/version_status_card.dart' show UpdateStatus, VersionStatusCard;
+import '../widgets/legal_link_widget.dart';
 
 class AppInfoPage extends HookConsumerWidget {
   const AppInfoPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final updateStatus = useState<UpdateStatus>(UpdateStatus.checking);
@@ -35,21 +32,32 @@ class AppInfoPage extends HookConsumerWidget {
     }, []);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: isDark 
+          ? AppColors.surfaceDark 
+          : Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
+        foregroundColor: isDark 
+            ? AppColors.textPrimaryDark 
+            : const Color(0xFF2D3748),
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
+          icon: Icon(
             Icons.arrow_back_ios_rounded,
-            color: Color(0xFF2D3748),
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : const Color(0xFF2D3748),
           ),
           onPressed: () => context.go('/'),
         ),
         title: Text(
           AppLocalizationsHelper.translate('appInfo', languageCode),
-          style: const TextStyle(
-            color: Color(0xFF2D3748),
+          style: TextStyle(
+            color: isDark 
+                ? AppColors.textPrimaryDark 
+                : const Color(0xFF2D3748),
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -59,7 +67,9 @@ class AppInfoPage extends HookConsumerWidget {
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            color: Colors.grey[200],
+            color: isDark 
+                ? AppColors.dividerDark 
+                : Colors.grey[200]!,
           ),
         ),
       ),
@@ -129,10 +139,12 @@ class AppInfoPage extends HookConsumerWidget {
                 Center(
                   child: Text(
                     packageInfo.appName,
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF2D3748),
+                      color: isDark 
+                          ? AppColors.textPrimaryDark 
+                          : const Color(0xFF2D3748),
                     ),
                   ),
                 ),
@@ -144,18 +156,19 @@ class AppInfoPage extends HookConsumerWidget {
                     '${AppLocalizationsHelper.translate('version', languageCode)}: $currentVersion',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: isDark 
+                          ? AppColors.textSecondaryDark 
+                          : Colors.grey[600]!,
                     ),
                   ),
                 ),
                 const SizedBox(height: 40),
 
                 // Version Status Card - Dynamic based on update status
-                _buildVersionStatusCard(
-                  context,
-                  ref,
-                  languageCode,
-                  updateStatus.value,
+                VersionStatusCard(
+                  status: updateStatus.value,
+                  languageCode: languageCode,
+                  isDark: isDark,
                 ),
 
                 const SizedBox(height: 24),
@@ -199,6 +212,62 @@ class AppInfoPage extends HookConsumerWidget {
                   ),
                 ),
 
+                const SizedBox(height: 32),
+
+                // Legal Links Section
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? AppColors.surfaceDarkElevated
+                        : Colors.grey[50],
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: isDark
+                          ? AppColors.borderDark
+                          : Colors.grey[300]!,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        AppLocalizationsHelper.translate(
+                          'additionalInfo',
+                          languageCode,
+                        ),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: isDark
+                              ? AppColors.textPrimaryDark
+                              : Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      LegalLinkWidget(
+                        icon: Icons.privacy_tip_outlined,
+                        title: AppLocalizationsHelper.translate(
+                          'privacyPolicy',
+                          languageCode,
+                        ),
+                        url: 'https://kh-thien.github.io/privacy-policy-staymate-mobile-app/',
+                        isDark: isDark,
+                      ),
+                      const SizedBox(height: 12),
+                      LegalLinkWidget(
+                        icon: Icons.description_outlined,
+                        title: AppLocalizationsHelper.translate(
+                          'termsOfService',
+                          languageCode,
+                        ),
+                        url: 'https://kh-thien.github.io/terms-of-service-staymate/',
+                        isDark: isDark,
+                      ),
+                    ],
+                  ),
+                ),
+
               ],
             ),
           );
@@ -207,210 +276,6 @@ class AppInfoPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildVersionStatusCard(
-    BuildContext context,
-    WidgetRef ref,
-    String languageCode,
-    UpdateStatus status,
-  ) {
-    switch (status) {
-      case UpdateStatus.checking:
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.blue[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.blue[200]!,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              const SizedBox(
-                width: 32,
-                height: 32,
-                child: CircularProgressIndicator(
-                  strokeWidth: 3,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Text(
-                  AppLocalizationsHelper.translate(
-                    'checkingForUpdate',
-                    languageCode,
-                  ),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.blue[900],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-
-      case UpdateStatus.upToDate:
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.green[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.green[200]!,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.check_circle_rounded,
-                color: Colors.green[700],
-                size: 32,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizationsHelper.translate(
-                        'appIsUpToDate',
-                        languageCode,
-                      ),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.green[900],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      AppLocalizationsHelper.translate(
-                        'youHaveLatestVersion',
-                        languageCode,
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.green[700],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-      case UpdateStatus.updateAvailable:
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.orange[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.orange[200]!,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.system_update_rounded,
-                color: Colors.orange[700],
-                size: 32,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizationsHelper.translate(
-                        'updateAvailable',
-                        languageCode,
-                      ),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.orange[900],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      AppLocalizationsHelper.translate(
-                        'newVersionAvailable',
-                        languageCode,
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.orange[700],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-
-      case UpdateStatus.error:
-      case UpdateStatus.notSupported:
-        return Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: Colors.grey[300]!,
-              width: 1,
-            ),
-          ),
-          child: Row(
-            children: [
-              Icon(
-                Icons.info_outline_rounded,
-                color: Colors.grey[700],
-                size: 32,
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      AppLocalizationsHelper.translate(
-                        'updateCheckNotAvailable',
-                        languageCode,
-                      ),
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[900],
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      AppLocalizationsHelper.translate(
-                        'updateCheckNotAvailableMessage',
-                        languageCode,
-                      ),
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[700],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-    }
-  }
 
   Future<void> _checkUpdateStatus(
     BuildContext context,
@@ -503,7 +368,9 @@ class AppInfoPage extends HookConsumerWidget {
           SnackBar(
             content: Text(
               AppLocalizationsHelper.translate(
-                'updateCheckNotAvailableMessage',
+                Platform.isIOS
+                    ? 'updateCheckNotAvailableMessageIOS'
+                    : 'updateCheckNotAvailableMessage',
                 languageCode,
               ),
             ),

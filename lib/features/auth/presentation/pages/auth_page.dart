@@ -173,6 +173,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
 
   void _handleAuthState(BuildContext context, AuthBlocState state) {
     if (!mounted) return;
+    final languageCode = ref.read(appLocaleProvider).languageCode;
 
     // Xử lý thành công - CHỈ hiển thị khi chuyển từ AuthSigningIn/AuthSigningUp
     if (state is AuthAuthenticated) {
@@ -185,8 +186,6 @@ class _AuthPageState extends ConsumerState<AuthPage>
         _lastErrorMessage = null;
 
         // Hiển thị thông báo thành công
-        final locale = ref.read(appLocaleProvider);
-        final languageCode = locale.languageCode;
         CustomSnackbar.showSuccess(
           context,
           AppLocalizationsHelper.translate('signInSuccess', languageCode),
@@ -210,8 +209,6 @@ class _AuthPageState extends ConsumerState<AuthPage>
         _lastErrorMessage = null;
 
         // Hiển thị thông báo thành công
-        final locale = ref.read(appLocaleProvider);
-        final languageCode = locale.languageCode;
         CustomSnackbar.showSuccess(
           context,
           AppLocalizationsHelper.translate('signUpSuccess', languageCode),
@@ -227,17 +224,32 @@ class _AuthPageState extends ConsumerState<AuthPage>
     }
     // Xử lý email confirmation required
     else if (state is AuthEmailConfirmationRequired) {
-      // Reset flag để có thể hiển thị lại nếu user thử lại
-      _hasShownSuccessMessage = false;
-      _lastErrorMessage = null;
+      // Chỉ xử lý nếu previous state là AuthSigningUp
+      final shouldShowMessage = _previousState is AuthSigningUp;
+      
+      if (shouldShowMessage && !_hasShownSuccessMessage) {
+        _hasShownSuccessMessage = true;
+        _lastErrorMessage = null;
 
-      // Hiển thị thông báo yêu cầu xác nhận email
-      CustomSnackbar.showInfo(
-        context,
-        state.message,
-      );
+        // Hiển thị thông báo yêu cầu xác nhận email
+        CustomSnackbar.showInfo(
+          context,
+          AppLocalizationsHelper.translate(
+            'authSignUpEmailConfirmationRequired',
+            languageCode,
+          ),
+        );
 
-      // Không navigate, ở lại trang auth để user có thể đăng nhập sau khi xác nhận
+        // Chuyển về tab Sign In và clear form
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (!mounted) return;
+          _tabController.animateTo(0); // Chuyển về tab Sign In
+          // Clear sign up form
+          _signUpNameController.clear();
+          _signUpEmailController.clear();
+          _signUpPasswordController.clear();
+        });
+      }
     }
     // Xử lý lỗi
     else if (state is AuthError) {
@@ -250,6 +262,7 @@ class _AuthPageState extends ConsumerState<AuthPage>
         final errorMessage = AuthErrorHandler.getErrorMessageFromCode(
           state.message,
           state.code,
+          languageCode,
         );
 
         // Nếu là admin blocked, hiển thị warning thay vì error

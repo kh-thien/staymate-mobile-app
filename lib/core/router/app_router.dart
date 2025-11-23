@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'auth_state_notifier.dart';
+import '../constants/app_styles.dart';
 import 'package:stay_mate/features/invoice/presentation/pages/invoice_page.dart';
 import 'package:stay_mate/features/invoice/presentation/pages/invoice_detail_page.dart';
 import 'package:stay_mate/features/report/presentation/pages/report_page.dart';
@@ -22,6 +23,10 @@ import '../../features/auth/presentation/pages/auth_page.dart';
 import '../../features/profile/presentation/pages/notification_settings_page.dart';
 import '../../features/profile/presentation/pages/language_settings_page.dart';
 import '../../features/profile/presentation/pages/app_info_page.dart';
+import '../../features/profile/presentation/pages/personal_info_page.dart';
+import '../../features/profile/presentation/pages/account_settings_page.dart';
+import '../../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../../features/feedback/presentation/pages/feedback_page.dart';
 import '../../features/home/presentation/pages/notifications_page.dart';
 
 class AppRouter {
@@ -38,13 +43,17 @@ class AppRouter {
   static const String languageSettings = '/language-settings';
   static const String notifications = '/notifications';
   static const String appInfo = '/app-info';
+  static const String personalInfo = '/profile/personal-info';
+  static const String accountSettings = '/profile/account';
+  static const String onboarding = '/onboarding';
+  static const String feedback = '/feedback';
 
   static GoRouter createRouter(AuthStateNotifier authStateNotifier) {
 
     return GoRouter(
       initialLocation: auth,
       refreshListenable: authStateNotifier,
-      redirect: (context, state) {
+      redirect: (context, state) async {
         // Nếu AuthBloc đang check hoặc loading, đợi kết quả
         if (authStateNotifier.isInitialOrLoading) {
           return null; // Không redirect, đợi AuthBloc check xong
@@ -52,15 +61,28 @@ class AppRouter {
 
         final isAuthenticated = authStateNotifier.isAuthenticated;
         final isAuthRoute = state.uri.path == auth;
+        final isOnboardingRoute = state.uri.path == onboarding;
 
-        // Nếu đang ở auth route và đã đăng nhập, redirect đến home
+        // Nếu đang ở auth route và đã đăng nhập, check onboarding
         if (isAuthRoute && isAuthenticated) {
+          final hasCompleted = await OnboardingPage.hasCompletedOnboarding();
+          if (!hasCompleted) {
+            return onboarding;
+          }
           return home;
+        }
+
+        // Nếu đã đăng nhập và không phải onboarding route, check onboarding
+        if (isAuthenticated && !isOnboardingRoute && !isAuthRoute) {
+          final hasCompleted = await OnboardingPage.hasCompletedOnboarding();
+          if (!hasCompleted) {
+            return onboarding;
+          }
         }
 
         // Nếu không phải auth route và chưa đăng nhập, redirect đến auth
         // (AuthGuard sẽ handle authentication check for protected routes)
-        if (!isAuthRoute && !isAuthenticated) {
+        if (!isAuthRoute && !isOnboardingRoute && !isAuthenticated) {
           return auth;
         }
 
@@ -81,9 +103,19 @@ class AppRouter {
           return AuthPage(initialIsSignIn: !isSignUp);
         },
       ),
+      // Onboarding route - Requires authentication
+      GoRoute(
+        path: onboarding,
+        name: 'onboarding',
+        builder: (context, state) => const AuthGuard(
+          child: OnboardingPage(),
+        ),
+      ),
       // Protected routes - Require authentication (including home)
       ShellRoute(
         builder: (context, state, child) {
+          final theme = Theme.of(context);
+          final isDark = theme.brightness == Brightness.dark;
           final topSafeArea = MediaQuery.of(context).padding.top;
           // Height = safe area + logo (56) + padding (8*2) = safe area + 72
           final appBarHeight = topSafeArea + 72.0;
@@ -91,7 +123,9 @@ class AppRouter {
           return ConnectivitySnackbar(
             child: Scaffold(
               resizeToAvoidBottomInset: true,
-              backgroundColor: Colors.amberAccent,
+              backgroundColor: isDark
+                  ? AppColors.surfaceDark
+                  : AppColors.background,
               appBar: PreferredSize(
                 preferredSize: Size.fromHeight(appBarHeight),
                 child: const CustomAppBar(),
@@ -222,26 +256,47 @@ class AppRouter {
         builder: (context, state) => const AuthGuard(
           child: NotificationsPage(),
         ),
-      ),
-      GoRoute(
-        path: notificationSettings,
-        name: 'notificationSettings',
-        builder: (context, state) => const AuthGuard(
-          child: NotificationSettingsPage(),
-        ),
-      ),
-      GoRoute(
-        path: languageSettings,
-        name: 'languageSettings',
-        builder: (context, state) => const AuthGuard(
-          child: LanguageSettingsPage(),
-        ),
-      ),
+          ),
+          GoRoute(
+            path: notificationSettings,
+            name: 'notificationSettings',
+            builder: (context, state) => const AuthGuard(
+              child: NotificationSettingsPage(),
+            ),
+          ),
+          GoRoute(
+            path: languageSettings,
+            name: 'languageSettings',
+            builder: (context, state) => const AuthGuard(
+              child: LanguageSettingsPage(),
+            ),
+          ),
       GoRoute(
         path: appInfo,
         name: 'appInfo',
         builder: (context, state) => const AuthGuard(
           child: AppInfoPage(),
+        ),
+      ),
+      GoRoute(
+        path: personalInfo,
+        name: 'personalInfo',
+        builder: (context, state) => const AuthGuard(
+          child: PersonalInfoPage(),
+        ),
+      ),
+      GoRoute(
+        path: accountSettings,
+        name: 'accountSettings',
+        builder: (context, state) => const AuthGuard(
+          child: AccountSettingsPage(),
+        ),
+      ),
+      GoRoute(
+        path: feedback,
+        name: 'feedback',
+        builder: (context, state) => const AuthGuard(
+          child: FeedbackPage(),
         ),
       ),
     ];

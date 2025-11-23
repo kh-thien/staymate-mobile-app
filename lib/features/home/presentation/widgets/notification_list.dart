@@ -340,7 +340,7 @@ class _NotificationItem extends StatelessWidget {
                   // Title
                   Text(
                     _translateNotificationContent(
-                      notification.title,
+                    notification.title,
                       notification.type,
                     ),
                     style: TextStyle(
@@ -357,7 +357,7 @@ class _NotificationItem extends StatelessWidget {
                   // Message
                   Text(
                     _translateNotificationContent(
-                      notification.message,
+                    notification.message,
                       notification.type,
                     ),
                     style: TextStyle(

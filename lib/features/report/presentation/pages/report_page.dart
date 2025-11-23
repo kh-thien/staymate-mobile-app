@@ -8,6 +8,7 @@ import '../../domain/entities/maintenance_request.dart';
 import '../providers/maintenance_request_provider.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../../../shared/widgets/skeleton_loader.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/providers/app_bar_provider.dart';
@@ -29,8 +30,8 @@ class ReportPage extends HookConsumerWidget {
       // Use a small delay to ensure this runs after any cleanup from previous page
       Future.microtask(() {
         notifier.updateTitle(
-          AppLocalizationsHelper.translate('reports', languageCode),
-        );
+              AppLocalizationsHelper.translate('reports', languageCode),
+            );
       });
       // Don't reset in cleanup - let the next page set its own title
       return null;
@@ -375,19 +376,26 @@ class _MaintenanceRequestCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
 
     return Container(
       margin: EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey.shade300,
+          color: isDark 
+              ? AppColors.borderDark 
+              : Colors.grey.shade300,
           width: 2.0,
         ),
-        boxShadow: [
+        boxShadow: isDark
+            ? []
+            : [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
             blurRadius: 8,
@@ -479,7 +487,9 @@ class _MaintenanceRequestCard extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade50,
+                    color: isDark 
+                        ? AppColors.surfaceDark 
+                        : Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -716,17 +726,24 @@ class _MaintenanceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final dateFormat = DateFormat('dd/MM/yyyy HH:mm');
     final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Container(
       margin: EdgeInsets.only(bottom: marginBottom),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark 
+            ? AppColors.surfaceDarkElevated 
+            : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.grey.shade300,
+          color: isDark 
+              ? AppColors.borderDark 
+              : Colors.grey.shade300,
           width: 1.5,
         ),
-        boxShadow: [
+        boxShadow: isDark
+            ? []
+            : [
           BoxShadow(
             color: Colors.black.withOpacity(0.12),
             blurRadius: 8,
@@ -754,7 +771,9 @@ class _MaintenanceCard extends StatelessWidget {
                       maintenance.title,
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: Colors.grey.shade900,
+                        color: isDark 
+                            ? AppColors.textPrimaryDark 
+                            : Colors.grey.shade900,
                         height: 1.3,
                       ),
                     ),

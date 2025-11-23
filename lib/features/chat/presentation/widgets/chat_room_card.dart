@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../domain/entities/chat_room.dart';
 
 /// Chat room card widget for displaying room in list
@@ -15,6 +16,8 @@ class ChatRoomCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
     final lastMessage = room.messages?.isNotEmpty == true
@@ -33,12 +36,20 @@ class ChatRoomCard extends ConsumerWidget {
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: unreadCount > 0 ? Colors.blue.withOpacity(0.03) : Colors.white,
+          color: unreadCount > 0 
+              ? (isDark 
+                  ? Colors.blue.withOpacity(0.15) 
+                  : Colors.blue.withOpacity(0.03))
+              : (isDark 
+                  ? AppColors.surfaceDarkElevated 
+                  : Colors.white),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: unreadCount > 0
                 ? Colors.blue.withOpacity(0.2)
-                : Colors.grey[200]!,
+                : (isDark 
+                    ? AppColors.borderDark 
+                    : Colors.grey[200]!),
             width: 1,
           ),
         ),
@@ -63,7 +74,9 @@ class ChatRoomCard extends ConsumerWidget {
                             fontWeight: unreadCount > 0
                                 ? FontWeight.bold
                                 : FontWeight.w600,
-                            color: Colors.black87,
+                            color: isDark 
+                                ? AppColors.textPrimaryDark 
+                                : Colors.black87,
                             height: 1.3,
                           ),
                           maxLines: 2,

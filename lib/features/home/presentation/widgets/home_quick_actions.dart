@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/constants/app_styles.dart';
 
 class HomeQuickActions extends StatelessWidget {
   const HomeQuickActions({
@@ -49,10 +50,10 @@ class HomeQuickActions extends StatelessWidget {
           children: [
             Text(
               AppLocalizationsHelper.translate('quickActions', languageCode),
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: Color(0xFF2D3748),
+                color: Theme.of(context).colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 16),
@@ -103,6 +104,12 @@ class _QuickActionButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    final textColor = isDark 
+        ? AppColors.textPrimaryDark 
+        : const Color(0xFF1F2937);
+    
     return SizedBox(
       width: width,
       child: InkWell(
@@ -112,8 +119,16 @@ class _QuickActionButton extends StatelessWidget {
           height: 150,
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: data.color.withOpacity(0.25),
+            color: isDark
+                ? AppColors.surfaceDarkElevated
+                : data.color.withOpacity(0.25),
             borderRadius: BorderRadius.circular(16),
+            border: isDark
+                ? Border.all(
+                    color: AppColors.borderDark,
+                    width: 1,
+                  )
+                : null,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,20 +136,22 @@ class _QuickActionButton extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: data.color.withOpacity(0.6),
+                  color: isDark
+                      ? data.color.withOpacity(0.3)
+                      : data.color.withOpacity(0.6),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(
                   data.icon,
-                  color: const Color(0xFF1F2937),
+                  color: textColor,
                 ),
               ),
               const SizedBox(height: 10),
               Text(
                 data.label,
-                style: const TextStyle(
+                style: TextStyle(
                   fontWeight: FontWeight.w600,
-                  color: Color(0xFF1F2937),
+                  color: textColor,
                 ),
               ),
             ],

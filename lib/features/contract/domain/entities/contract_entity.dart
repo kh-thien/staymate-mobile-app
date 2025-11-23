@@ -174,7 +174,7 @@ class ContractEntity {
   @Deprecated('Use getContractTypeTranslated instead')
   String get contractTypeInVietnamese {
     return getContractTypeTranslated('vi');
-  }
+    }
 
   // Deprecated: Keep for backward compatibility, but use getPaymentCycleTranslated instead
   @Deprecated('Use getPaymentCycleTranslated instead')

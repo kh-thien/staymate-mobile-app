@@ -515,7 +515,7 @@ final class LandlordPaymentAccountProvider
 }
 
 String _$landlordPaymentAccountHash() =>
-    r'e6a62f16dacd945d932e3362255cb3b07ecb2747';
+    r'52dce559a466470817ea34006b56e09894b9bcb4';
 
 /// Get landlord's payment account for an invoice
 
@@ -601,7 +601,7 @@ final class PaymentAccountFromPaymentProvider
 }
 
 String _$paymentAccountFromPaymentHash() =>
-    r'25d3d1e73746be24859ea8193cc9b0d34ff8f9d8';
+    r'204a459dc133788c6469639b31c548fb4c6bf402';
 
 /// Get payment account from payment (receiving_account)
 
