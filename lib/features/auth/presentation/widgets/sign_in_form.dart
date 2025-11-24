@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -5,10 +6,12 @@ import '../bloc/auth_bloc_exports.dart';
 import '../../../../../core/services/connectivity_service.dart';
 import '../../../../../core/services/locale_provider.dart';
 import '../../../../../core/localization/app_localizations_helper.dart';
+import '../../../../../core/utils/validation_utils.dart';
 import '../../../../../shared/widgets/custom_snackbar.dart';
 import 'auth_text_field.dart';
 import 'auth_primary_button.dart';
 import 'auth_google_button.dart';
+import 'auth_apple_button.dart';
 import 'auth_divider.dart';
 
 class SignInForm extends ConsumerStatefulWidget {
@@ -83,6 +86,27 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     context.read<AuthBloc>().add(SignInWithGoogle());
   }
 
+  Future<void> _handleSignInWithApple() async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
+    // Kiểm tra kết nối internet
+    final connectivityService = ref.read(connectivityServiceProvider);
+    final isConnected = await connectivityService.checkConnectivity();
+
+    if (!isConnected) {
+      if (!mounted) return;
+      CustomSnackbar.showError(
+        context,
+        '${AppLocalizationsHelper.translate('noInternetConnection', languageCode)}. ${AppLocalizationsHelper.translate('pleaseCheckInternetConnection', languageCode)}',
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    context.read<AuthBloc>().add(SignInWithApple());
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(appLocaleProvider);
@@ -96,6 +120,8 @@ class _SignInFormState extends ConsumerState<SignInForm> {
     return BlocBuilder<AuthBloc, AuthBlocState>(
       builder: (context, state) {
         final isLoading = state is AuthSigningIn;
+        final isLoadingGoogle = state is AuthSigningInWithGoogle;
+        final isLoadingApple = state is AuthSigningInWithApple;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -150,7 +176,9 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                     if (value == null || value.isEmpty) {
                       return AppLocalizationsHelper.translate('pleaseEnterEmail', languageCode);
                     }
-                    if (!value.contains('@')) {
+                    // Sử dụng validation chặt chẽ hơn
+                    final emailError = ValidationUtils.validateEmail(value);
+                    if (emailError != null) {
                       return AppLocalizationsHelper.translate('invalidEmail', languageCode);
                     }
                     return null;
@@ -207,10 +235,21 @@ class _SignInFormState extends ConsumerState<SignInForm> {
                 // Google Sign In button
                 AuthGoogleButton(
                   text: AppLocalizationsHelper.translate('signInWithGoogle', languageCode),
-                  isLoading: isLoading,
+                  isLoading: isLoadingGoogle,
                   onPressed: isConnected ? _handleSignInWithGoogle : null,
                   isDark: widget.isDark,
                 ),
+
+                // Apple Sign In button (iOS only)
+                if (Platform.isIOS) ...[
+                  const SizedBox(height: 12),
+                  AuthAppleButton(
+                    text: AppLocalizationsHelper.translate('signInWithApple', languageCode),
+                    isLoading: isLoadingApple,
+                    onPressed: isConnected ? _handleSignInWithApple : null,
+                    isDark: widget.isDark,
+                  ),
+                ],
               ],
             ),
           ),

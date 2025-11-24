@@ -26,7 +26,9 @@ class AuthTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
       decoration: BoxDecoration(
         color: isDark
             ? Colors.white.withOpacity(0.05)
@@ -70,8 +72,12 @@ class AuthTextField extends StatelessWidget {
           focusedBorder: InputBorder.none,
           errorBorder: InputBorder.none,
           focusedErrorBorder: InputBorder.none,
+            // Đảm bảo không có default border radius từ Material
+            filled: true,
+            fillColor: Colors.transparent,
+          ),
+          validator: validator,
         ),
-        validator: validator,
       ),
     );
   }

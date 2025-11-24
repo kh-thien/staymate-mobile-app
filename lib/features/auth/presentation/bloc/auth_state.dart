@@ -29,6 +29,15 @@ class AuthSigningUp extends AuthBlocState {}
 
 class AuthSigningOut extends AuthBlocState {}
 
+// Separate loading states for social login buttons
+class AuthSigningInWithGoogle extends AuthBlocState {}
+
+class AuthSigningInWithApple extends AuthBlocState {}
+
+class AuthSigningUpWithGoogle extends AuthBlocState {}
+
+class AuthSigningUpWithApple extends AuthBlocState {}
+
 // Success states
 class AuthSignUpSuccess extends AuthBlocState {
   final User user;

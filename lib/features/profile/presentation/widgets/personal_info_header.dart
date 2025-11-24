@@ -63,6 +63,9 @@ class PersonalInfoHeader extends StatelessWidget {
                         isDark ? AppColors.textSecondaryDark : const Color(0xFF4F46E5),
                   )
                 : null,
+            onBackgroundImageError: (exception, stackTrace) {
+              // Handle image loading error silently
+            },
           ),
           const SizedBox(width: 16),
           Expanded(

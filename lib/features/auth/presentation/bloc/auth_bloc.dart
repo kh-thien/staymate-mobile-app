@@ -18,6 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     on<SignInWithEmail>(_onSignInWithEmail);
     on<SignInWithGoogle>(_onSignInWithGoogle);
     on<SignUpWithGoogle>(_onSignUpWithGoogle);
+    on<SignInWithApple>(_onSignInWithApple);
+    on<SignUpWithApple>(_onSignUpWithApple);
     on<SignUpWithEmail>(_onSignUpWithEmail);
     on<SignOut>(_onSignOut);
     on<ClearError>(_onClearError);
@@ -135,7 +137,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     Emitter<AuthBlocState> emit,
   ) async {
     try {
-      emit(AuthSigningIn());
+      emit(AuthSigningInWithGoogle());
 
       final response = await _authService.signInWithGoogle();
 
@@ -161,7 +163,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     Emitter<AuthBlocState> emit,
   ) async {
     try {
-      emit(AuthSigningUp());
+      emit(AuthSigningUpWithGoogle());
 
       final response = await _authService.signInWithGoogle();
 
@@ -171,7 +173,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
             response.user!.email?.split('@').first ??
             'User';
 
-        emit(AuthSignUpSuccess(user: response.user!, displayName: displayName));
+        // Emit AuthAuthenticated thay vì AuthSignUpSuccess để tránh navigation issue
+        emit(AuthAuthenticated(user: response.user!, displayName: displayName));
       } else {
         emit(AuthUnauthenticated());
       }
@@ -179,6 +182,59 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
       emit(AuthError(message: e.message, code: e.statusCode));
     } catch (e) {
       emit(AuthError(message: 'Google sign up failed: $e'));
+    }
+  }
+
+  Future<void> _onSignInWithApple(
+    SignInWithApple event,
+    Emitter<AuthBlocState> emit,
+  ) async {
+    try {
+      emit(AuthSigningInWithApple());
+
+      final response = await _authService.signInWithApple();
+
+      if (response.user != null) {
+        final displayName =
+            response.user!.userMetadata?['full_name'] as String? ??
+            response.user!.email?.split('@').first ??
+            'User';
+
+        emit(AuthAuthenticated(user: response.user!, displayName: displayName));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } on AuthException catch (e) {
+      emit(AuthError(message: e.message, code: e.statusCode));
+    } catch (e) {
+      emit(AuthError(message: 'Apple sign in failed: $e'));
+    }
+  }
+
+  Future<void> _onSignUpWithApple(
+    SignUpWithApple event,
+    Emitter<AuthBlocState> emit,
+  ) async {
+    try {
+      emit(AuthSigningUpWithApple());
+
+      final response = await _authService.signInWithApple();
+
+      if (response.user != null) {
+        final displayName =
+            response.user!.userMetadata?['full_name'] as String? ??
+            response.user!.email?.split('@').first ??
+            'User';
+
+        // Emit AuthAuthenticated thay vì AuthSignUpSuccess để tránh navigation issue
+        emit(AuthAuthenticated(user: response.user!, displayName: displayName));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } on AuthException catch (e) {
+      emit(AuthError(message: e.message, code: e.statusCode));
+    } catch (e) {
+      emit(AuthError(message: 'Apple sign up failed: $e'));
     }
   }
 

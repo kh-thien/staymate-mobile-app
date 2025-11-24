@@ -20,6 +20,14 @@
   "@signUpWithGoogle": {
     "description": "Sign up with Google button text"
   },
+  "signInWithApple": "Sign in with Apple",
+  "@signInWithApple": {
+    "description": "Sign in with Apple button text"
+  },
+  "signUpWithApple": "Sign up with Apple",
+  "@signUpWithApple": {
+    "description": "Sign up with Apple button text"
+  },
   "email": "Email",
   "@email": {
     "description": "Email label"
@@ -270,5 +278,133 @@
   "reconnecting": "Connection issue. Reconnecting...",
   "@reconnecting": {
     "description": "Message shown when the app is trying to reconnect"
-  }
+  },
+  "personalInfo": "Personal Information",
+  "@personalInfo": {
+    "description": "Personal information label"
+  },
+  "account": "Account",
+  "@account": {
+    "description": "Account label"
+  },
+  "user": "User",
+  "@user": {
+    "description": "User label"
+  },
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name label"
+  },
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number label"
+  },
+  "userId": "User ID",
+  "@userId": {
+    "description": "User ID label"
+  },
+  "created": "Created",
+  "@created": {
+    "description": "Created date label"
+  },
+  "loginProvider": "Login Provider",
+  "@loginProvider": {
+    "description": "Login provider label"
+  },
+  "memberSince": "Member since {date}",
+  "@memberSince": {
+    "description": "Member since label",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "userIdLabel": "ID: {userId}",
+  "@userIdLabel": {
+    "description": "User ID label with value",
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "loginProviderLabel": "Login with {provider}",
+  "@loginProviderLabel": {
+    "description": "Login provider label with value",
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "secureLogin": "Secure Login",
+  "@secureLogin": {
+    "description": "Secure login label"
+  },
+  "changePassword": "Change Password",
+  "@changePassword": {
+    "description": "Change password label"
+  },
+  "currentPassword": "Current Password",
+  "@currentPassword": {
+    "description": "Current password label"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "New password label"
+  },
+  "confirmNewPassword": "Confirm New Password",
+  "@confirmNewPassword": {
+    "description": "Confirm new password label"
+  },
+  "passwordUpdated": "Password updated successfully",
+  "@passwordUpdated": {
+    "description": "Password updated message"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Passwords do not match error"
+  },
+  "passwordTooShort": "Password must be at least 8 characters",
+  "@passwordTooShort": {
+    "description": "Password too short error"
+  },
+  "passwordChangeNotAvailableForSocialLogin": "You are signed in with a social account (Google/Apple). To change your password, please use an email account.",
+  "@passwordChangeNotAvailableForSocialLogin": {
+    "description": "Message shown when password change is not available for social login"
+  },
+  "loggedOutSuccessfully": "Logged out successfully",
+  "@loggedOutSuccessfully": {
+    "description": "Logged out success message"
+  },
+  "selectTheme": "Select Theme",
+  "@selectTheme": {
+    "description": "Select theme title"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System theme option"
+  },
+  "theme": "Theme",
+  "@theme": {
+    "description": "Theme label"
+  },
+  "sendFeedback": "Send Feedback",
+  "@sendFeedback": {
+    "description": "Send feedback label"
+  },
+  "appInfo": "App Information",
+  "@appInfo": {
+    "description": "App information label"
+  },
+  "anErrorOccurredMessage": "An error occurred"
 }

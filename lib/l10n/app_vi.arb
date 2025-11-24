@@ -5,6 +5,8 @@
   "signUp": "Đăng ký",
   "signInWithGoogle": "Đăng nhập bằng Google",
   "signUpWithGoogle": "Đăng ký bằng Google",
+  "signInWithApple": "Đăng nhập bằng Apple",
+  "signUpWithApple": "Đăng ký bằng Apple",
   "email": "Email",
   "password": "Mật khẩu",
   "confirmPassword": "Xác nhận mật khẩu",
@@ -108,5 +110,55 @@
   "reconnecting": "Sự cố kết nối. Đang kết nối lại...",
   "@reconnecting": {
     "description": "Message shown when the app is trying to reconnect"
-  }
+  },
+  "personalInfo": "Thông tin cá nhân",
+  "account": "Tài khoản",
+  "user": "Người dùng",
+  "fullName": "Họ và tên",
+  "phoneNumber": "Số điện thoại",
+  "userId": "ID người dùng",
+  "created": "Ngày tạo",
+  "loginProvider": "Nhà cung cấp đăng nhập",
+  "memberSince": "Thành viên từ {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "userIdLabel": "ID: {userId}",
+  "@userIdLabel": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "loginProviderLabel": "Đăng nhập bằng {provider}",
+  "@loginProviderLabel": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "secureLogin": "Đăng nhập an toàn",
+  "changePassword": "Đổi mật khẩu",
+  "currentPassword": "Mật khẩu hiện tại",
+  "newPassword": "Mật khẩu mới",
+  "confirmNewPassword": "Xác nhận mật khẩu mới",
+  "passwordUpdated": "Mật khẩu đã được cập nhật",
+  "passwordsDoNotMatch": "Mật khẩu không khớp",
+  "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+  "passwordChangeNotAvailableForSocialLogin": "Bạn đang đăng nhập bằng tài khoản xã hội (Google/Apple). Để đổi mật khẩu, vui lòng sử dụng tài khoản email.",
+  "loggedOutSuccessfully": "Đã đăng xuất thành công",
+  "selectTheme": "Chọn giao diện",
+  "themeLight": "Sáng",
+  "themeDark": "Tối",
+  "themeSystem": "Theo hệ thống",
+  "theme": "Giao diện",
+  "sendFeedback": "Gửi phản hồi",
+  "appInfo": "Thông tin ứng dụng",
+  "anErrorOccurredMessage": "Đã xảy ra lỗi"
 }

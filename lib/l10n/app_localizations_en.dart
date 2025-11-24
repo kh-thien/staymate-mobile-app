@@ -24,6 +24,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signUpWithGoogle => 'Sign up with Google';
 
   @override
+  String get signInWithApple => 'Sign in with Apple';
+
+  @override
+  String get signUpWithApple => 'Sign up with Apple';
+
+  @override
   String get email => 'Email';
 
   @override
@@ -208,4 +214,98 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reconnecting => 'Connection issue. Reconnecting...';
+
+  @override
+  String get personalInfo => 'Personal Information';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get user => 'User';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get userId => 'User ID';
+
+  @override
+  String get created => 'Created';
+
+  @override
+  String get loginProvider => 'Login Provider';
+
+  @override
+  String memberSince(String date) {
+    return 'Member since $date';
+  }
+
+  @override
+  String userIdLabel(String userId) {
+    return 'ID: $userId';
+  }
+
+  @override
+  String loginProviderLabel(String provider) {
+    return 'Login with $provider';
+  }
+
+  @override
+  String get secureLogin => 'Secure Login';
+
+  @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get currentPassword => 'Current Password';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmNewPassword => 'Confirm New Password';
+
+  @override
+  String get passwordUpdated => 'Password updated successfully';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get passwordTooShort => 'Password must be at least 8 characters';
+
+  @override
+  String get passwordChangeNotAvailableForSocialLogin =>
+      'You are signed in with a social account (Google/Apple). To change your password, please use an email account.';
+
+  @override
+  String get loggedOutSuccessfully => 'Logged out successfully';
+
+  @override
+  String get selectTheme => 'Select Theme';
+
+  @override
+  String get themeLight => 'Light';
+
+  @override
+  String get themeDark => 'Dark';
+
+  @override
+  String get themeSystem => 'System';
+
+  @override
+  String get theme => 'Theme';
+
+  @override
+  String get sendFeedback => 'Send Feedback';
+
+  @override
+  String get appInfo => 'App Information';
+
+  @override
+  String get anErrorOccurredMessage => 'An error occurred';
 }

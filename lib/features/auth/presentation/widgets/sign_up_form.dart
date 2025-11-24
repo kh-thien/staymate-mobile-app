@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -6,10 +7,13 @@ import '../bloc/auth_bloc_exports.dart';
 import '../../../../../core/services/connectivity_service.dart';
 import '../../../../../core/services/locale_provider.dart';
 import '../../../../../core/localization/app_localizations_helper.dart';
+import '../../../../../core/utils/validation_utils.dart';
+import '../../../../../core/constants/app_constants.dart';
 import '../../../../../shared/widgets/custom_snackbar.dart';
 import 'auth_text_field.dart';
 import 'auth_primary_button.dart';
 import 'auth_google_button.dart';
+import 'auth_apple_button.dart';
 import 'auth_divider.dart';
 
 class SignUpForm extends ConsumerStatefulWidget {
@@ -100,6 +104,27 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     context.read<AuthBloc>().add(SignUpWithGoogle());
   }
 
+  Future<void> _handleSignUpWithApple() async {
+    final locale = ref.read(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
+    // Kiểm tra kết nối internet
+    final connectivityService = ref.read(connectivityServiceProvider);
+    final isConnected = await connectivityService.checkConnectivity();
+
+    if (!isConnected) {
+      if (!mounted) return;
+      CustomSnackbar.showError(
+        context,
+        '${AppLocalizationsHelper.translate('noInternetConnection', languageCode)}. ${AppLocalizationsHelper.translate('pleaseCheckInternetConnection', languageCode)}',
+      );
+      return;
+    }
+
+    if (!mounted) return;
+    context.read<AuthBloc>().add(SignUpWithApple());
+  }
+
   @override
   Widget build(BuildContext context) {
     final locale = ref.watch(appLocaleProvider);
@@ -113,6 +138,8 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
     return BlocBuilder<AuthBloc, AuthBlocState>(
       builder: (context, state) {
         final isLoading = state is AuthSigningUp;
+        final isLoadingGoogle = state is AuthSigningUpWithGoogle;
+        final isLoadingApple = state is AuthSigningUpWithApple;
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -166,6 +193,11 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                     if (value == null || value.isEmpty) {
                       return AppLocalizationsHelper.translate('pleaseEnterName', languageCode);
                     }
+                    // Sử dụng validation chặt chẽ hơn
+                    final nameError = ValidationUtils.validateName(value);
+                    if (nameError != null) {
+                      return AppLocalizationsHelper.translate('pleaseEnterName', languageCode);
+                    }
                     return null;
                   },
                 ),
@@ -184,7 +216,9 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                     if (value == null || value.isEmpty) {
                       return AppLocalizationsHelper.translate('pleaseEnterEmail', languageCode);
                     }
-                    if (!value.contains('@')) {
+                    // Sử dụng validation chặt chẽ hơn
+                    final emailError = ValidationUtils.validateEmail(value);
+                    if (emailError != null) {
                       return AppLocalizationsHelper.translate('invalidEmail', languageCode);
                     }
                     return null;
@@ -218,7 +252,10 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                     if (value == null || value.isEmpty) {
                       return AppLocalizationsHelper.translate('pleaseEnterPassword', languageCode);
                     }
-                    if (value.length < 6) {
+                    // Sử dụng validation đơn giản (6 ký tự) để không quá strict
+                    // Có thể thay bằng validatePassword() nếu muốn strict hơn
+                    final passwordError = ValidationUtils.validatePasswordSimple(value, minLength: 6);
+                    if (passwordError != null) {
                       return AppLocalizationsHelper.translate('passwordMinLength', languageCode);
                     }
                     return null;
@@ -249,10 +286,21 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
                 // Google Sign Up button
                 AuthGoogleButton(
                   text: AppLocalizationsHelper.translate('signUpWithGoogle', languageCode),
-                  isLoading: isLoading,
+                  isLoading: isLoadingGoogle,
                   onPressed: isConnected ? _handleSignUpWithGoogle : null,
                   isDark: widget.isDark,
                 ),
+
+                // Apple Sign Up button (iOS only)
+                if (Platform.isIOS) ...[
+                  const SizedBox(height: 12),
+                  AuthAppleButton(
+                    text: AppLocalizationsHelper.translate('signUpWithApple', languageCode),
+                    isLoading: isLoadingApple,
+                    onPressed: isConnected ? _handleSignUpWithApple : null,
+                    isDark: widget.isDark,
+                  ),
+                ],
               ],
             ),
           ),
@@ -298,9 +346,8 @@ class _SignUpFormState extends ConsumerState<SignUpForm> {
   }
 
   Widget _buildTermsText(String languageCode, bool isDark) {
-    final privacyPolicyUrl =
-        'https://kh-thien.github.io/privacy-policy-staymate-mobile-app/';
-    final termsUrl = 'https://kh-thien.github.io/terms-of-service-staymate/';
+    final privacyPolicyUrl = AppConstants.privacyPolicyUrl;
+    final termsUrl = AppConstants.termsOfServiceUrl;
 
     return RichText(
       text: TextSpan(

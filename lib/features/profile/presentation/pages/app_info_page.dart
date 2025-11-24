@@ -10,6 +10,7 @@ import '../../../../core/services/locale_provider.dart';
 import '../../../../core/localization/app_localizations_helper.dart';
 import '../../../../core/constants/logo_app.dart';
 import '../../../../core/constants/app_styles.dart';
+import '../../../../core/constants/app_constants.dart';
 import '../widgets/version_status_card.dart' show UpdateStatus, VersionStatusCard;
 import '../widgets/legal_link_widget.dart';
 
@@ -115,17 +116,25 @@ class AppInfoPage extends HookConsumerWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(20),
                       child: Image.asset(
-                        LogoApp.logoIcon,
+                        isDark ? LogoApp.logoIconPngDark : LogoApp.logoIconPng,
                         width: 100,
                         height: 100,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
+                          // Nếu logo không load được, dùng icon với màu primary
                           return Container(
-                            color: Colors.amberAccent,
-                            child: const Icon(
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? AppColors.surfaceDark
+                                  : AppColors.primary.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Icon(
                               Icons.home_rounded,
                               size: 60,
-                              color: Colors.white,
+                              color: isDark
+                                  ? AppColors.textPrimaryDark
+                                  : AppColors.primary,
                             ),
                           );
                         },
@@ -217,41 +226,41 @@ class AppInfoPage extends HookConsumerWidget {
                 // Legal Links Section
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: isDark
-                        ? AppColors.surfaceDarkElevated
-                        : Colors.grey[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(
-                      color: isDark
-                          ? AppColors.borderDark
-                          : Colors.grey[300]!,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        AppLocalizationsHelper.translate(
+          decoration: BoxDecoration(
+            color: isDark 
+                ? AppColors.surfaceDarkElevated 
+                : Colors.grey[50],
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark 
+                  ? AppColors.borderDark 
+                  : Colors.grey[300]!,
+            ),
+          ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      AppLocalizationsHelper.translate(
                           'additionalInfo',
-                          languageCode,
-                        ),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: isDark
-                              ? AppColors.textPrimaryDark
-                              : Colors.black87,
-                        ),
+                        languageCode,
                       ),
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDark 
+                            ? AppColors.textPrimaryDark 
+                              : Colors.black87,
+                      ),
+                    ),
                       const SizedBox(height: 16),
                       LegalLinkWidget(
                         icon: Icons.privacy_tip_outlined,
                         title: AppLocalizationsHelper.translate(
                           'privacyPolicy',
-                          languageCode,
-                        ),
-                        url: 'https://kh-thien.github.io/privacy-policy-staymate-mobile-app/',
+                        languageCode,
+                      ),
+                        url: AppConstants.privacyPolicyUrl,
                         isDark: isDark,
                       ),
                       const SizedBox(height: 12),
@@ -261,16 +270,16 @@ class AppInfoPage extends HookConsumerWidget {
                           'termsOfService',
                           languageCode,
                         ),
-                        url: 'https://kh-thien.github.io/terms-of-service-staymate/',
+                        url: AppConstants.termsOfServiceUrl,
                         isDark: isDark,
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+              ),
 
-              ],
-            ),
-          );
+            ],
+          ),
+        );
         },
       ),
     );

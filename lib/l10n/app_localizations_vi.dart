@@ -24,6 +24,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get signUpWithGoogle => 'Đăng ký bằng Google';
 
   @override
+  String get signInWithApple => 'Đăng nhập bằng Apple';
+
+  @override
+  String get signUpWithApple => 'Đăng ký bằng Apple';
+
+  @override
   String get email => 'Email';
 
   @override
@@ -208,4 +214,98 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get reconnecting => 'Sự cố kết nối. Đang kết nối lại...';
+
+  @override
+  String get personalInfo => 'Thông tin cá nhân';
+
+  @override
+  String get account => 'Tài khoản';
+
+  @override
+  String get user => 'Người dùng';
+
+  @override
+  String get fullName => 'Họ và tên';
+
+  @override
+  String get phoneNumber => 'Số điện thoại';
+
+  @override
+  String get userId => 'ID người dùng';
+
+  @override
+  String get created => 'Ngày tạo';
+
+  @override
+  String get loginProvider => 'Nhà cung cấp đăng nhập';
+
+  @override
+  String memberSince(String date) {
+    return 'Thành viên từ $date';
+  }
+
+  @override
+  String userIdLabel(String userId) {
+    return 'ID: $userId';
+  }
+
+  @override
+  String loginProviderLabel(String provider) {
+    return 'Đăng nhập bằng $provider';
+  }
+
+  @override
+  String get secureLogin => 'Đăng nhập an toàn';
+
+  @override
+  String get changePassword => 'Đổi mật khẩu';
+
+  @override
+  String get currentPassword => 'Mật khẩu hiện tại';
+
+  @override
+  String get newPassword => 'Mật khẩu mới';
+
+  @override
+  String get confirmNewPassword => 'Xác nhận mật khẩu mới';
+
+  @override
+  String get passwordUpdated => 'Mật khẩu đã được cập nhật';
+
+  @override
+  String get passwordsDoNotMatch => 'Mật khẩu không khớp';
+
+  @override
+  String get passwordTooShort => 'Mật khẩu phải có ít nhất 8 ký tự';
+
+  @override
+  String get passwordChangeNotAvailableForSocialLogin =>
+      'Bạn đang đăng nhập bằng tài khoản xã hội (Google/Apple). Để đổi mật khẩu, vui lòng sử dụng tài khoản email.';
+
+  @override
+  String get loggedOutSuccessfully => 'Đã đăng xuất thành công';
+
+  @override
+  String get selectTheme => 'Chọn giao diện';
+
+  @override
+  String get themeLight => 'Sáng';
+
+  @override
+  String get themeDark => 'Tối';
+
+  @override
+  String get themeSystem => 'Theo hệ thống';
+
+  @override
+  String get theme => 'Giao diện';
+
+  @override
+  String get sendFeedback => 'Gửi phản hồi';
+
+  @override
+  String get appInfo => 'Thông tin ứng dụng';
+
+  @override
+  String get anErrorOccurredMessage => 'Đã xảy ra lỗi';
 }

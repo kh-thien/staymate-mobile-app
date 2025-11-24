@@ -128,6 +128,18 @@ abstract class AppLocalizations {
   /// **'Sign up with Google'**
   String get signUpWithGoogle;
 
+  /// Sign in with Apple button text
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Apple'**
+  String get signInWithApple;
+
+  /// Sign up with Apple button text
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up with Apple'**
+  String get signUpWithApple;
+
   /// Email label
   ///
   /// In en, this message translates to:
@@ -481,6 +493,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Connection issue. Reconnecting...'**
   String get reconnecting;
+
+  /// Personal information label
+  ///
+  /// In en, this message translates to:
+  /// **'Personal Information'**
+  String get personalInfo;
+
+  /// Account label
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// User label
+  ///
+  /// In en, this message translates to:
+  /// **'User'**
+  String get user;
+
+  /// Full name label
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get fullName;
+
+  /// Phone number label
+  ///
+  /// In en, this message translates to:
+  /// **'Phone Number'**
+  String get phoneNumber;
+
+  /// User ID label
+  ///
+  /// In en, this message translates to:
+  /// **'User ID'**
+  String get userId;
+
+  /// Created date label
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get created;
+
+  /// Login provider label
+  ///
+  /// In en, this message translates to:
+  /// **'Login Provider'**
+  String get loginProvider;
+
+  /// Member since label
+  ///
+  /// In en, this message translates to:
+  /// **'Member since {date}'**
+  String memberSince(String date);
+
+  /// User ID label with value
+  ///
+  /// In en, this message translates to:
+  /// **'ID: {userId}'**
+  String userIdLabel(String userId);
+
+  /// Login provider label with value
+  ///
+  /// In en, this message translates to:
+  /// **'Login with {provider}'**
+  String loginProviderLabel(String provider);
+
+  /// Secure login label
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Login'**
+  String get secureLogin;
+
+  /// Change password label
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
+
+  /// Current password label
+  ///
+  /// In en, this message translates to:
+  /// **'Current Password'**
+  String get currentPassword;
+
+  /// New password label
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get newPassword;
+
+  /// Confirm new password label
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get confirmNewPassword;
+
+  /// Password updated message
+  ///
+  /// In en, this message translates to:
+  /// **'Password updated successfully'**
+  String get passwordUpdated;
+
+  /// Passwords do not match error
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// Password too short error
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters'**
+  String get passwordTooShort;
+
+  /// Message shown when password change is not available for social login
+  ///
+  /// In en, this message translates to:
+  /// **'You are signed in with a social account (Google/Apple). To change your password, please use an email account.'**
+  String get passwordChangeNotAvailableForSocialLogin;
+
+  /// Logged out success message
+  ///
+  /// In en, this message translates to:
+  /// **'Logged out successfully'**
+  String get loggedOutSuccessfully;
+
+  /// Select theme title
+  ///
+  /// In en, this message translates to:
+  /// **'Select Theme'**
+  String get selectTheme;
+
+  /// Light theme option
+  ///
+  /// In en, this message translates to:
+  /// **'Light'**
+  String get themeLight;
+
+  /// Dark theme option
+  ///
+  /// In en, this message translates to:
+  /// **'Dark'**
+  String get themeDark;
+
+  /// System theme option
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get themeSystem;
+
+  /// Theme label
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get theme;
+
+  /// Send feedback label
+  ///
+  /// In en, this message translates to:
+  /// **'Send Feedback'**
+  String get sendFeedback;
+
+  /// App information label
+  ///
+  /// In en, this message translates to:
+  /// **'App Information'**
+  String get appInfo;
+
+  /// No description provided for @anErrorOccurredMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get anErrorOccurredMessage;
 }
 
 class _AppLocalizationsDelegate

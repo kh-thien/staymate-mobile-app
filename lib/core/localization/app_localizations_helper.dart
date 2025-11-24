@@ -12,6 +12,8 @@ class AppLocalizationsHelper {
       'signUp': 'Đăng ký',
       'signInWithGoogle': 'Đăng nhập bằng Google',
       'signUpWithGoogle': 'Đăng ký bằng Google',
+      'signInWithApple': 'Đăng nhập bằng Apple',
+      'signUpWithApple': 'Đăng ký bằng Apple',
       'email': 'Email',
       'password': 'Mật khẩu',
       'confirmPassword': 'Xác nhận mật khẩu',
@@ -37,6 +39,10 @@ class AppLocalizationsHelper {
       'authOperationCancelled': 'Thao tác đã bị hủy.',
       'authGoogleSignInFailed': 'Đăng nhập với Google thất bại. Vui lòng thử lại.',
       'authGoogleSignInCancelled': 'Đăng nhập với Google đã bị hủy.',
+      'authAppleSignInFailed': 'Đăng nhập với Apple thất bại. Vui lòng thử lại.',
+      'authAppleSignInCancelled': 'Đăng nhập với Apple đã bị hủy.',
+      'authAppleIdTokenError': 'Không thể lấy thông tin từ Apple. Vui lòng thử lại.',
+      'authAppleAudienceError': 'Lỗi cấu hình Apple Sign-In: Service ID không khớp. Vui lòng kiểm tra Service ID trong Supabase Dashboard (phải là com.staymate.mobile.web, không phải com.staymate.mobile).',
       'authAdminBlocked': 'Ứng dụng này dành riêng cho người thuê, tính năng admin sẽ được phát triển sau.',
       'authUnknownError': 'Đã xảy ra lỗi. Vui lòng thử lại.',
       'authTimeout': 'Yêu cầu quá thời gian chờ. Vui lòng thử lại.',
@@ -177,9 +183,12 @@ class AppLocalizationsHelper {
       
       // User
       'user': 'Người dùng',
-      'userIdLabel': 'ID người dùng: {userId}',
+      'userId': 'ID người dùng',
+      'userIdLabel': 'ID: {userId}',
+      'loginProvider': 'Nhà cung cấp đăng nhập',
       'loginProviderLabel': 'Đăng nhập bằng {provider}',
       'secureLogin': 'Đăng nhập an toàn',
+      'memberSince': 'Thành viên từ {date}',
       
       // Auth Header
       'appDescription': 'Ứng dụng theo dõi phòng trọ tiện lợi',
@@ -494,6 +503,8 @@ class AppLocalizationsHelper {
       'signUp': 'Sign Up',
       'signInWithGoogle': 'Sign in with Google',
       'signUpWithGoogle': 'Sign up with Google',
+      'signInWithApple': 'Sign in with Apple',
+      'signUpWithApple': 'Sign up with Apple',
       'email': 'Email',
       'password': 'Password',
       'confirmPassword': 'Confirm Password',
@@ -519,6 +530,10 @@ class AppLocalizationsHelper {
       'authOperationCancelled': 'The operation was cancelled.',
       'authGoogleSignInFailed': 'Google sign-in failed. Please try again.',
       'authGoogleSignInCancelled': 'Google sign-in was cancelled.',
+      'authAppleSignInFailed': 'Apple sign-in failed. Please try again.',
+      'authAppleSignInCancelled': 'Apple sign-in was cancelled.',
+      'authAppleIdTokenError': 'Unable to retrieve information from Apple. Please try again.',
+      'authAppleAudienceError': 'Apple Sign-In configuration error: Service ID mismatch. Please check Service ID in Supabase Dashboard (must be com.staymate.mobile.web, not com.staymate.mobile).',
       'authAdminBlocked': 'This app is for tenants only. Admin features will be added later.',
       'authUnknownError': 'An unexpected error occurred. Please try again.',
       'authTimeout': 'The request timed out. Please try again.',
@@ -658,9 +673,12 @@ class AppLocalizationsHelper {
       
       // User
       'user': 'User',
-      'userIdLabel': 'User ID: {userId}',
-      'loginProviderLabel': 'Login via {provider}',
+      'userId': 'User ID',
+      'userIdLabel': 'ID: {userId}',
+      'loginProvider': 'Login Provider',
+      'loginProviderLabel': 'Login with {provider}',
       'secureLogin': 'Secure login',
+      'memberSince': 'Member since {date}',
       
       // Auth Header
       'appDescription': 'Convenient room rental tracking application',

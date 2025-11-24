@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:stay_mate/core/services/fcm_token_service.dart';
 
 class AuthService {
@@ -300,6 +302,151 @@ class AuthService {
       throw AuthException(
         'Đăng nhập với Google thất bại: ${e.toString()}',
         statusCode: 'google_signin_failed',
+      );
+    }
+  }
+
+  // Đăng nhập bằng Apple
+  Future<AuthResponse> signInWithApple() async {
+    try {
+      debugPrint('🍎 [Apple Sign-In] Starting Apple Sign-In process...');
+
+      // Kiểm tra platform
+      if (!Platform.isIOS) {
+        throw AuthException(
+          'Sign in with Apple chỉ khả dụng trên iOS.',
+          statusCode: 'apple_signin_ios_only',
+        );
+      }
+
+      debugPrint('🍎 [Apple Sign-In] Requesting credential...');
+      final appleCredential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+      );
+
+      debugPrint('🍎 [Apple Sign-In] Got credential');
+      debugPrint('🍎 [Apple Sign-In] Identity Token: ${appleCredential.identityToken != null ? "Received" : "NULL"}');
+
+      if (appleCredential.identityToken == null) {
+        debugPrint('❌ [Apple Sign-In] Identity Token is null');
+        throw AuthException(
+          'Không thể lấy Identity Token từ Apple. Vui lòng thử lại.',
+          statusCode: 'apple_signin_no_identity_token',
+        );
+      }
+
+      debugPrint('🍎 [Apple Sign-In] Signing in with Supabase...');
+      final response = await _supabase.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: appleCredential.identityToken!,
+        accessToken: appleCredential.authorizationCode,
+      );
+      debugPrint('✅ [Apple Sign-In] Supabase sign-in successful');
+
+      // Nếu có fullName từ Apple và user chưa có full_name trong metadata
+      if (appleCredential.givenName != null || appleCredential.familyName != null) {
+        final fullName = '${appleCredential.givenName ?? ''} ${appleCredential.familyName ?? ''}'.trim();
+        if (fullName.isNotEmpty && response.user != null) {
+          final currentMetadata = response.user!.userMetadata ?? {};
+          if (currentMetadata['full_name'] == null || currentMetadata['full_name'].toString().isEmpty) {
+            debugPrint('🍎 [Apple Sign-In] Updating user metadata with full name...');
+            await _supabase.auth.updateUser(
+              UserAttributes(data: {
+                ...currentMetadata,
+                'full_name': fullName,
+              }),
+            );
+          }
+        }
+      }
+
+      // Kiểm tra role và block admin
+      if (response.user != null) {
+        debugPrint('🍎 [Apple Sign-In] Checking admin status...');
+        await checkAndBlockAdmin(response.user!.id);
+        debugPrint('✅ [Apple Sign-In] Admin check passed');
+
+        // Lưu FCM token sau khi đăng nhập thành công (chỉ khi không phải admin)
+        debugPrint('🍎 [Apple Sign-In] Saving FCM token...');
+        await _fcmTokenService.saveToken(response.user!.id);
+        debugPrint('✅ [Apple Sign-In] FCM token saved');
+      }
+
+      debugPrint('✅ [Apple Sign-In] Apple Sign-In completed successfully');
+      return response;
+    } on SignInWithAppleAuthorizationException catch (e) {
+      debugPrint('❌ [Apple Sign-In] AuthorizationException: ${e.code} - ${e.message}');
+      
+      if (e.code == AuthorizationErrorCode.canceled) {
+        throw AuthException(
+          'Đăng nhập với Apple đã bị hủy.',
+          statusCode: 'apple_signin_cancelled',
+        );
+      } else if (e.code == AuthorizationErrorCode.failed) {
+        throw AuthException(
+          'Đăng nhập với Apple thất bại. Vui lòng thử lại.',
+          statusCode: 'apple_signin_failed',
+        );
+      } else if (e.code == AuthorizationErrorCode.invalidResponse) {
+        throw AuthException(
+          'Phản hồi không hợp lệ từ Apple. Vui lòng thử lại.',
+          statusCode: 'apple_signin_invalid_response',
+        );
+      } else if (e.code == AuthorizationErrorCode.notHandled) {
+        throw AuthException(
+          'Không thể xử lý yêu cầu đăng nhập. Vui lòng thử lại.',
+          statusCode: 'apple_signin_not_handled',
+        );
+      } else if (e.code == AuthorizationErrorCode.unknown) {
+        throw AuthException(
+          'Lỗi không xác định khi đăng nhập với Apple. Vui lòng thử lại.',
+          statusCode: 'apple_signin_unknown',
+        );
+      }
+      
+      throw AuthException(
+        'Đăng nhập với Apple thất bại: ${e.message}',
+        statusCode: 'apple_signin_error',
+      );
+    } on AuthException catch (e) {
+      debugPrint('❌ [Apple Sign-In] AuthException: ${e.message} (${e.statusCode})');
+      
+      // Xử lý lỗi audience không khớp
+      if (e.message.contains('audience') || 
+          e.message.contains('Unacceptable audience') ||
+          e.statusCode?.contains('400') == true) {
+        throw AuthException(
+          'Lỗi cấu hình Apple Sign-In: Service ID không khớp. Vui lòng kiểm tra Service ID trong Supabase Dashboard (phải là com.staymate.mobile.service, không phải com.staymate.mobile).',
+          statusCode: 'apple_signin_audience_error',
+        );
+      }
+      
+      rethrow;
+    } catch (e, stackTrace) {
+      debugPrint('❌ [Apple Sign-In] Unexpected error: $e');
+      debugPrint('❌ [Apple Sign-In] Stack trace: $stackTrace');
+      
+      final errorString = e.toString().toLowerCase();
+      if (errorString.contains('cancelled') || errorString.contains('canceled')) {
+        throw AuthException(
+          'Đăng nhập với Apple đã bị hủy.',
+          statusCode: 'apple_signin_cancelled',
+        );
+      }
+      
+      if (errorString.contains('network') || errorString.contains('connection')) {
+        throw AuthException(
+          'NETWORK_ERROR_CHECK_CONNECTION',
+          statusCode: 'apple_signin_network_error',
+        );
+      }
+      
+      throw AuthException(
+        'Đăng nhập với Apple thất bại: ${e.toString()}',
+        statusCode: 'apple_signin_failed',
       );
     }
   }

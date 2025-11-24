@@ -31,9 +31,8 @@ class AccountSettingsPage extends HookConsumerWidget {
 
     final Map<String, dynamic> appMetadata =
         Map<String, dynamic>.from(user?.appMetadata ?? {});
-    final providerLabel =
-        (appMetadata['provider'] as String?)?.toUpperCase() ??
-            AppLocalizationsHelper.translate('email', languageCode).toUpperCase();
+    final provider = (appMetadata['provider'] as String?) ?? 'email';
+    final providerLabel = _formatProviderName(provider, languageCode);
     final dynamic providersRaw = appMetadata['providers'];
     final isPasswordProviderLogin =
         (appMetadata['provider'] as String?) == 'email' ||
@@ -154,12 +153,27 @@ class AccountSettingsPage extends HookConsumerWidget {
     );
   }
 
+  /// Format provider name để hiển thị đẹp hơn
+  String _formatProviderName(String provider, String languageCode) {
+    switch (provider.toLowerCase()) {
+      case 'google':
+        return 'Google';
+      case 'apple':
+        return 'Apple';
+      case 'email':
+        return AppLocalizationsHelper.translate('email', languageCode);
+      default:
+        return provider.toUpperCase();
+    }
+  }
+
   void _showSnackBar(BuildContext context, String message, Color color) {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
         backgroundColor: color,
+        duration: const Duration(seconds: 3),
       ),
     );
   }

@@ -177,31 +177,44 @@ class _AuthPageState extends ConsumerState<AuthPage>
 
     // Xử lý thành công - CHỈ hiển thị khi chuyển từ AuthSigningIn/AuthSigningUp
     if (state is AuthAuthenticated) {
-      // Chỉ hiển thị thông báo nếu previous state là AuthSigningIn
-      // (tức là user vừa đăng nhập, không phải app check lại auth status khi khởi động)
-      final shouldShowMessage = _previousState is AuthSigningIn;
+      // Chỉ hiển thị thông báo nếu previous state là loading state
+      // (tức là user vừa đăng nhập/đăng ký, không phải app check lại auth status khi khởi động)
+      final shouldShowMessage = _previousState is AuthSigningIn ||
+          _previousState is AuthSigningInWithGoogle ||
+          _previousState is AuthSigningInWithApple ||
+          _previousState is AuthSigningUp ||
+          _previousState is AuthSigningUpWithGoogle ||
+          _previousState is AuthSigningUpWithApple;
       
       if (shouldShowMessage && !_hasShownSuccessMessage) {
         _hasShownSuccessMessage = true;
         _lastErrorMessage = null;
 
+        // Xác định message dựa trên previous state
+        final isSignUp = _previousState is AuthSigningUp ||
+            _previousState is AuthSigningUpWithGoogle ||
+            _previousState is AuthSigningUpWithApple;
+
         // Hiển thị thông báo thành công
         CustomSnackbar.showSuccess(
           context,
-          AppLocalizationsHelper.translate('signInSuccess', languageCode),
+          AppLocalizationsHelper.translate(
+            isSignUp ? 'signUpSuccess' : 'signInSuccess',
+            languageCode,
+          ),
         );
 
-        // Navigate đến home sau khi đăng nhập thành công
+        // Navigate đến home sau khi đăng nhập/đăng ký thành công
         Future.delayed(const Duration(milliseconds: 800), () {
           if (!mounted) return;
           context.go('/');
         });
         return;
       }
-      // Nếu không phải từ AuthSigningIn (ví dụ: từ CheckAuthStatus khi app khởi động),
+      // Nếu không phải từ loading state (ví dụ: từ CheckAuthStatus khi app khởi động),
       // router sẽ tự động redirect về home, không cần hiển thị thông báo
     } else if (state is AuthSignUpSuccess) {
-      // Chỉ hiển thị thông báo nếu previous state là AuthSigningUp
+      // Chỉ hiển thị thông báo nếu previous state là AuthSigningUp (email signup)
       final shouldShowMessage = _previousState is AuthSigningUp;
       
       if (shouldShowMessage && !_hasShownSuccessMessage) {
@@ -229,16 +242,16 @@ class _AuthPageState extends ConsumerState<AuthPage>
       
       if (shouldShowMessage && !_hasShownSuccessMessage) {
         _hasShownSuccessMessage = true;
-        _lastErrorMessage = null;
+      _lastErrorMessage = null;
 
-        // Hiển thị thông báo yêu cầu xác nhận email
-        CustomSnackbar.showInfo(
-          context,
-          AppLocalizationsHelper.translate(
-            'authSignUpEmailConfirmationRequired',
-            languageCode,
-          ),
-        );
+      // Hiển thị thông báo yêu cầu xác nhận email
+      CustomSnackbar.showInfo(
+        context,
+        AppLocalizationsHelper.translate(
+          'authSignUpEmailConfirmationRequired',
+          languageCode,
+        ),
+      );
 
         // Chuyển về tab Sign In và clear form
         Future.delayed(const Duration(milliseconds: 500), () {

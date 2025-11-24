@@ -22,7 +22,10 @@ class PersonalInfoPage extends ConsumerWidget {
         Map<String, dynamic>.from(user?.userMetadata ?? {});
     final Map<String, dynamic> accountMetadata =
         Map<String, dynamic>.from(user?.appMetadata ?? {});
-    final fullName = (metadata['full_name'] as String?)?.trim();
+    // Lấy thông tin từ userMetadata, fallback về email nếu không có
+    final fullName = (metadata['full_name'] as String?)?.trim() ??
+        user?.email?.split('@').first ??
+        '';
     final phoneNumber = (metadata['phone'] as String?)?.trim();
     final avatarUrl = (metadata['avatar_url'] as String?)?.trim();
 
@@ -77,8 +80,9 @@ class PersonalInfoPage extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PersonalInfoHeader(
-                fullName: fullName ??
-                    AppLocalizationsHelper.translate(
+                fullName: fullName.isNotEmpty
+                    ? fullName
+                    : AppLocalizationsHelper.translate(
                       'user',
                       languageCode,
                     ),
@@ -98,8 +102,9 @@ class PersonalInfoPage extends ConsumerWidget {
                       'fullName',
                       languageCode,
                     ),
-                    value: fullName ??
-                        AppLocalizationsHelper.translate(
+                    value: fullName.isNotEmpty
+                        ? fullName
+                        : AppLocalizationsHelper.translate(
                             'user',
                             languageCode,
                           ),
@@ -147,8 +152,10 @@ class PersonalInfoPage extends ConsumerWidget {
                       'loginProvider',
                       languageCode,
                     ),
-                    value:
+                    value: _formatProviderName(
                         (accountMetadata['provider'] as String?) ?? 'email',
+                      languageCode,
+                    ),
                   ),
                 ],
               ),
@@ -157,6 +164,20 @@ class PersonalInfoPage extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  /// Format provider name để hiển thị đẹp hơn
+  String _formatProviderName(String provider, String languageCode) {
+    switch (provider.toLowerCase()) {
+      case 'google':
+        return 'Google';
+      case 'apple':
+        return 'Apple';
+      case 'email':
+        return AppLocalizationsHelper.translate('email', languageCode);
+      default:
+        return provider.toUpperCase();
+    }
   }
 }
 

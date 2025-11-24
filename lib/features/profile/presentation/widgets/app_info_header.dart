@@ -40,17 +40,25 @@ class AppInfoHeader extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(20),
               child: Image.asset(
-                LogoApp.logoIcon,
+                isDark ? LogoApp.logoIconPngDark : LogoApp.logoIconPng,
                 width: 100,
                 height: 100,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) {
+                  // Nếu logo không load được, dùng icon với màu primary
                   return Container(
-                    color: Colors.amberAccent,
-                    child: const Icon(
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? AppColors.surfaceDark
+                          : AppColors.primary.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Icon(
                       Icons.home_rounded,
                       size: 60,
-                      color: Colors.white,
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.primary,
                     ),
                   );
                 },

@@ -127,6 +127,23 @@ class AuthErrorHandler {
         case 'google_signin_cancelled':
           return _translate('authGoogleSignInCancelled', languageCode);
 
+        case 'apple_signin_failed':
+        case 'apple_signin_error':
+        case 'apple_signin_invalid_response':
+        case 'apple_signin_not_handled':
+        case 'apple_signin_unknown':
+          return _translate('authAppleSignInFailed', languageCode);
+
+        case 'apple_signin_cancelled':
+          return _translate('authAppleSignInCancelled', languageCode);
+
+        case 'apple_signin_no_identity_token':
+        case 'apple_signin_ios_only':
+          return _translate('authAppleIdTokenError', languageCode);
+
+        case 'apple_signin_audience_error':
+          return _translate('authAppleAudienceError', languageCode);
+
         case 'admin_blocked':
           return _translate('authAdminBlocked', languageCode);
 
@@ -178,9 +195,34 @@ class AuthErrorHandler {
         return _translate('authGoogleSignInCancelled', languageCode);
       }
       return _translate('authGoogleSignInFailed', languageCode);
+    } else if (errorMessage.contains('apple')) {
+      if (errorMessage.contains('cancelled') ||
+          errorMessage.contains('canceled')) {
+        return _translate('authAppleSignInCancelled', languageCode);
+      }
+      if (errorMessage.contains('id token') ||
+          errorMessage.contains('id_token') ||
+          errorMessage.contains('identity token')) {
+        return _translate('authAppleIdTokenError', languageCode);
+      }
+      if (errorMessage.contains('audience')) {
+        return _translate('authAppleAudienceError', languageCode);
+      }
+      return _translate('authAppleSignInFailed', languageCode);
     } else if (errorMessage.contains('id token') ||
-        errorMessage.contains('id_token')) {
+        errorMessage.contains('id_token') ||
+        errorMessage.contains('identity token')) {
+      // Nếu không rõ là Google hay Apple, kiểm tra thêm
+      if (errorMessage.contains('google')) {
       return _translate('authGoogleIdTokenError', languageCode);
+      } else if (errorMessage.contains('apple')) {
+        return _translate('authAppleIdTokenError', languageCode);
+      }
+      // Default: có thể là Apple vì thường gặp hơn
+      return _translate('authAppleIdTokenError', languageCode);
+    } else if (errorMessage.contains('audience') ||
+        errorMessage.contains('unacceptable audience')) {
+      return _translate('authAppleAudienceError', languageCode);
     }
 
     // Trả về message gốc nếu không match

@@ -61,10 +61,14 @@ class ProfileBottomSheet extends ConsumerWidget {
                             ? AppColors.surfaceDark 
                             : Colors.grey[200]!,
                         backgroundImage:
-                            user?.userMetadata?['avatar_url'] != null
-                            ? NetworkImage(user!.userMetadata!['avatar_url'])
+                            user?.userMetadata?['avatar_url'] != null &&
+                            user!.userMetadata!['avatar_url'].toString().isNotEmpty
+                            ? NetworkImage(
+                                user.userMetadata!['avatar_url'],
+                              )
                             : null,
-                        child: user?.userMetadata?['avatar_url'] == null
+                        child: user?.userMetadata?['avatar_url'] == null ||
+                            user!.userMetadata!['avatar_url'].toString().isEmpty
                             ? Icon(
                                 Icons.person,
                                 size: 40,
@@ -73,6 +77,9 @@ class ProfileBottomSheet extends ConsumerWidget {
                                     : Colors.grey,
                               )
                             : null,
+                        onBackgroundImageError: (exception, stackTrace) {
+                          // Handle image loading error silently
+                        },
                       ),
                       const SizedBox(width: 16),
                       Expanded(

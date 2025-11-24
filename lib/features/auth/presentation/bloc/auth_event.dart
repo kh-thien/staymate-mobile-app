@@ -15,6 +15,10 @@ class SignInWithGoogle extends AuthEvent {}
 
 class SignUpWithGoogle extends AuthEvent {}
 
+class SignInWithApple extends AuthEvent {}
+
+class SignUpWithApple extends AuthEvent {}
+
 class SignUpWithEmail extends AuthEvent {
   final String email;
   final String password;
