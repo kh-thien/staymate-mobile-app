@@ -13,7 +13,6 @@ import '../../../../shared/widgets/skeleton_loader.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/providers/app_bar_provider.dart';
 
-
 class ReportPage extends HookConsumerWidget {
   const ReportPage({super.key});
 
@@ -30,8 +29,8 @@ class ReportPage extends HookConsumerWidget {
       // Use a small delay to ensure this runs after any cleanup from previous page
       Future.microtask(() {
         notifier.updateTitle(
-              AppLocalizationsHelper.translate('reports', languageCode),
-            );
+          AppLocalizationsHelper.translate('reports', languageCode),
+        );
       });
       // Don't reset in cleanup - let the next page set its own title
       return null;
@@ -86,12 +85,21 @@ class ReportPage extends HookConsumerWidget {
                     ),
                     tabs: [
                       Tab(
-                        icon: const Icon(Icons.report_problem_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('reportIssue', languageCode),
+                        icon: const Icon(
+                          Icons.report_problem_rounded,
+                          size: 18,
+                        ),
+                        text: AppLocalizationsHelper.translate(
+                          'reportIssue',
+                          languageCode,
+                        ),
                       ),
                       Tab(
                         icon: const Icon(Icons.construction_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('maintenanceWork', languageCode),
+                        text: AppLocalizationsHelper.translate(
+                          'maintenanceWork',
+                          languageCode,
+                        ),
                       ),
                     ],
                   ),
@@ -138,10 +146,7 @@ class ReportPage extends HookConsumerWidget {
           icon: const Icon(Icons.report_problem_rounded, size: 22),
           label: Text(
             AppLocalizationsHelper.translate('createReport', languageCode),
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-            ),
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
           elevation: 6,
           highlightElevation: 8,
@@ -159,92 +164,108 @@ class _MaintenanceRequestsTab extends ConsumerWidget {
       maintenanceRequestsStreamProvider,
     );
 
-    return maintenanceRequestsAsync.when(
-      data: (requests) {
-        if (requests.isEmpty) {
-          final languageCode = ref.watch(appLocaleProvider).languageCode;
-          return EmptyState(
-            icon: Icons.check_circle_outline_rounded,
-            title: AppLocalizationsHelper.translate('noIssuesToReport', languageCode),
-            subtitle: AppLocalizationsHelper.translate('yourReportedIssuesWillAppearHere', languageCode),
-            onRefresh: () => ref.invalidate(maintenanceRequestsStreamProvider),
-            refreshLabel: AppLocalizationsHelper.translate('refresh', languageCode),
-          );
-        }
-        final locale = ref.watch(appLocaleProvider);
-        final languageCode = locale.languageCode;
-        return _MaintenanceRequestsList(requests: requests, languageCode: languageCode);
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(maintenanceRequestsStreamProvider);
       },
-            loading: () => ListView.separated(
-        padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 24,
-          bottom: MediaQuery.of(context).padding.bottom + 80,
+      child: maintenanceRequestsAsync.when(
+        data: (requests) {
+          if (requests.isEmpty) {
+            final languageCode = ref.watch(appLocaleProvider).languageCode;
+            return EmptyState(
+              icon: Icons.check_circle_outline_rounded,
+              title: AppLocalizationsHelper.translate(
+                'noIssuesToReport',
+                languageCode,
+              ),
+              subtitle: AppLocalizationsHelper.translate(
+                'yourReportedIssuesWillAppearHere',
+                languageCode,
+              ),
+            );
+          }
+          final locale = ref.watch(appLocaleProvider);
+          final languageCode = locale.languageCode;
+          return _MaintenanceRequestsList(
+            requests: requests,
+            languageCode: languageCode,
+          );
+        },
+        loading: () => ListView.separated(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 24,
+            bottom: MediaQuery.of(context).padding.bottom + 80,
+          ),
+          itemCount: 5,
+          separatorBuilder: (_, __) => const SizedBox(height: 16),
+          itemBuilder: (context, index) {
+            return const MaintenanceRequestCardSkeleton();
+          },
         ),
-        itemCount: 5,
-        separatorBuilder: (_, __) => const SizedBox(height: 16),
-        itemBuilder: (context, index) {
-          return const MaintenanceRequestCardSkeleton();
+        error: (error, stack) {
+          final locale = ref.watch(appLocaleProvider);
+          final languageCode = locale.languageCode;
+
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 64,
+                    color: Colors.red.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  SelectableText.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text:
+                              '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: error.toString(),
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ref.invalidate(maintenanceRequestsStreamProvider);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(
+                      AppLocalizationsHelper.translate(
+                        'tryAgain',
+                        languageCode,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       ),
-      error: (error, stack) {
-        final locale = ref.watch(appLocaleProvider);
-        final languageCode = locale.languageCode;
-        
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline_rounded,
-                  size: 64,
-                  color: Colors.red.shade400,
-                ),
-                const SizedBox(height: 16),
-                SelectableText.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                          fontSize: 16,
-                        ),
-                      ),
-                      TextSpan(
-                        text: error.toString(),
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    ref.invalidate(maintenanceRequestsStreamProvider);
-                  },
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: Text(
-                    AppLocalizationsHelper.translate('tryAgain', languageCode),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -258,80 +279,96 @@ class _MaintenanceRecordsTab extends ConsumerWidget {
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
 
-    return maintenanceAsync.when(
-      data: (maintenances) {
-        if (maintenances.isEmpty) {
-          return EmptyState(
-            icon: Icons.construction_rounded,
-            title: AppLocalizationsHelper.translate('noMaintenanceWork', languageCode),
-            subtitle: AppLocalizationsHelper.translate('maintenanceWorkWillShowHere', languageCode),
-            onRefresh: () => ref.invalidate(maintenanceRecordsStreamProvider),
-            refreshLabel: AppLocalizationsHelper.translate('refresh', languageCode),
-          );
-        }
-        return _MaintenanceList(maintenances: maintenances, languageCode: languageCode);
+    return RefreshIndicator(
+      onRefresh: () async {
+        ref.invalidate(maintenanceRecordsStreamProvider);
       },
-            loading: () => ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-        itemCount: 4,
-        itemBuilder: (context, index) {
-          return const MaintenanceCardSkeleton();
+      child: maintenanceAsync.when(
+        data: (maintenances) {
+          if (maintenances.isEmpty) {
+            return EmptyState(
+              icon: Icons.construction_rounded,
+              title: AppLocalizationsHelper.translate(
+                'noMaintenanceWork',
+                languageCode,
+              ),
+              subtitle: AppLocalizationsHelper.translate(
+                'maintenanceWorkWillShowHere',
+                languageCode,
+              ),
+            );
+          }
+          return _MaintenanceList(
+            maintenances: maintenances,
+            languageCode: languageCode,
+          );
+        },
+        loading: () => ListView.builder(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          itemCount: 4,
+          itemBuilder: (context, index) {
+            return const MaintenanceCardSkeleton();
+          },
+        ),
+        error: (error, stack) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.error_outline_rounded,
+                    size: 64,
+                    color: Colors.red.shade400,
+                  ),
+                  const SizedBox(height: 16),
+                  SelectableText.rich(
+                    TextSpan(
+                      children: [
+                        TextSpan(
+                          text:
+                              '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                            fontSize: 16,
+                          ),
+                        ),
+                        TextSpan(
+                          text: error.toString(),
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      ref.invalidate(maintenanceRecordsStreamProvider);
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: Text(
+                      AppLocalizationsHelper.translate(
+                        'tryAgain',
+                        languageCode,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
         },
       ),
-      error: (error, stack) {
-        return Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline_rounded,
-                  size: 64,
-                  color: Colors.red.shade400,
-                ),
-                const SizedBox(height: 16),
-                SelectableText.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                          fontSize: 16,
-                        ),
-                      ),
-                      TextSpan(
-                        text: error.toString(),
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    ref.invalidate(maintenanceRecordsStreamProvider);
-                  },
-                  icon: const Icon(Icons.refresh_rounded),
-                  label: Text(
-                    AppLocalizationsHelper.translate('tryAgain', languageCode),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -340,7 +377,10 @@ class _MaintenanceRequestsList extends ConsumerWidget {
   final List<MaintenanceRequest> requests;
   final String languageCode;
 
-  const _MaintenanceRequestsList({required this.requests, required this.languageCode});
+  const _MaintenanceRequestsList({
+    required this.requests,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -383,32 +423,28 @@ class _MaintenanceRequestCard extends ConsumerWidget {
     return Container(
       margin: EdgeInsets.zero,
       decoration: BoxDecoration(
-        color: isDark 
-            ? AppColors.surfaceDarkElevated 
-            : Colors.white,
+        color: isDark ? AppColors.surfaceDarkElevated : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark 
-              ? AppColors.borderDark 
-              : Colors.grey.shade300,
+          color: isDark ? AppColors.borderDark : Colors.grey.shade300,
           width: 2.0,
         ),
         boxShadow: isDark
             ? []
             : [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-            spreadRadius: 0,
-          ),
-        ],
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                  spreadRadius: 0,
+                ),
+              ],
       ),
       child: Material(
         color: Colors.transparent,
@@ -478,7 +514,10 @@ class _MaintenanceRequestCard extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    _StatusBadge(status: request.status, languageCode: languageCode),
+                    _StatusBadge(
+                      status: request.status,
+                      languageCode: languageCode,
+                    ),
                   ],
                 ),
                 const SizedBox(height: 16),
@@ -487,9 +526,7 @@ class _MaintenanceRequestCard extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: isDark 
-                        ? AppColors.surfaceDark 
-                        : Colors.grey.shade50,
+                    color: isDark ? AppColors.surfaceDark : Colors.grey.shade50,
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
@@ -537,7 +574,10 @@ class _MaintenanceRequestCard extends ConsumerWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              AppLocalizationsHelper.translate('hasImage', languageCode),
+                              AppLocalizationsHelper.translate(
+                                'hasImage',
+                                languageCode,
+                              ),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.primary,
                                 fontWeight: FontWeight.w600,
@@ -665,7 +705,10 @@ class _MaintenanceList extends StatelessWidget {
   final List<Maintenance> maintenances;
   final String languageCode;
 
-  const _MaintenanceList({required this.maintenances, required this.languageCode});
+  const _MaintenanceList({
+    required this.maintenances,
+    required this.languageCode,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -731,271 +774,279 @@ class _MaintenanceCard extends StatelessWidget {
     return Container(
       margin: EdgeInsets.only(bottom: marginBottom),
       decoration: BoxDecoration(
-        color: isDark 
-            ? AppColors.surfaceDarkElevated 
-            : Colors.white,
+        color: isDark ? AppColors.surfaceDarkElevated : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark 
-              ? AppColors.borderDark 
-              : Colors.grey.shade300,
+          color: isDark ? AppColors.borderDark : Colors.grey.shade300,
           width: 1.5,
         ),
         boxShadow: isDark
             ? []
             : [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.12),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-            spreadRadius: 0,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 4,
-            offset: const Offset(0, 1),
-            spreadRadius: 0,
-          ),
-        ],
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.12),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                  spreadRadius: 0,
+                ),
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.06),
+                  blurRadius: 4,
+                  offset: const Offset(0, 1),
+                  spreadRadius: 0,
+                ),
+              ],
       ),
       child: Padding(
         padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with status badge
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      maintenance.title,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: isDark 
-                            ? AppColors.textPrimaryDark 
-                            : Colors.grey.shade900,
-                        height: 1.3,
-                      ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header with status badge
+            Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    maintenance.title,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : Colors.grey.shade900,
+                      height: 1.3,
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: _getStatusColor(maintenance.status),
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: _getStatusColor(
-                            maintenance.status,
-                          ).withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      _getStatusText(maintenance.status, languageCode),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.3,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-
-              // Badge if from user's request
-              if (maintenance.maintenanceRequestId != null)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [Colors.blue.shade50, Colors.blue.shade100],
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blue.shade300, width: 1.5),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.person_outline,
-                        size: 16,
-                        color: Colors.blue.shade700,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        AppLocalizationsHelper.translate('fromYourReport', languageCode),
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: Colors.blue.shade700,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
                   ),
                 ),
-
-              // Description
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade100,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
-                ),
-                child: Text(
-                  maintenance.description,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Colors.grey.shade800,
-                    height: 1.5,
-                  ),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Property and Room info
-              _InfoRow(
-                icon: Icons.home_outlined,
-                iconColor: Colors.purple,
-                text:
-                    '${maintenance.propertyName ?? "N/A"}${maintenance.roomName != null ? " - ${maintenance.roomName}" : ""}',
-              ),
-              const SizedBox(height: 10),
-
-              // Type and Priority
-              Row(
-                children: [
-                  Expanded(
-                    child: _InfoRow(
-                      icon: Icons.build_outlined,
-                      iconColor: Colors.orange,
-                      text: maintenance.maintenanceType,
-                    ),
-                  ),
-                  if (maintenance.priority != null) ...[
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: _InfoRow(
-                        icon: Icons.flag_outlined,
-                        iconColor: Colors.red,
-                        text: maintenance.priority!,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 10),
-
-              // Cost if available
-              if (maintenance.cost != null) ...[
+                const SizedBox(width: 8),
                 Container(
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
+                    horizontal: 14,
                     vertical: 8,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.green.shade200),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.payments_outlined,
-                        size: 18,
-                        color: Colors.green.shade700,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        NumberFormat.currency(
-                          locale: 'vi_VN',
-                          symbol: 'đ',
-                        ).format(maintenance.cost),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w700,
-                          color: Colors.green.shade700,
-                          fontSize: 15,
-                        ),
+                    color: _getStatusColor(maintenance.status),
+                    borderRadius: BorderRadius.circular(20),
+                    boxShadow: [
+                      BoxShadow(
+                        color: _getStatusColor(
+                          maintenance.status,
+                        ).withOpacity(0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
+                  child: Text(
+                    _getStatusText(maintenance.status, languageCode),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.3,
+                    ),
+                  ),
                 ),
-                const SizedBox(height: 10),
               ],
+            ),
+            const SizedBox(height: 12),
 
-              const Divider(height: 28, thickness: 1),
-
-              // Timestamps
-              Row(
-                children: [
-                  Expanded(
-                    child: _TimestampChip(
-                      icon: Icons.calendar_today_outlined,
-                      label: AppLocalizationsHelper.translate('created', languageCode),
-                      date: dateFormat.format(maintenance.createdAt),
-                      languageCode: languageCode,
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: _TimestampChip(
-                      icon: Icons.update_outlined,
-                      label: AppLocalizationsHelper.translate('updated', languageCode),
-                      date: dateFormat.format(maintenance.updatedAt),
-                      languageCode: languageCode,
-                    ),
-                  ),
-                ],
-              ),
-
-              // Read-only notice
-              const SizedBox(height: 12),
+            // Badge if from user's request
+            if (maintenance.maintenanceRequestId != null)
               Container(
-                padding: const EdgeInsets.all(12),
+                margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
-                  color: Colors.amber.shade50,
+                  gradient: LinearGradient(
+                    colors: [Colors.blue.shade50, Colors.blue.shade100],
+                  ),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.amber.shade200),
+                  border: Border.all(color: Colors.blue.shade300, width: 1.5),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      Icons.visibility_outlined,
-                      size: 18,
-                      color: Colors.amber.shade700,
+                      Icons.person_outline,
+                      size: 16,
+                      color: Colors.blue.shade700,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        AppLocalizationsHelper.translate('viewOnlyCannotEdit', languageCode),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: Colors.amber.shade900,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    const SizedBox(width: 6),
+                    Text(
+                      AppLocalizationsHelper.translate(
+                        'fromYourReport',
+                        languageCode,
+                      ),
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.blue.shade700,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],
                 ),
               ),
+
+            // Description
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey.shade100,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Text(
+                maintenance.description,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: Colors.grey.shade800,
+                  height: 1.5,
+                ),
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // Property and Room info
+            _InfoRow(
+              icon: Icons.home_outlined,
+              iconColor: Colors.purple,
+              text:
+                  '${maintenance.propertyName ?? "N/A"}${maintenance.roomName != null ? " - ${maintenance.roomName}" : ""}',
+            ),
+            const SizedBox(height: 10),
+
+            // Type and Priority
+            Row(
+              children: [
+                Expanded(
+                  child: _InfoRow(
+                    icon: Icons.build_outlined,
+                    iconColor: Colors.orange,
+                    text: maintenance.maintenanceType,
+                  ),
+                ),
+                if (maintenance.priority != null) ...[
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _InfoRow(
+                      icon: Icons.flag_outlined,
+                      iconColor: Colors.red,
+                      text: maintenance.priority!,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // Cost if available
+            if (maintenance.cost != null) ...[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.green.shade200),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.payments_outlined,
+                      size: 18,
+                      color: Colors.green.shade700,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'vi_VN',
+                        symbol: 'đ',
+                      ).format(maintenance.cost),
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: Colors.green.shade700,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
             ],
-          ),
+
+            const Divider(height: 28, thickness: 1),
+
+            // Timestamps
+            Row(
+              children: [
+                Expanded(
+                  child: _TimestampChip(
+                    icon: Icons.calendar_today_outlined,
+                    label: AppLocalizationsHelper.translate(
+                      'created',
+                      languageCode,
+                    ),
+                    date: dateFormat.format(maintenance.createdAt),
+                    languageCode: languageCode,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _TimestampChip(
+                    icon: Icons.update_outlined,
+                    label: AppLocalizationsHelper.translate(
+                      'updated',
+                      languageCode,
+                    ),
+                    date: dateFormat.format(maintenance.updatedAt),
+                    languageCode: languageCode,
+                  ),
+                ),
+              ],
+            ),
+
+            // Read-only notice
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade50,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.amber.shade200),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.visibility_outlined,
+                    size: 18,
+                    color: Colors.amber.shade700,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      AppLocalizationsHelper.translate(
+                        'viewOnlyCannotEdit',
+                        languageCode,
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.amber.shade900,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

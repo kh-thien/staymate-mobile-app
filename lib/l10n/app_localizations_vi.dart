@@ -195,8 +195,21 @@ class AppLocalizationsVi extends AppLocalizations {
   String get refresh => 'Làm mới';
 
   @override
+  String get pullDownToRefresh => 'Kéo xuống để làm mới';
+
+  @override
   String get startAConversationToSeeItHere =>
       'Bắt đầu một cuộc trò chuyện để xem nó ở đây.';
+
+  @override
+  String get noConversationsYet => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get chatWillAppearWhenYouHaveContract =>
+      'Chat sẽ xuất hiện khi bạn có hợp đồng kết nối với chủ nhà. Điều này sẽ tạo cuộc trò chuyện giữa bạn và chủ nhà.';
+
+  @override
+  String get pleaseContactLandlord => 'Vui lòng liên hệ chủ nhà';
 
   @override
   String get noInvoicesFound => 'Không tìm thấy hoá đơn';
@@ -253,6 +266,65 @@ class AppLocalizationsVi extends AppLocalizations {
   String loginProviderLabel(String provider) {
     return 'Đăng nhập bằng $provider';
   }
+
+  @override
+  String get deleteAccount => 'Xóa tài khoản';
+
+  @override
+  String get deleteAccountDescription =>
+      'Hành động này sẽ xóa vĩnh viễn toàn bộ dữ liệu của bạn và không thể khôi phục.';
+
+  @override
+  String get deleteAccountReasonPlaceholder => 'Lý do (không bắt buộc)';
+
+  @override
+  String get deleteAccountReasonHint =>
+      'Hãy chia sẻ nhanh lý do để chúng tôi cải thiện (không bắt buộc)';
+
+  @override
+  String get deleteAccountAcknowledge =>
+      'Tôi hiểu rằng tài khoản và dữ liệu của mình sẽ bị xóa vĩnh viễn.';
+
+  @override
+  String get deleteAccountConfirm => 'Xóa tài khoản';
+
+  @override
+  String get deleteAccountSuccess => 'Tài khoản đã được xóa.';
+
+  @override
+  String get deleteAccountFailed =>
+      'Không thể xóa tài khoản. Vui lòng thử lại.';
+
+  @override
+  String get deleteAccountInProgress => 'Đang xóa tài khoản...';
+
+  @override
+  String get deleteAccountDeletingData =>
+      'Đang xóa dữ liệu, vui lòng không thao tác';
+
+  @override
+  String get deleteAccountLongDescription =>
+      'Sau khi xác nhận, chúng tôi sẽ xóa vĩnh viễn hồ sơ, hợp đồng, hóa đơn và lịch sử trò chuyện của bạn theo yêu cầu của Apple.';
+
+  @override
+  String get deleteAccountDataWipe =>
+      'Tất cả dữ liệu cá nhân và tùy chỉnh sẽ bị xóa ngay lập tức.';
+
+  @override
+  String get deleteAccountIrreversible =>
+      'Hành động này không thể hoàn tác và bạn sẽ mất quyền truy cập ngay.';
+
+  @override
+  String get deleteReasonPrivacy => 'Lo ngại quyền riêng tư';
+
+  @override
+  String get deleteReasonNoLongerRenting => 'Không còn thuê nhà với StayMate';
+
+  @override
+  String get deleteReasonBuggy => 'Ứng dụng lỗi hoặc không ổn định';
+
+  @override
+  String get deleteReasonOther => 'Lý do khác';
 
   @override
   String get secureLogin => 'Đăng nhập an toàn';

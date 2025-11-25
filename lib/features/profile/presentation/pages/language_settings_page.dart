@@ -18,32 +18,24 @@ class LanguageSettingsPage extends ConsumerWidget {
     final languageCode = currentLocale.languageCode;
 
     return Scaffold(
-      backgroundColor: isDark 
-          ? AppColors.surfaceDark 
-          : Colors.white,
+      backgroundColor: isDark ? AppColors.surfaceDark : Colors.white,
       appBar: AppBar(
-        backgroundColor: isDark 
-            ? AppColors.surfaceDarkElevated 
-            : Colors.white,
-        foregroundColor: isDark 
-            ? AppColors.textPrimaryDark 
+        backgroundColor: isDark ? AppColors.surfaceDarkElevated : Colors.white,
+        foregroundColor: isDark
+            ? AppColors.textPrimaryDark
             : const Color(0xFF2D3748),
         elevation: 0,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios_rounded,
-            color: isDark 
-                ? AppColors.textPrimaryDark 
-                : const Color(0xFF2D3748),
+            color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D3748),
           ),
           onPressed: () => context.go('/'),
         ),
         title: Text(
           AppLocalizationsHelper.translate('language', languageCode),
           style: TextStyle(
-            color: isDark 
-                ? AppColors.textPrimaryDark 
-                : const Color(0xFF2D3748),
+            color: isDark ? AppColors.textPrimaryDark : const Color(0xFF2D3748),
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
@@ -53,9 +45,7 @@ class LanguageSettingsPage extends ConsumerWidget {
           preferredSize: const Size.fromHeight(1),
           child: Container(
             height: 1,
-            color: isDark 
-                ? AppColors.dividerDark 
-                : Colors.grey[200]!,
+            color: isDark ? AppColors.dividerDark : Colors.grey[200]!,
           ),
         ),
       ),
@@ -64,16 +54,16 @@ class LanguageSettingsPage extends ConsumerWidget {
           // Vietnamese option
           _buildLanguageOption(
             context: context,
-            locale: LocaleService.defaultLocale,
+            locale: LocaleService.vietnameseLocale,
             title: 'Tiếng Việt',
             subtitle: 'Vietnamese',
             isSelected: LocaleService.isVietnamese(currentLocale),
             languageCode: languageCode,
             onTap: () {
-              localeNotifier.setLocale(LocaleService.defaultLocale);
+              localeNotifier.setLocale(LocaleService.vietnameseLocale);
             },
           ),
-          
+
           // English option
           _buildLanguageOption(
             context: context,
@@ -102,20 +92,16 @@ class LanguageSettingsPage extends ConsumerWidget {
   }) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        color: isDark 
-            ? AppColors.surfaceDarkElevated 
-            : Colors.white,
+        color: isDark ? AppColors.surfaceDarkElevated : Colors.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected
               ? theme.colorScheme.primary
-              : (isDark 
-                  ? AppColors.borderDark 
-                  : Colors.grey[300]!),
+              : (isDark ? AppColors.borderDark : Colors.grey[300]!),
           width: isSelected ? 2 : 1,
         ),
       ),
@@ -123,30 +109,21 @@ class LanguageSettingsPage extends ConsumerWidget {
         title: Text(
           title,
           style: TextStyle(
-            color: isDark 
-                ? AppColors.textPrimaryDark 
-                : Colors.black87,
+            color: isDark ? AppColors.textPrimaryDark : Colors.black87,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
-            color: isDark 
-                ? AppColors.textSecondaryDark 
-                : Colors.grey[600]!,
+            color: isDark ? AppColors.textSecondaryDark : Colors.grey[600]!,
           ),
         ),
-      trailing: isSelected
-            ? Icon(
-                Icons.check_circle,
-                color: theme.colorScheme.primary,
-              )
-          : null,
-      onTap: onTap,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        trailing: isSelected
+            ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
+            : null,
+        onTap: onTap,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     );
   }

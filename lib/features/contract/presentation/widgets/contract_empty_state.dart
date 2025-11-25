@@ -5,59 +5,83 @@ import '../../../../core/localization/app_localizations_helper.dart';
 
 /// Widget hiển thị trạng thái empty khi không có hợp đồng
 class ContractEmptyState extends ConsumerWidget {
-  final VoidCallback? onRefresh;
-
-  const ContractEmptyState({super.key, this.onRefresh});
+  const ContractEmptyState({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
-    
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.file_copy_outlined,
-              size: 100,
-              color: theme.colorScheme.primary.withOpacity(0.2),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              AppLocalizationsHelper.translate('noContractsYet', languageCode),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
+    final isDark = theme.brightness == Brightness.dark;
+
+    return ListView(
+      physics: const AlwaysScrollableScrollPhysics(),
+      padding: const EdgeInsets.only(top: 24),
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.file_copy_outlined,
+                size: 100,
+                color: theme.colorScheme.primary.withOpacity(0.2),
               ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              AppLocalizationsHelper.translate('contactLandlordToCreateContract', languageCode),
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-            if (onRefresh != null) ...[
-              const SizedBox(height: 32),
-              ElevatedButton.icon(
-                onPressed: onRefresh,
-                icon: const Icon(Icons.refresh_rounded),
-                label: Text(AppLocalizationsHelper.translate('refresh', languageCode)),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                  textStyle: theme.textTheme.labelLarge,
+              const SizedBox(height: 24),
+              Text(
+                AppLocalizationsHelper.translate(
+                  'noContractsYet',
+                  languageCode,
+                ),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
-            ]
-          ],
+              const SizedBox(height: 12),
+              Text(
+                AppLocalizationsHelper.translate(
+                  'contactLandlordToCreateContract',
+                  languageCode,
+                ),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.arrow_downward_rounded,
+                    size: 16,
+                    color: isDark
+                        ? theme.colorScheme.onSurfaceVariant.withOpacity(0.6)
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    AppLocalizationsHelper.translate(
+                      'pullDownToRefresh',
+                      languageCode,
+                    ),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant.withOpacity(
+                        0.7,
+                      ),
+                      fontStyle: FontStyle.italic,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
-      ),
+      ],
     );
   }
 }

@@ -255,9 +255,25 @@
   "@refresh": {
     "description": "Refresh button text"
   },
+  "pullDownToRefresh": "Pull down to refresh",
+  "@pullDownToRefresh": {
+    "description": "Hint text for pull-to-refresh functionality"
+  },
   "startAConversationToSeeItHere": "Start a conversation to see it here.",
   "@startAConversationToSeeItHere": {
     "description": "Subtitle for empty chat list"
+  },
+  "noConversationsYet": "No conversations yet",
+  "@noConversationsYet": {
+    "description": "Title for empty chat list"
+  },
+  "chatWillAppearWhenYouHaveContract": "Chat will appear when you have a contract connected with your landlord. This will create a conversation between you and your landlord.",
+  "@chatWillAppearWhenYouHaveContract": {
+    "description": "Message explaining that chat appears when user has a contract with landlord"
+  },
+  "pleaseContactLandlord": "Please contact your landlord",
+  "@pleaseContactLandlord": {
+    "description": "Instruction to contact landlord"
   },
   "noInvoicesFound": "No Invoices Found",
   "@noInvoicesFound": {
@@ -338,6 +354,23 @@
       }
     }
   },
+  "deleteAccount": "Delete account",
+  "deleteAccountDescription": "This action will permanently delete your account and data. It cannot be undone.",
+  "deleteAccountReasonPlaceholder": "Reason (optional)",
+  "deleteAccountReasonHint": "Share a short reason to help us improve (optional)",
+  "deleteAccountAcknowledge": "I understand that my account and data will be permanently deleted.",
+  "deleteAccountConfirm": "Delete account",
+  "deleteAccountSuccess": "Your account has been deleted.",
+  "deleteAccountFailed": "Unable to delete your account. Please try again.",
+  "deleteAccountInProgress": "Deleting your account…",
+  "deleteAccountDeletingData": "Deleting data, please do not operate",
+  "deleteAccountLongDescription": "Once you confirm, we will permanently erase your profile, rental data, chat history, and notifications. This follows Apple's account-deletion policy.",
+  "deleteAccountDataWipe": "All personal data and preferences will be removed immediately.",
+  "deleteAccountIrreversible": "This action cannot be undone and you will lose access right away.",
+  "deleteReasonPrivacy": "Privacy concerns",
+  "deleteReasonNoLongerRenting": "I am no longer renting with StayMate",
+  "deleteReasonBuggy": "The app has issues/bugs",
+  "deleteReasonOther": "Other reasons",
   "secureLogin": "Secure Login",
   "@secureLogin": {
     "description": "Secure login label"

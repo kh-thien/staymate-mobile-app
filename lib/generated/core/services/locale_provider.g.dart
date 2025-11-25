@@ -46,7 +46,7 @@ final class AppLocaleProvider extends $NotifierProvider<AppLocale, Locale> {
   }
 }
 
-String _$appLocaleHash() => r'd4b39ebaaf13f211dfd419cec8afeb3198621364';
+String _$appLocaleHash() => r'a37d506b24b5e86200b7ff00af73f3af1cae0de3';
 
 /// Provider for current locale
 /// keepAlive: true để đảm bảo provider không bị dispose khi không có watchers

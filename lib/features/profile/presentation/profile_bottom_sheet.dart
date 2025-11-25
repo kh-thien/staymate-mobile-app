@@ -55,30 +55,36 @@ class ProfileBottomSheet extends ConsumerWidget {
                   // Profile header
                   Row(
                     children: [
-                      CircleAvatar(
+                      Builder(
+                        builder: (_) {
+                          final avatarValue =
+                              user?.userMetadata?['avatar_url'];
+                          String? normalizedAvatar;
+                          if (avatarValue is String &&
+                              avatarValue.isNotEmpty) {
+                            normalizedAvatar = avatarValue;
+                          }
+                          final hasAvatar = normalizedAvatar != null;
+                          ImageProvider? imageProvider;
+                          if (normalizedAvatar != null) {
+                            imageProvider = NetworkImage(normalizedAvatar);
+                          }
+                          return CircleAvatar(
                         radius: 30,
                         backgroundColor: isDark 
                             ? AppColors.surfaceDark 
                             : Colors.grey[200]!,
-                        backgroundImage:
-                            user?.userMetadata?['avatar_url'] != null &&
-                            user!.userMetadata!['avatar_url'].toString().isNotEmpty
-                            ? NetworkImage(
-                                user.userMetadata!['avatar_url'],
-                              )
-                            : null,
-                        child: user?.userMetadata?['avatar_url'] == null ||
-                            user!.userMetadata!['avatar_url'].toString().isEmpty
-                            ? Icon(
+                            backgroundImage: imageProvider,
+                            child: hasAvatar
+                                ? null
+                                : Icon(
                                 Icons.person,
                                 size: 40,
                                 color: isDark 
                                     ? AppColors.textSecondaryDark 
                                     : Colors.grey,
-                              )
-                            : null,
-                        onBackgroundImageError: (exception, stackTrace) {
-                          // Handle image loading error silently
+                                  ),
+                          );
                         },
                       ),
                       const SizedBox(width: 16),

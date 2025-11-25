@@ -51,13 +51,15 @@ class LanguageSelector extends ConsumerWidget {
     if (isCompact) {
       final flagEmoji = getFlagEmoji(locale);
       final langCode = getLanguageCode(locale);
-      
+
       return PopupMenuButton<Locale>(
         tooltip: AppLocalizationsHelper.translate('language', languageCode),
         onSelected: (Locale selectedLocale) async {
           await localeNotifier.setLocale(selectedLocale);
           // Debug: Print selected locale
-          debugPrint('🌐 User selected locale: ${selectedLocale.languageCode}_${selectedLocale.countryCode}');
+          debugPrint(
+            '🌐 User selected locale: ${selectedLocale.languageCode}_${selectedLocale.countryCode}',
+          );
         },
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -77,10 +79,7 @@ class LanguageSelector extends ConsumerWidget {
                 size: iconSize ?? 20,
               ),
               const SizedBox(width: 6),
-              Text(
-                flagEmoji,
-                style: const TextStyle(fontSize: 16),
-              ),
+              Text(flagEmoji, style: const TextStyle(fontSize: 16)),
               const SizedBox(width: 4),
               Text(
                 langCode,
@@ -95,11 +94,11 @@ class LanguageSelector extends ConsumerWidget {
         ),
         itemBuilder: (BuildContext context) => [
           PopupMenuItem<Locale>(
-            value: LocaleService.defaultLocale,
+            value: LocaleService.vietnameseLocale,
             child: Row(
               children: [
                 Text(
-                  getFlagEmoji(LocaleService.defaultLocale),
+                  getFlagEmoji(LocaleService.vietnameseLocale),
                   style: const TextStyle(fontSize: 20),
                 ),
                 const SizedBox(width: 12),
@@ -157,7 +156,7 @@ class LanguageSelector extends ConsumerWidget {
     // Full mode - Hiển thị button với flag + code
     final flagEmoji = getFlagEmoji(locale);
     final langCode = getLanguageCode(locale);
-    
+
     return PopupMenuButton<Locale>(
       offset: const Offset(0, 40),
       child: Container(
@@ -178,10 +177,7 @@ class LanguageSelector extends ConsumerWidget {
               color: Theme.of(context).colorScheme.onSurface,
             ),
             const SizedBox(width: 6),
-            Text(
-              flagEmoji,
-              style: const TextStyle(fontSize: 16),
-            ),
+            Text(flagEmoji, style: const TextStyle(fontSize: 16)),
             const SizedBox(width: 4),
             Text(
               langCode,
@@ -203,15 +199,17 @@ class LanguageSelector extends ConsumerWidget {
       onSelected: (Locale selectedLocale) async {
         await localeNotifier.setLocale(selectedLocale);
         // Debug: Print selected locale
-        debugPrint('🌐 User selected locale: ${selectedLocale.languageCode}_${selectedLocale.countryCode}');
+        debugPrint(
+          '🌐 User selected locale: ${selectedLocale.languageCode}_${selectedLocale.countryCode}',
+        );
       },
       itemBuilder: (BuildContext context) => [
         PopupMenuItem<Locale>(
-          value: LocaleService.defaultLocale,
+          value: LocaleService.vietnameseLocale,
           child: Row(
             children: [
               Text(
-                getFlagEmoji(LocaleService.defaultLocale),
+                getFlagEmoji(LocaleService.vietnameseLocale),
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(width: 12),

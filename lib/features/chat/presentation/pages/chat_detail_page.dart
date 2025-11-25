@@ -60,7 +60,7 @@ class ChatDetailPage extends HookConsumerWidget {
           // Silently fail - not critical
         }
       });
-      
+
       // Mark as read when leaving chat (pop back)
       return () {
         Future.delayed(Duration.zero, () async {
@@ -110,8 +110,14 @@ class ChatDetailPage extends HookConsumerWidget {
                   data: (messages) {
                     if (messages.isEmpty) {
                       return ChatEmptyState(
-                        message:
-                            '${AppLocalizationsHelper.translate('noMessagesYet', languageCode)}\n${AppLocalizationsHelper.translate('startConversation', languageCode)}',
+                        customMessage: AppLocalizationsHelper.translate(
+                          'noMessagesYet',
+                          languageCode,
+                        ),
+                        customSubtitle: AppLocalizationsHelper.translate(
+                          'startConversation',
+                          languageCode,
+                        ),
                       );
                     }
 
@@ -177,7 +183,10 @@ class ChatDetailPage extends HookConsumerWidget {
                                       ).showSnackBar(
                                         SnackBar(
                                           content: Text(
-                                            AppLocalizationsHelper.translate('cannotResendFile', languageCode),
+                                            AppLocalizationsHelper.translate(
+                                              'cannotResendFile',
+                                              languageCode,
+                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -208,7 +217,8 @@ class ChatDetailPage extends HookConsumerWidget {
                             TextSpan(
                               children: [
                                 TextSpan(
-                                  text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                                  text:
+                                      '${AppLocalizationsHelper.translate('error', languageCode)}: ',
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.red,
@@ -272,7 +282,9 @@ class ChatDetailPage extends HookConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('${AppLocalizationsHelper.translate('error', languageCode)}: ${e.toString()}'),
+                          content: Text(
+                            '${AppLocalizationsHelper.translate('error', languageCode)}: ${e.toString()}',
+                          ),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -285,19 +297,34 @@ class ChatDetailPage extends HookConsumerWidget {
                     final source = await showDialog<ImageSource>(
                       context: context,
                       builder: (context) => AlertDialog(
-                        title: Text(AppLocalizationsHelper.translate('selectImageFrom', languageCode)),
+                        title: Text(
+                          AppLocalizationsHelper.translate(
+                            'selectImageFrom',
+                            languageCode,
+                          ),
+                        ),
                         content: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             ListTile(
                               leading: const Icon(Icons.camera_alt),
-                              title: Text(AppLocalizationsHelper.translate('camera', languageCode)),
+                              title: Text(
+                                AppLocalizationsHelper.translate(
+                                  'camera',
+                                  languageCode,
+                                ),
+                              ),
                               onTap: () =>
                                   Navigator.pop(context, ImageSource.camera),
                             ),
                             ListTile(
                               leading: const Icon(Icons.photo_library),
-                              title: Text(AppLocalizationsHelper.translate('gallery', languageCode)),
+                              title: Text(
+                                AppLocalizationsHelper.translate(
+                                  'gallery',
+                                  languageCode,
+                                ),
+                              ),
                               onTap: () =>
                                   Navigator.pop(context, ImageSource.gallery),
                             ),
@@ -314,13 +341,15 @@ class ChatDetailPage extends HookConsumerWidget {
                     // Request appropriate permission based on source
                     bool hasPermission = false;
                     if (source == ImageSource.camera) {
-                      hasPermission = await PermissionHelper.requestCameraWithFeedback(
-                        context,
-                      );
+                      hasPermission =
+                          await PermissionHelper.requestCameraWithFeedback(
+                            context,
+                          );
                     } else {
-                      hasPermission = await PermissionHelper.requestPhotosWithFeedback(
-                        context,
-                      );
+                      hasPermission =
+                          await PermissionHelper.requestPhotosWithFeedback(
+                            context,
+                          );
                     }
 
                     if (!hasPermission) {

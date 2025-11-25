@@ -19,26 +19,32 @@ class AppLocale extends _$AppLocale {
   /// Initialize locale by loading from SharedPreferences
   void _initializeLocale() {
     // Load saved locale asynchronously and update state
-    LocaleService.getSavedLocale().then((savedLocale) {
-      state = savedLocale;
-    }).catchError((e) {
-      // Use default locale on error (already set in build())
-    });
+    LocaleService.getSavedLocale()
+        .then((savedLocale) {
+          state = savedLocale;
+        })
+        .catchError((e) {
+          // Use default locale on error (already set in build())
+        });
   }
 
   /// Change locale
   Future<void> setLocale(Locale locale) async {
-    debugPrint('🌐 Changing locale to: ${locale.languageCode}_${locale.countryCode}');
+    debugPrint(
+      '🌐 Changing locale to: ${locale.languageCode}_${locale.countryCode}',
+    );
     await LocaleService.saveLocale(locale);
     state = locale;
-    debugPrint('✅ Locale changed to: ${state.languageCode}_${state.countryCode}');
+    debugPrint(
+      '✅ Locale changed to: ${state.languageCode}_${state.countryCode}',
+    );
   }
 
   /// Toggle between Vietnamese and English
   Future<void> toggleLocale() async {
     final newLocale = LocaleService.isVietnamese(state)
         ? LocaleService.englishLocale
-        : LocaleService.defaultLocale;
+        : LocaleService.vietnameseLocale;
     await setLocale(newLocale);
   }
 

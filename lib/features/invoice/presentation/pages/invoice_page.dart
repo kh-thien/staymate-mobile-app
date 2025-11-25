@@ -14,9 +14,6 @@ import '../../../../shared/widgets/skeleton_loader.dart';
 import '../../../../shared/widgets/empty_state.dart';
 import '../../../../shared/providers/app_bar_provider.dart';
 
-
-
-
 class InvoicePage extends HookConsumerWidget {
   const InvoicePage({super.key});
 
@@ -92,7 +89,10 @@ class InvoicePage extends HookConsumerWidget {
                 bottom: false,
                 child: Container(
                   height: 60,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: TabBar(
                     controller: tabController,
                     isScrollable: true,
@@ -117,23 +117,44 @@ class InvoicePage extends HookConsumerWidget {
                     tabs: [
                       Tab(
                         icon: const Icon(Icons.receipt_long_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('all', languageCode),
+                        text: AppLocalizationsHelper.translate(
+                          'all',
+                          languageCode,
+                        ),
                       ),
                       Tab(
-                        icon: const Icon(Icons.pending_actions_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('unpaidShort', languageCode),
+                        icon: const Icon(
+                          Icons.pending_actions_rounded,
+                          size: 18,
+                        ),
+                        text: AppLocalizationsHelper.translate(
+                          'unpaidShort',
+                          languageCode,
+                        ),
                       ),
                       Tab(
-                        icon: const Icon(Icons.hourglass_empty_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('processing', languageCode),
+                        icon: const Icon(
+                          Icons.hourglass_empty_rounded,
+                          size: 18,
+                        ),
+                        text: AppLocalizationsHelper.translate(
+                          'processing',
+                          languageCode,
+                        ),
                       ),
                       Tab(
                         icon: const Icon(Icons.check_circle_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('paidShort', languageCode),
+                        text: AppLocalizationsHelper.translate(
+                          'paidShort',
+                          languageCode,
+                        ),
                       ),
                       Tab(
                         icon: const Icon(Icons.error_rounded, size: 18),
-                        text: AppLocalizationsHelper.translate('overdue', languageCode),
+                        text: AppLocalizationsHelper.translate(
+                          'overdue',
+                          languageCode,
+                        ),
                       ),
                     ],
                   ),
@@ -147,7 +168,6 @@ class InvoicePage extends HookConsumerWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerLowest,
-                
               ),
               child: ClipRRect(
                 borderRadius: const BorderRadius.only(
@@ -193,10 +213,14 @@ class _InvoiceListView extends ConsumerWidget {
           if (invoices.isEmpty) {
             return EmptyState(
               icon: Icons.receipt_long_outlined,
-              title: AppLocalizationsHelper.translate('noInvoicesFound', languageCode),
-              subtitle: AppLocalizationsHelper.translate('invoicesOfThisCategoryWillAppearHere', languageCode),
-              onRefresh: () => ref.invalidate(filteredInvoicesStreamProvider),
-              refreshLabel: AppLocalizationsHelper.translate('refresh', languageCode),
+              title: AppLocalizationsHelper.translate(
+                'noInvoicesFound',
+                languageCode,
+              ),
+              subtitle: AppLocalizationsHelper.translate(
+                'invoicesOfThisCategoryWillAppearHere',
+                languageCode,
+              ),
             );
           }
 
@@ -217,7 +241,7 @@ class _InvoiceListView extends ConsumerWidget {
             },
           );
         },
-                loading: () => ListView.builder(
+        loading: () => ListView.builder(
           padding: const EdgeInsets.only(
             left: 16,
             right: 16,
@@ -243,7 +267,8 @@ class _InvoiceListView extends ConsumerWidget {
                   TextSpan(
                     children: [
                       TextSpan(
-                        text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                        text:
+                            '${AppLocalizationsHelper.translate('error', languageCode)}: ',
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.red,
@@ -252,10 +277,7 @@ class _InvoiceListView extends ConsumerWidget {
                       ),
                       TextSpan(
                         text: error.toString(),
-                        style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 14,
-                        ),
+                        style: const TextStyle(color: Colors.red, fontSize: 14),
                       ),
                     ],
                   ),
@@ -307,14 +329,10 @@ class _InvoiceCard extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: isDark 
-            ? AppColors.surfaceDarkElevated 
-            : Colors.white,
+        color: isDark ? AppColors.surfaceDarkElevated : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark 
-              ? AppColors.borderDark 
-              : Colors.grey.shade300,
+          color: isDark ? AppColors.borderDark : Colors.grey.shade300,
           width: 1.5,
         ),
         boxShadow: isDark
@@ -356,7 +374,10 @@ class _InvoiceCard extends ConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      AppLocalizationsHelper.translate('paymentRecorded', languageCode),
+                      AppLocalizationsHelper.translate(
+                        'paymentRecorded',
+                        languageCode,
+                      ),
                     ),
                     backgroundColor: Colors.green,
                     behavior: SnackBarBehavior.floating,
@@ -441,14 +462,17 @@ class _InvoiceCard extends ConsumerWidget {
                     children: [
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          AppLocalizationsHelper.translate('totalAmount', languageCode),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                            fontWeight: FontWeight.w500,
+                        children: [
+                          Text(
+                            AppLocalizationsHelper.translate(
+                              'totalAmount',
+                              languageCode,
+                            ),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
                           const SizedBox(height: 4),
                           Text(
                             currencyFormatter.format(invoice.finalAmount),

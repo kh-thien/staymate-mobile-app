@@ -19,7 +19,7 @@ class AppLocalizationsHelper {
       'confirmPassword': 'Xác nhận mật khẩu',
       'fullName': 'Họ và tên',
       'logout': 'Đăng xuất',
-      
+
       // Validation messages
       'pleaseEnterEmail': 'Vui lòng nhập email',
       'invalidEmail': 'Email không hợp lệ',
@@ -28,27 +28,40 @@ class AppLocalizationsHelper {
       'passwordMinLength': 'Mật khẩu phải có ít nhất 6 ký tự',
       'pleaseCheckInternetConnection': 'Vui lòng kiểm tra lại kết nối mạng',
       'pleaseFillAllFields': 'Vui lòng nhập đầy đủ thông tin',
-      'authInvalidCredentials': 'Email hoặc mật khẩu không đúng. Vui lòng thử lại.',
-      'authEmailNotConfirmed': 'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư của bạn.',
-      'authUserNotFound': 'Tài khoản không tồn tại. Vui lòng kiểm tra lại email.',
-      'authEmailAlreadyRegistered': 'Email này đã được đăng ký. Vui lòng đăng nhập hoặc sử dụng email khác.',
-      'authWeakPassword': 'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn.',
+      'authInvalidCredentials':
+          'Email hoặc mật khẩu không đúng. Vui lòng thử lại.',
+      'authEmailNotConfirmed':
+          'Email chưa được xác nhận. Vui lòng kiểm tra hộp thư của bạn.',
+      'authUserNotFound':
+          'Tài khoản không tồn tại. Vui lòng kiểm tra lại email.',
+      'authEmailAlreadyRegistered':
+          'Email này đã được đăng ký. Vui lòng đăng nhập hoặc sử dụng email khác.',
+      'authWeakPassword':
+          'Mật khẩu quá yếu. Vui lòng sử dụng mật khẩu mạnh hơn.',
       'authInvalidEmail': 'Email không hợp lệ. Vui lòng kiểm tra lại.',
-      'authTooManyRequests': 'Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.',
+      'authTooManyRequests':
+          'Quá nhiều yêu cầu. Vui lòng thử lại sau vài phút.',
       'authInvalidPassword': 'Mật khẩu không hợp lệ. Vui lòng thử lại.',
       'authOperationCancelled': 'Thao tác đã bị hủy.',
-      'authGoogleSignInFailed': 'Đăng nhập với Google thất bại. Vui lòng thử lại.',
+      'authGoogleSignInFailed':
+          'Đăng nhập với Google thất bại. Vui lòng thử lại.',
       'authGoogleSignInCancelled': 'Đăng nhập với Google đã bị hủy.',
-      'authAppleSignInFailed': 'Đăng nhập với Apple thất bại. Vui lòng thử lại.',
+      'authAppleSignInFailed':
+          'Đăng nhập với Apple thất bại. Vui lòng thử lại.',
       'authAppleSignInCancelled': 'Đăng nhập với Apple đã bị hủy.',
-      'authAppleIdTokenError': 'Không thể lấy thông tin từ Apple. Vui lòng thử lại.',
-      'authAppleAudienceError': 'Lỗi cấu hình Apple Sign-In: Service ID không khớp. Vui lòng kiểm tra Service ID trong Supabase Dashboard (phải là com.staymate.mobile.web, không phải com.staymate.mobile).',
-      'authAdminBlocked': 'Ứng dụng này dành riêng cho người thuê, tính năng admin sẽ được phát triển sau.',
+      'authAppleIdTokenError':
+          'Không thể lấy thông tin từ Apple. Vui lòng thử lại.',
+      'authAppleAudienceError':
+          'Lỗi cấu hình Apple Sign-In: Service ID không khớp. Vui lòng kiểm tra Service ID trong Supabase Dashboard (phải là com.staymate.mobile.web, không phải com.staymate.mobile).',
+      'authAdminBlocked':
+          'Ứng dụng này dành riêng cho người thuê, tính năng admin sẽ được phát triển sau.',
       'authUnknownError': 'Đã xảy ra lỗi. Vui lòng thử lại.',
+      'authServerError': 'Máy chủ đang gặp sự cố. Vui lòng thử lại sau.',
       'authTimeout': 'Yêu cầu quá thời gian chờ. Vui lòng thử lại.',
       'authPermissionDenied': 'Bạn không có quyền thực hiện thao tác này.',
       'authDataNotFound': 'Không tìm thấy dữ liệu. Vui lòng thử lại.',
-      'authGoogleIdTokenError': 'Không thể lấy thông tin từ Google. Vui lòng thử lại.',
+      'authGoogleIdTokenError':
+          'Không thể lấy thông tin từ Google. Vui lòng thử lại.',
       'authSignUpEmailConfirmationRequired':
           'Đăng ký thành công! Vui lòng kiểm tra email và xác nhận tài khoản trước khi đăng nhập.',
       'signUpAccountTitle': 'Đăng ký tài khoản',
@@ -57,7 +70,7 @@ class AppLocalizationsHelper {
       'signUpErrorPrefix': 'Lỗi đăng ký',
       'orLabel': 'hoặc',
       'alreadyHaveAccount': 'Đã có tài khoản? ',
-      
+
       // Navigation
       'home': 'Trang chủ',
       'contracts': 'Hợp đồng',
@@ -70,7 +83,8 @@ class AppLocalizationsHelper {
       'language': 'Ngôn ngữ',
       'checkingNotificationStatus': 'Đang kiểm tra...',
       'notificationTypes': 'Loại thông báo',
-      'notificationTypesDescription': 'Nhận thông báo về các cập nhật quan trọng:',
+      'notificationTypesDescription':
+          'Nhận thông báo về các cập nhật quan trọng:',
       'notificationEnabled': 'Đã bật',
       'notificationDisabled': 'Đã tắt',
       'notificationNotGranted': 'Chưa cấp quyền',
@@ -84,8 +98,10 @@ class AppLocalizationsHelper {
       'notificationTypeNewReportDesc': 'Cập nhật về báo cáo và sự cố',
       'openSystemSettings': 'Mở cài đặt hệ thống',
       'manageInSettings': 'Quản lý trong cài đặt',
-      'notificationPermissionDeniedMessage': 'Để bật thông báo, vui lòng mở Cài đặt hệ thống và bật quyền thông báo cho ứng dụng.',
-      'notificationEnableMessage': 'Bật công tắc phía trên để nhận thông báo từ ứng dụng.',
+      'notificationPermissionDeniedMessage':
+          'Để bật thông báo, vui lòng mở Cài đặt hệ thống và bật quyền thông báo cho ứng dụng.',
+      'notificationEnableMessage':
+          'Bật công tắc phía trên để nhận thông báo từ ứng dụng.',
       'notificationEnabledSuccess': 'Đã bật thông báo thành công!',
       'notificationPermissionDenied': 'Quyền thông báo bị từ chối',
       'errorCheckingStatus': 'Lỗi khi kiểm tra trạng thái',
@@ -96,11 +112,11 @@ class AppLocalizationsHelper {
       'themeDark': 'Tối',
       'themeSystem': 'Theo hệ thống',
       'selectTheme': 'Chọn giao diện',
-      
+
       // Language
       'vietnamese': 'Tiếng Việt',
       'english': 'Tiếng Anh',
-      
+
       // Empty states
       'noContracts': 'Không có hợp đồng nào',
       'noInvoices': 'Không có hoá đơn nào',
@@ -112,12 +128,16 @@ class AppLocalizationsHelper {
       'yourReportedIssuesWillAppearHere':
           'Các sự cố bạn báo cáo sẽ hiển thị ở đây khi được tạo.',
       'noChats': 'Không có cuộc trò chuyện nào',
+      'chatWillAppearWhenYouHaveContract':
+          'Chat sẽ xuất hiện khi bạn có hợp đồng kết nối với chủ nhà. Điều này sẽ tạo cuộc trò chuyện giữa bạn và chủ nhà.',
+      'pleaseContactLandlord': 'Vui lòng liên hệ chủ nhà',
       'startAConversationToSeeItHere':
           'Hãy bắt đầu cuộc trò chuyện để xem nội dung tại đây.',
       'noNotifications': 'Chưa có thông báo nào',
       'noMaintenanceWork': 'Chưa có công việc bảo trì',
       'noIssues': 'Chưa có sự cố gì',
-      
+      'pullDownToRefresh': 'Kéo xuống để làm mới',
+
       // Reports
       'createReport': 'Tạo báo cáo sự cố',
       'reportIssue': 'Báo cáo sự cố',
@@ -126,9 +146,10 @@ class AppLocalizationsHelper {
       'allGood': 'Yên ổn',
       'maintenanceWorkWillShowHere': 'Các công việc bảo trì sẽ hiển thị ở đây',
       'fromYourReport': 'Từ báo cáo của bạn',
-      'viewOnlyCannotEdit': 'Chỉ xem - Bạn không thể chỉnh sửa công việc bảo trì',
+      'viewOnlyCannotEdit':
+          'Chỉ xem - Bạn không thể chỉnh sửa công việc bảo trì',
       'hasImage': 'Có ảnh',
-      
+
       // Status
       'pending': 'Đang chờ',
       'approved': 'Đã duyệt',
@@ -146,7 +167,7 @@ class AppLocalizationsHelper {
       'waitingProcess': 'Chờ xử lý',
       'inProgress': 'Đang xử lý',
       'completed': 'Hoàn thành',
-      
+
       // Common
       'error': 'Lỗi',
       'tryAgain': 'Thử lại',
@@ -159,7 +180,7 @@ class AppLocalizationsHelper {
       'view': 'Xem',
       'send': 'Gửi',
       'pay': 'Thanh toán',
-      
+
       // Connectivity
       'online': 'Trực tuyến',
       'offline': 'Ngoại tuyến',
@@ -167,38 +188,63 @@ class AppLocalizationsHelper {
       'reconnected': 'Đã kết nối lại',
       'networkError': 'Lỗi kết nối mạng',
       'networkErrorTryAgain': 'Lỗi kết nối mạng. Vui lòng thử lại.',
-      'networkErrorCheckConnection': 'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet và thử lại.',
-      
+      'networkErrorCheckConnection':
+          'Lỗi kết nối mạng. Vui lòng kiểm tra kết nối internet và thử lại.',
+
       // Media
       'camera': 'Camera',
       'gallery': 'Thư viện',
       'file': 'Tệp',
-      
+
       // Time
       'justNow': 'Vừa xong',
       'yesterday': 'Hôm qua',
       'minutesAgo': '{minutes} phút trước',
       'hoursAgo': '{hours} giờ trước',
       'daysAgo': '{days} ngày trước',
-      
+
       // User
       'user': 'Người dùng',
       'userId': 'ID người dùng',
       'userIdLabel': 'ID: {userId}',
       'loginProvider': 'Nhà cung cấp đăng nhập',
       'loginProviderLabel': 'Đăng nhập bằng {provider}',
+      'deleteAccount': 'Xóa tài khoản',
+      'deleteAccountDescription':
+          'Hành động này sẽ xóa vĩnh viễn toàn bộ dữ liệu của bạn và không thể khôi phục.',
+      'deleteAccountReasonPlaceholder': 'Lý do (không bắt buộc)',
+      'deleteAccountReasonHint':
+          'Hãy chia sẻ nhanh lý do để chúng tôi cải thiện (không bắt buộc).',
+      'deleteAccountAcknowledge':
+          'Tôi hiểu rằng tài khoản và dữ liệu của mình sẽ bị xóa vĩnh viễn.',
+      'deleteAccountConfirm': 'Xóa tài khoản',
+      'deleteAccountSuccess': 'Tài khoản đã được xóa.',
+      'deleteAccountFailed': 'Không thể xóa tài khoản. Vui lòng thử lại.',
+      'deleteAccountInProgress': 'Đang xóa tài khoản...',
+      'deleteAccountDeletingData': 'Đang xóa dữ liệu, vui lòng không thao tác',
+      'deleteAccountLongDescription':
+          'Sau khi xác nhận, chúng tôi sẽ xóa vĩnh viễn hồ sơ, hợp đồng, hóa đơn và lịch sử trò chuyện của bạn theo yêu cầu của Apple.',
+      'deleteAccountDataWipe':
+          'Tất cả dữ liệu cá nhân và tùy chỉnh sẽ bị xóa ngay lập tức.',
+      'deleteAccountIrreversible':
+          'Hành động này không thể hoàn tác và bạn sẽ mất quyền truy cập ngay.',
+      'deleteReasonPrivacy': 'Lo ngại quyền riêng tư',
+      'deleteReasonNoLongerRenting': 'Không còn thuê nhà với StayMate',
+      'deleteReasonBuggy': 'Ứng dụng lỗi hoặc không ổn định',
+      'deleteReasonOther': 'Lý do khác',
       'secureLogin': 'Đăng nhập an toàn',
       'memberSince': 'Thành viên từ {date}',
-      
+
       // Auth Header
       'appDescription': 'Ứng dụng theo dõi phòng trọ tiện lợi',
       'appDescriptionSubtitle': 'dành riêng cho người thuê',
-      
+
       // Success messages
       'signInSuccess': 'Đăng nhập thành công!',
       'signUpSuccess': 'Đăng ký thành công! Chào mừng đến với StayMate!',
-      'paymentRecorded': 'Đã ghi nhận thanh toán. Chủ nhà sẽ xác nhận trong thời gian sớm nhất.',
-      
+      'paymentRecorded':
+          'Đã ghi nhận thanh toán. Chủ nhà sẽ xác nhận trong thời gian sớm nhất.',
+
       // Contracts
       'contractList': 'Danh sách hợp đồng',
       'contractListCount': 'Danh sách hợp đồng ({count})',
@@ -208,21 +254,22 @@ class AppLocalizationsHelper {
       'contractCount': 'Số hợp đồng',
       'youHaveContracts': 'Bạn có {count} hợp đồng thuê trọ',
       'noContractYet': 'Chưa có hợp đồng',
-      'contactLandlordToCreateRentalContract': 'Liên hệ với chủ nhà để tạo hợp đồng thuê trọ',
-      
+      'contactLandlordToCreateRentalContract':
+          'Liên hệ với chủ nhà để tạo hợp đồng thuê trọ',
+
       // Invoices
       'totalAmount': 'Tổng tiền',
       'dueDate': 'Hạn',
       'cannotNavigate': 'Không thể điều hướng',
-      
+
       // Notifications
       'noNotificationsYet': 'Chưa có thông báo nào',
-      
+
       // Maintenance
       'create': 'Tạo',
       'updated': 'Cập nhật',
       'created': 'Tạo',
-      
+
       // Chat
       'noConversationsYet': 'Chưa có cuộc trò chuyện nào',
       'noMessagesYet': 'Chưa có tin nhắn nào',
@@ -231,7 +278,7 @@ class AppLocalizationsHelper {
       'addressUnknown': 'Địa chỉ không xác định',
       'selectImageFrom': 'Chọn hình ảnh từ',
       'landlord': 'Chủ nhà',
-      
+
       // Contract Detail
       'contractDetail': 'Chi tiết hợp đồng',
       'contractInfo': 'Thông tin hợp đồng',
@@ -244,7 +291,7 @@ class AppLocalizationsHelper {
       'noticePeriod': 'Thời gian báo hủy',
       'days': 'ngày',
       'notAvailable': 'Chưa có',
-      
+
       // Report Detail
       'reportDetail': 'Chi tiết sự cố',
       'confirmCancel': 'Xác nhận huỷ',
@@ -252,7 +299,8 @@ class AppLocalizationsHelper {
       'cancelReport': 'Huỷ báo cáo',
       'reportCancelled': 'Đã huỷ báo cáo',
       'confirmDelete': 'Xác nhận xoá',
-      'confirmDeleteReport': 'Bạn có chắc muốn xoá báo cáo này? Hành động này không thể hoàn tác.',
+      'confirmDeleteReport':
+          'Bạn có chắc muốn xoá báo cáo này? Hành động này không thể hoàn tác.',
       'deleteReport': 'Xoá báo cáo',
       'reportDeleted': 'Đã xoá báo cáo',
       'reportNotFound': 'Không tìm thấy báo cáo',
@@ -266,12 +314,12 @@ class AppLocalizationsHelper {
       'timeInfo': 'Thông tin thời gian',
       'reportDate': 'Ngày báo cáo',
       'lastUpdated': 'Cập nhật lần cuối',
-      
+
       // Contract Card
       'contractNumber': 'Hợp đồng #{id}',
       'rent': 'Tiền thuê',
       'perMonth': '/tháng',
-      
+
       // Contract Detail Extended
       'viewContractFiles': 'Xem file hợp đồng ({count})',
       'noContractFiles': 'Chưa có file hợp đồng',
@@ -294,7 +342,7 @@ class AppLocalizationsHelper {
       'reason': 'Lý do',
       'note': 'Ghi chú',
       'earlyTermination': 'Chấm dứt sớm',
-      
+
       // Contract Files Viewer
       'downloading': 'Đang tải xuống...',
       'savedToDownload': 'Đã lưu vào thư mục Download',
@@ -307,7 +355,7 @@ class AppLocalizationsHelper {
       'download': 'Tải xuống',
       'cannotAccessStorage': 'Không thể truy cập thư mục lưu trữ',
       'platformNotSupported': 'Nền tảng không được hỗ trợ',
-      
+
       // Invoice Detail
       'invoiceDetail': 'Chi tiết hoá đơn',
       'invoiceInfo': 'Chi tiết hoá đơn',
@@ -323,9 +371,10 @@ class AppLocalizationsHelper {
       'choosePaymentMethod': 'Chọn phương thức thanh toán',
       'invoiceNumber': 'Số hóa đơn',
       'amount': 'Số tiền',
-      'qrPaymentUnderDevelopment': 'Chức năng thanh toán QR đang được phát triển',
+      'qrPaymentUnderDevelopment':
+          'Chức năng thanh toán QR đang được phát triển',
       'items': 'mục',
-      
+
       // Bank Transfer
       'bankTransferInfo': 'Thông tin chuyển khoản',
       'amountToTransfer': 'Số tiền cần chuyển',
@@ -337,9 +386,11 @@ class AppLocalizationsHelper {
       'transferContent': 'Nội dung chuyển khoản',
       'branch': 'Chi nhánh',
       'noteLabel': 'Lưu ý',
-      'transferNote': 'Ghi đúng nội dung chuyển khoản. Khi đã chắc chắn chuyển khoản, hãy bấm nút xác nhận bên dưới.',
+      'transferNote':
+          'Ghi đúng nội dung chuyển khoản. Khi đã chắc chắn chuyển khoản, hãy bấm nút xác nhận bên dưới.',
       'confirmPayment': 'Xác nhận thanh toán',
-      'confirmPaymentMessage': 'Bạn đã chuyển khoản theo đúng thông tin?\n\nHóa đơn sẽ chuyển sang trạng thái "Chờ duyệt" và chủ nhà sẽ xác nhận sau khi nhận được tiền.',
+      'confirmPaymentMessage':
+          'Bạn đã chuyển khoản theo đúng thông tin?\n\nHóa đơn sẽ chuyển sang trạng thái "Chờ duyệt" và chủ nhà sẽ xác nhận sau khi nhận được tiền.',
       'notYet': 'Chưa',
       'transferred': 'Đã chuyển khoản',
       'confirmTransferred': 'Xác nhận đã thanh toán',
@@ -358,16 +409,18 @@ class AppLocalizationsHelper {
       'copyAccountNumber': 'Sao chép số tài khoản',
       'copyAccountName': 'Sao chép tên tài khoản',
       'copyTransferContent': 'Sao chép nội dung chuyển khoản',
-      
+
       // Home
       'trackRoomRental': 'Theo dõi hợp đồng trọ',
-      'scanQRCodeOrEnterCode': 'Quét QR code hoặc nhập mã để kết nối với chủ nhà',
+      'scanQRCodeOrEnterCode':
+          'Quét QR code hoặc nhập mã để kết nối với chủ nhà',
       'scanQRCode': 'Quét QR Code',
       'enterCode': 'Nhập mã',
       'homeGreetingMorning': 'Chào buổi sáng ☀️',
       'homeGreetingAfternoon': 'Chào buổi chiều 🌤️',
       'homeGreetingEvening': 'Chào buổi tối 🌙',
-      'homeWelcomeMessage': 'Dùng quét hoặc nhập mã hợp đồng để xem thông tin hợp đồng',
+      'homeWelcomeMessage':
+          'Dùng quét hoặc nhập mã hợp đồng để xem thông tin hợp đồng',
       'quickActions': 'Truy cập nhanh',
       'upcomingPayment': 'Thanh toán sắp tới',
       'dueSoon': 'Đến hạn trong 3 ngày',
@@ -379,30 +432,31 @@ class AppLocalizationsHelper {
       'maintenanceInProgress': 'Đang bảo trì {{count}} đang được xử lý',
       'recentNotifications': 'Thông báo gần đây',
       'featureUnderDevelopment': 'Tính năng đang phát triển',
-      
+
       // Chat Room Card
       'roomLabel': 'Phòng',
-      
+
       // Message Input
       'enterMessage': 'Nhập tin nhắn...',
       'chooseAttachment': 'Chọn file đính kèm',
       'image': 'Hình ảnh',
       'selectImageFromLibrary': 'Chọn ảnh từ thư viện',
       'selectDocumentOrFile': 'Chọn tài liệu hoặc file khác',
-      
+
       // Owner Detail
       'ownerInfo': 'Thông tin chủ nhà',
       'rentalPropertyInfo': 'Thông tin nhà cho thuê',
       'propertyName': 'Tên nhà',
       'address': 'Địa chỉ',
-      
+
       // Profile Bottom Sheet
       'personalInfo': 'Thông tin cá nhân',
       'account': 'Tài khoản',
       'help': 'Trợ giúp',
       'loggedOutSuccessfully': 'Đã đăng xuất thành công!',
       'supportFromStayMate': 'Hỗ trợ từ ứng dụng Stay Mate',
-      'cannotOpenEmailApp': 'Không thể mở ứng dụng email. Vui lòng kiểm tra cài đặt của bạn.',
+      'cannotOpenEmailApp':
+          'Không thể mở ứng dụng email. Vui lòng kiểm tra cài đặt của bạn.',
       'anErrorOccurredMessage': 'Đã xảy ra lỗi',
       'info': 'Thông tin',
       'changePassword': 'Đổi mật khẩu',
@@ -414,7 +468,7 @@ class AppLocalizationsHelper {
       'passwordTooShort': 'Mật khẩu cần ít nhất 8 ký tự',
       'passwordChangeNotAvailableForSocialLogin':
           'Bạn đang đăng nhập bằng tài khoản mạng xã hội nên không thể đổi mật khẩu tại đây.',
-      
+
       // App Info
       'appInfo': 'Thông tin ứng dụng',
       'version': 'Phiên bản',
@@ -426,70 +480,82 @@ class AppLocalizationsHelper {
       'buildNumber': 'Số bản dựng',
       'noUpdateAvailable': 'Không có bản cập nhật nào',
       'updateAvailable': 'Có bản cập nhật',
-      'updateAvailableMessage': 'Có phiên bản mới của ứng dụng. Bạn có muốn cập nhật ngay bây giờ?',
+      'updateAvailableMessage':
+          'Có phiên bản mới của ứng dụng. Bạn có muốn cập nhật ngay bây giờ?',
       'later': 'Để sau',
       'update': 'Cập nhật',
       'checkingForUpdate': 'Đang kiểm tra...',
       'newVersionAvailable': 'Có phiên bản mới, vui lòng cập nhật',
       'updateCheckNotAvailable': 'Không thể kiểm tra cập nhật',
-      'updateCheckNotAvailableMessage': 'Tính năng này chỉ hoạt động với app được cài từ Play Store',
-      'updateCheckNotAvailableMessageIOS': 'Tính năng này chỉ hoạt động với app được cài từ App Store',
+      'updateCheckNotAvailableMessage':
+          'Tính năng này chỉ hoạt động với app được cài từ Play Store',
+      'updateCheckNotAvailableMessageIOS':
+          'Tính năng này chỉ hoạt động với app được cài từ App Store',
       'privacyPolicy': 'Chính sách quyền riêng tư',
       'termsOfService': 'Điều khoản dịch vụ',
       'openPrivacyPolicy': 'Mở chính sách quyền riêng tư',
       'openTermsOfService': 'Mở điều khoản dịch vụ',
       'iAgreeTo': 'Tôi đồng ý với',
       'and': 'và',
-      'mustAgreeToTerms': 'Vui lòng đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư',
-      
+      'mustAgreeToTerms':
+          'Vui lòng đồng ý với Điều khoản dịch vụ và Chính sách quyền riêng tư',
+
       // Onboarding
       'skip': 'Bỏ qua',
       'next': 'Tiếp theo',
       'back': 'Quay lại',
       'getStarted': 'Bắt đầu',
       'onboardingWelcomeTitle': 'Chào mừng đến với Stay Mate',
-      'onboardingWelcomeDescription': 'Ứng dụng quản lý thuê trọ tiện lợi, giúp bạn theo dõi hợp đồng, hóa đơn và giao tiếp với chủ nhà một cách dễ dàng.',
+      'onboardingWelcomeDescription':
+          'Ứng dụng quản lý thuê trọ tiện lợi, giúp bạn theo dõi hợp đồng, hóa đơn và giao tiếp với chủ nhà một cách dễ dàng.',
       'onboardingContractsTitle': 'Quản lý hợp đồng',
-      'onboardingContractsDescription': 'Xem chi tiết hợp đồng thuê, thông tin phòng, điều khoản và tải xuống tài liệu đính kèm.',
+      'onboardingContractsDescription':
+          'Xem chi tiết hợp đồng thuê, thông tin phòng, điều khoản và tải xuống tài liệu đính kèm.',
       'onboardingInvoicesTitle': 'Theo dõi hóa đơn',
-      'onboardingInvoicesDescription': 'Xem hóa đơn hàng tháng, thanh toán trực tuyến và theo dõi lịch sử thanh toán của bạn.',
+      'onboardingInvoicesDescription':
+          'Xem hóa đơn hàng tháng, thanh toán trực tuyến và theo dõi lịch sử thanh toán của bạn.',
       'onboardingReportsTitle': 'Báo cáo sự cố',
-      'onboardingReportsDescription': 'Báo cáo sự cố bảo trì kèm hình ảnh và theo dõi tiến độ xử lý từ chủ nhà.',
+      'onboardingReportsDescription':
+          'Báo cáo sự cố bảo trì kèm hình ảnh và theo dõi tiến độ xử lý từ chủ nhà.',
       'onboardingChatTitle': 'Nhắn tin với chủ nhà',
-      'onboardingChatDescription': 'Giao tiếp trực tiếp với chủ nhà, gửi tin nhắn, hình ảnh và tệp đính kèm một cách nhanh chóng.',
+      'onboardingChatDescription':
+          'Giao tiếp trực tiếp với chủ nhà, gửi tin nhắn, hình ảnh và tệp đính kèm một cách nhanh chóng.',
       'onboardingConnectTitle': 'Kết nối với chủ nhà',
-      'onboardingConnectDescription': 'Quét QR code hoặc nhập mã để liên kết tài khoản với chủ nhà và bắt đầu sử dụng các tính năng.',
-      
+      'onboardingConnectDescription':
+          'Quét QR code hoặc nhập mã để liên kết tài khoản với chủ nhà và bắt đầu sử dụng các tính năng.',
+
       // Feedback
       'sendFeedback': 'Gửi phản hồi',
       'feedbackSubject': 'Tiêu đề',
       'feedbackSubjectHint': 'Nhập tiêu đề phản hồi của bạn',
       'feedbackMessage': 'Nội dung',
-      'feedbackMessageHint': 'Mô tả chi tiết phản hồi, đề xuất hoặc báo cáo lỗi...',
-      'feedbackInfo': 'Phản hồi của bạn sẽ được gửi qua email. Chúng tôi sẽ xem xét và phản hồi trong thời gian sớm nhất.',
+      'feedbackMessageHint':
+          'Mô tả chi tiết phản hồi, đề xuất hoặc báo cáo lỗi...',
+      'feedbackInfo':
+          'Phản hồi của bạn sẽ được gửi qua email. Chúng tôi sẽ xem xét và phản hồi trong thời gian sớm nhất.',
       'feedbackSent': 'Cảm ơn bạn đã gửi phản hồi!',
-      
+
       // Contract Status Values
       'contractStatusDraft': 'Nháp',
       'contractStatusActive': 'Đang hoạt động',
       'contractStatusExpired': 'Hết hạn',
       'contractStatusTerminated': 'Đã chấm dứt',
-      
+
       // Contract Type Values
       'contractTypeRental': 'Hợp đồng thuê',
       'contractTypeUnknown': 'Không xác định',
-      
+
       // Payment Cycle Values
       'paymentCycleMonthly': 'Hàng tháng',
       'paymentCycleQuarterly': 'Hàng quý',
       'paymentCycleYearly': 'Hàng năm',
       'paymentCycleUnknown': 'Không xác định',
-      
+
       // Payment Day Type Values
       'paymentDayTypeFixedDays': 'Ngày cố định',
       'paymentDayTypeCustomDays': 'Ngày tùy chỉnh',
       'paymentDayTypeUnknown': 'Không xác định',
-      
+
       // Termination Reason Values
       'terminationReasonExpired': 'Hết hạn',
       'terminationReasonViolation': 'Vi phạm',
@@ -510,7 +576,7 @@ class AppLocalizationsHelper {
       'confirmPassword': 'Confirm Password',
       'fullName': 'Full Name',
       'logout': 'Logout',
-      
+
       // Validation messages
       'pleaseEnterEmail': 'Please enter your email',
       'invalidEmail': 'Invalid email address',
@@ -519,27 +585,38 @@ class AppLocalizationsHelper {
       'passwordMinLength': 'Password must be at least 6 characters',
       'pleaseCheckInternetConnection': 'Please check your internet connection',
       'pleaseFillAllFields': 'Please fill in all required fields',
-      'authInvalidCredentials': 'Incorrect email or password. Please try again.',
-      'authEmailNotConfirmed': 'Your email is not confirmed. Please check your inbox.',
+      'authInvalidCredentials':
+          'Incorrect email or password. Please try again.',
+      'authEmailNotConfirmed':
+          'Your email is not confirmed. Please check your inbox.',
       'authUserNotFound': 'Account not found. Please verify your email.',
-      'authEmailAlreadyRegistered': 'This email is already registered. Please sign in or use another email.',
-      'authWeakPassword': 'Password is too weak. Please use a stronger password.',
+      'authEmailAlreadyRegistered':
+          'This email is already registered. Please sign in or use another email.',
+      'authWeakPassword':
+          'Password is too weak. Please use a stronger password.',
       'authInvalidEmail': 'Invalid email address. Please check again.',
-      'authTooManyRequests': 'Too many requests. Please try again in a few minutes.',
+      'authTooManyRequests':
+          'Too many requests. Please try again in a few minutes.',
       'authInvalidPassword': 'Invalid password. Please try again.',
       'authOperationCancelled': 'The operation was cancelled.',
       'authGoogleSignInFailed': 'Google sign-in failed. Please try again.',
       'authGoogleSignInCancelled': 'Google sign-in was cancelled.',
       'authAppleSignInFailed': 'Apple sign-in failed. Please try again.',
       'authAppleSignInCancelled': 'Apple sign-in was cancelled.',
-      'authAppleIdTokenError': 'Unable to retrieve information from Apple. Please try again.',
-      'authAppleAudienceError': 'Apple Sign-In configuration error: Service ID mismatch. Please check Service ID in Supabase Dashboard (must be com.staymate.mobile.web, not com.staymate.mobile).',
-      'authAdminBlocked': 'This app is for tenants only. Admin features will be added later.',
+      'authAppleIdTokenError':
+          'Unable to retrieve information from Apple. Please try again.',
+      'authAppleAudienceError':
+          'Apple Sign-In configuration error: Service ID mismatch. Please check Service ID in Supabase Dashboard (must be com.staymate.mobile.web, not com.staymate.mobile).',
+      'authAdminBlocked':
+          'This app is for tenants only. Admin features will be added later.',
       'authUnknownError': 'An unexpected error occurred. Please try again.',
+      'authServerError': 'Server error. Please try again later.',
       'authTimeout': 'The request timed out. Please try again.',
-      'authPermissionDenied': 'You do not have permission to perform this action.',
+      'authPermissionDenied':
+          'You do not have permission to perform this action.',
       'authDataNotFound': 'Data not found. Please try again.',
-      'authGoogleIdTokenError': 'Unable to retrieve information from Google. Please try again.',
+      'authGoogleIdTokenError':
+          'Unable to retrieve information from Google. Please try again.',
       'authSignUpEmailConfirmationRequired':
           'Registration successful! Please check your email and verify before signing in.',
       'signUpAccountTitle': 'Create an account',
@@ -548,7 +625,7 @@ class AppLocalizationsHelper {
       'signUpErrorPrefix': 'Sign-up error',
       'orLabel': 'or',
       'alreadyHaveAccount': 'Already have an account? ',
-      
+
       // Navigation
       'home': 'Home',
       'contracts': 'Contracts',
@@ -561,22 +638,28 @@ class AppLocalizationsHelper {
       'language': 'Language',
       'checkingNotificationStatus': 'Checking...',
       'notificationTypes': 'Notification Types',
-      'notificationTypesDescription': 'Receive notifications about important updates:',
+      'notificationTypesDescription':
+          'Receive notifications about important updates:',
       'notificationEnabled': 'Enabled',
       'notificationDisabled': 'Disabled',
       'notificationNotGranted': 'Not granted',
       'notificationTypeNewMessage': 'New Messages',
-      'notificationTypeNewMessageDesc': 'Get notified when you receive new messages',
+      'notificationTypeNewMessageDesc':
+          'Get notified when you receive new messages',
       'notificationTypeContractUpdate': 'Contract Updates',
-      'notificationTypeContractUpdateDesc': 'Notifications about contract changes',
+      'notificationTypeContractUpdateDesc':
+          'Notifications about contract changes',
       'notificationTypeInvoice': 'Invoice Notifications',
-      'notificationTypeInvoiceDesc': 'Reminders about invoices that need payment',
+      'notificationTypeInvoiceDesc':
+          'Reminders about invoices that need payment',
       'notificationTypeNewReport': 'New Reports',
       'notificationTypeNewReportDesc': 'Updates about reports and issues',
       'openSystemSettings': 'Open System Settings',
       'manageInSettings': 'Manage in Settings',
-      'notificationPermissionDeniedMessage': 'To enable notifications, please open System Settings and enable notification permission for the app.',
-      'notificationEnableMessage': 'Turn on the switch above to receive notifications from the app.',
+      'notificationPermissionDeniedMessage':
+          'To enable notifications, please open System Settings and enable notification permission for the app.',
+      'notificationEnableMessage':
+          'Turn on the switch above to receive notifications from the app.',
       'notificationEnabledSuccess': 'Notifications enabled successfully!',
       'notificationPermissionDenied': 'Notification permission denied',
       'errorCheckingStatus': 'Error checking status',
@@ -587,11 +670,11 @@ class AppLocalizationsHelper {
       'themeDark': 'Dark',
       'themeSystem': 'System',
       'selectTheme': 'Select Theme',
-      
+
       // Language
       'vietnamese': 'Vietnamese',
       'english': 'English',
-      
+
       // Empty states
       'noContracts': 'No contracts',
       'noInvoices': 'No invoices',
@@ -603,11 +686,15 @@ class AppLocalizationsHelper {
       'yourReportedIssuesWillAppearHere':
           'Your reported issues will show up here once submitted.',
       'noChats': 'No chats',
+      'chatWillAppearWhenYouHaveContract':
+          'Chat will appear when you have a contract connected with your landlord. This will create a conversation between you and your landlord.',
+      'pleaseContactLandlord': 'Please contact your landlord',
       'startAConversationToSeeItHere': 'Start a conversation to see it here.',
       'noNotifications': 'No notifications yet',
       'noMaintenanceWork': 'No maintenance work yet',
       'noIssues': 'No issues',
-      
+      'pullDownToRefresh': 'Pull down to refresh',
+
       // Reports
       'createReport': 'Create Report',
       'reportIssue': 'Report Issue',
@@ -618,7 +705,7 @@ class AppLocalizationsHelper {
       'fromYourReport': 'From your report',
       'viewOnlyCannotEdit': 'View only - You cannot edit maintenance work',
       'hasImage': 'Has image',
-      
+
       // Status
       'pending': 'Pending',
       'approved': 'Approved',
@@ -636,7 +723,7 @@ class AppLocalizationsHelper {
       'waitingProcess': 'Waiting Process',
       'inProgress': 'In Progress',
       'completed': 'Completed',
-      
+
       // Common
       'error': 'Error',
       'tryAgain': 'Try Again',
@@ -649,7 +736,7 @@ class AppLocalizationsHelper {
       'view': 'View',
       'send': 'Send',
       'pay': 'Pay',
-      
+
       // Connectivity
       'online': 'Online',
       'offline': 'Offline',
@@ -657,62 +744,89 @@ class AppLocalizationsHelper {
       'reconnected': 'Reconnected',
       'networkError': 'Network error',
       'networkErrorTryAgain': 'Network error. Please try again.',
-      'networkErrorCheckConnection': 'Network error. Please check your internet connection and try again.',
-      
+      'networkErrorCheckConnection':
+          'Network error. Please check your internet connection and try again.',
+
       // Media
       'camera': 'Camera',
       'gallery': 'Gallery',
       'file': 'File',
-      
+
       // Time
       'justNow': 'Just now',
       'yesterday': 'Yesterday',
       'minutesAgo': '{minutes} minutes ago',
       'hoursAgo': '{hours} hours ago',
       'daysAgo': '{days} days ago',
-      
+
       // User
       'user': 'User',
       'userId': 'User ID',
       'userIdLabel': 'ID: {userId}',
       'loginProvider': 'Login Provider',
       'loginProviderLabel': 'Login with {provider}',
+      'deleteAccount': 'Delete account',
+      'deleteAccountDescription':
+          'This action will permanently delete your account and data. It cannot be undone.',
+      'deleteAccountReasonPlaceholder': 'Reason (optional)',
+      'deleteAccountReasonHint':
+          'Share a short reason to help us improve (optional).',
+      'deleteAccountAcknowledge':
+          'I understand that my account and data will be permanently deleted.',
+      'deleteAccountConfirm': 'Delete account',
+      'deleteAccountSuccess': 'Your account has been deleted.',
+      'deleteAccountFailed': 'Unable to delete your account. Please try again.',
+      'deleteAccountInProgress': 'Deleting your account…',
+      'deleteAccountDeletingData': 'Deleting data, please do not operate',
+      'deleteAccountLongDescription':
+          'Once you confirm, we will permanently erase your profile, rental data, chats, and notifications per Apple’s account-deletion policy.',
+      'deleteAccountDataWipe':
+          'All personal data and preferences will be removed immediately.',
+      'deleteAccountIrreversible':
+          'This action cannot be undone and you will lose access right away.',
+      'deleteReasonPrivacy': 'Privacy concerns',
+      'deleteReasonNoLongerRenting': 'I am no longer renting with StayMate',
+      'deleteReasonBuggy': 'The app has issues/bugs',
+      'deleteReasonOther': 'Other reasons',
       'secureLogin': 'Secure login',
       'memberSince': 'Member since {date}',
-      
+
       // Auth Header
       'appDescription': 'Convenient room rental tracking application',
       'appDescriptionSubtitle': 'dedicated to tenants',
-      
+
       // Success messages
       'signInSuccess': 'Sign in successful!',
       'signUpSuccess': 'Sign up successful! Welcome to StayMate!',
-      'paymentRecorded': 'Payment recorded. The landlord will confirm as soon as possible.',
-      
+      'paymentRecorded':
+          'Payment recorded. The landlord will confirm as soon as possible.',
+
       // Contracts
       'contractList': 'Contract List',
       'contractListCount': 'Contract List ({count})',
       'noContractsYet': 'No contracts yet',
-      'contactLandlordToCreateContract': 'Contact the landlord to create a contract',
+      'contactLandlordToCreateContract':
+          'Contact the landlord to create a contract',
       'contractStatus': 'Contract Status',
       'contractCount': 'Contract Count',
       'youHaveContracts': 'You have {count} rental contracts',
       'noContractYet': 'No contract yet',
-      'contactLandlordToCreateRentalContract': 'Contact the landlord to create a rental contract',
-      
+      'contactLandlordToCreateRentalContract':
+          'Contact the landlord to create a rental contract',
+
       // Invoices
       'totalAmount': 'Total Amount',
       'dueDate': 'Due',
       'cannotNavigate': 'Cannot navigate',
-      
+
       // Notifications
       'noNotificationsYet': 'No notifications yet',
-      
+
       // Maintenance
       'create': 'Created',
       'updated': 'Updated',
       'created': 'Created',
-      
+
       // Chat
       'noConversationsYet': 'No conversations yet',
       'noMessagesYet': 'No messages yet',
@@ -721,7 +835,7 @@ class AppLocalizationsHelper {
       'addressUnknown': 'Address unknown',
       'selectImageFrom': 'Select image from',
       'landlord': 'Landlord',
-      
+
       // Contract Detail
       'contractDetail': 'Contract Detail',
       'contractInfo': 'Contract Information',
@@ -734,7 +848,7 @@ class AppLocalizationsHelper {
       'noticePeriod': 'Notice Period',
       'days': 'days',
       'notAvailable': 'Not Available',
-      
+
       // Report Detail
       'reportDetail': 'Report Detail',
       'confirmCancel': 'Confirm Cancel',
@@ -742,7 +856,8 @@ class AppLocalizationsHelper {
       'cancelReport': 'Cancel Report',
       'reportCancelled': 'Report cancelled',
       'confirmDelete': 'Confirm Delete',
-      'confirmDeleteReport': 'Are you sure you want to delete this report? This action cannot be undone.',
+      'confirmDeleteReport':
+          'Are you sure you want to delete this report? This action cannot be undone.',
       'deleteReport': 'Delete Report',
       'reportDeleted': 'Report deleted',
       'reportNotFound': 'Report not found',
@@ -756,12 +871,12 @@ class AppLocalizationsHelper {
       'timeInfo': 'Time Information',
       'reportDate': 'Report Date',
       'lastUpdated': 'Last Updated',
-      
+
       // Contract Card
       'contractNumber': 'Contract #{id}',
       'rent': 'Rent',
       'perMonth': '/month',
-      
+
       // Contract Detail Extended
       'viewContractFiles': 'View Contract Files ({count})',
       'noContractFiles': 'No contract files',
@@ -784,7 +899,7 @@ class AppLocalizationsHelper {
       'reason': 'Reason',
       'note': 'Note',
       'earlyTermination': 'Early Termination',
-      
+
       // Contract Files Viewer
       'downloading': 'Downloading...',
       'savedToDownload': 'Saved to Download folder',
@@ -797,7 +912,7 @@ class AppLocalizationsHelper {
       'download': 'Download',
       'cannotAccessStorage': 'Cannot access storage folder',
       'platformNotSupported': 'Platform not supported',
-      
+
       // Invoice Detail
       'invoiceDetail': 'Invoice Detail',
       'invoiceInfo': 'Invoice Details',
@@ -815,7 +930,7 @@ class AppLocalizationsHelper {
       'amount': 'Amount',
       'qrPaymentUnderDevelopment': 'QR payment feature is under development',
       'items': 'items',
-      
+
       // Bank Transfer
       'bankTransferInfo': 'Bank Transfer Information',
       'amountToTransfer': 'Amount to Transfer',
@@ -827,9 +942,11 @@ class AppLocalizationsHelper {
       'transferContent': 'Transfer Content',
       'branch': 'Branch',
       'noteLabel': 'Note',
-      'transferNote': 'Please write the correct transfer content. When you are sure you have transferred, please click the confirm button below.',
+      'transferNote':
+          'Please write the correct transfer content. When you are sure you have transferred, please click the confirm button below.',
       'confirmPayment': 'Confirm Payment',
-      'confirmPaymentMessage': 'Have you transferred according to the information?\n\nThe invoice will change to "Pending Approval" status and the landlord will confirm after receiving the money.',
+      'confirmPaymentMessage':
+          'Have you transferred according to the information?\n\nThe invoice will change to "Pending Approval" status and the landlord will confirm after receiving the money.',
       'notYet': 'Not Yet',
       'transferred': 'Transferred',
       'confirmTransferred': 'Confirm Payment',
@@ -848,10 +965,11 @@ class AppLocalizationsHelper {
       'copyAccountNumber': 'Copy account number',
       'copyAccountName': 'Copy account name',
       'copyTransferContent': 'Copy transfer content',
-      
+
       // Home
       'trackRoomRental': 'Track Room Rental',
-      'scanQRCodeOrEnterCode': 'Scan QR code or enter code to connect with landlord',
+      'scanQRCodeOrEnterCode':
+          'Scan QR code or enter code to connect with landlord',
       'scanQRCode': 'Scan QR Code',
       'enterCode': 'Enter Code',
       'homeGreetingMorning': 'Good morning ☀️',
@@ -869,30 +987,31 @@ class AppLocalizationsHelper {
       'maintenanceInProgress': '{{count}} maintenance tasks in progress',
       'recentNotifications': 'Recent Notifications',
       'featureUnderDevelopment': 'Feature under development',
-      
+
       // Chat Room Card
       'roomLabel': 'Room',
-      
+
       // Message Input
       'enterMessage': 'Enter message...',
       'chooseAttachment': 'Choose Attachment',
       'image': 'Image',
       'selectImageFromLibrary': 'Select image from library',
       'selectDocumentOrFile': 'Select document or other file',
-      
+
       // Owner Detail
       'ownerInfo': 'Owner Information',
       'rentalPropertyInfo': 'Rental Property Information',
       'propertyName': 'Property Name',
       'address': 'Address',
-      
+
       // Profile Bottom Sheet
       'personalInfo': 'Personal Information',
       'account': 'Account',
       'help': 'Help',
       'loggedOutSuccessfully': 'Logged out successfully!',
       'supportFromStayMate': 'Support from Stay Mate App',
-      'cannotOpenEmailApp': 'Cannot open email app. Please check your settings.',
+      'cannotOpenEmailApp':
+          'Cannot open email app. Please check your settings.',
       'anErrorOccurredMessage': 'An error occurred',
       'info': 'Info',
       'changePassword': 'Change Password',
@@ -904,7 +1023,7 @@ class AppLocalizationsHelper {
       'passwordTooShort': 'Password must be at least 8 characters',
       'passwordChangeNotAvailableForSocialLogin':
           'You are signed in with a social account, so password change is not available here.',
-      
+
       // App Info
       'appInfo': 'App Information',
       'version': 'Version',
@@ -916,70 +1035,82 @@ class AppLocalizationsHelper {
       'buildNumber': 'Build Number',
       'noUpdateAvailable': 'No update available',
       'updateAvailable': 'Update Available',
-      'updateAvailableMessage': 'A new version of the app is available. Would you like to update now?',
+      'updateAvailableMessage':
+          'A new version of the app is available. Would you like to update now?',
       'later': 'Later',
       'update': 'Update',
       'checkingForUpdate': 'Checking...',
       'newVersionAvailable': 'New version available, please update',
       'updateCheckNotAvailable': 'Update check not available',
-      'updateCheckNotAvailableMessage': 'This feature only works with apps installed from Play Store',
-      'updateCheckNotAvailableMessageIOS': 'This feature only works with apps installed from App Store',
+      'updateCheckNotAvailableMessage':
+          'This feature only works with apps installed from Play Store',
+      'updateCheckNotAvailableMessageIOS':
+          'This feature only works with apps installed from App Store',
       'privacyPolicy': 'Privacy Policy',
       'termsOfService': 'Terms of Service',
       'openPrivacyPolicy': 'Open Privacy Policy',
       'openTermsOfService': 'Open Terms of Service',
       'iAgreeTo': 'I agree to the',
       'and': 'and',
-      'mustAgreeToTerms': 'Please agree to the Terms of Service and Privacy Policy',
-      
+      'mustAgreeToTerms':
+          'Please agree to the Terms of Service and Privacy Policy',
+
       // Onboarding
       'skip': 'Skip',
       'next': 'Next',
       'back': 'Back',
       'getStarted': 'Get Started',
       'onboardingWelcomeTitle': 'Welcome to Stay Mate',
-      'onboardingWelcomeDescription': 'A convenient rental management app that helps you track contracts, invoices, and communicate with your landlord easily.',
+      'onboardingWelcomeDescription':
+          'A convenient rental management app that helps you track contracts, invoices, and communicate with your landlord easily.',
       'onboardingContractsTitle': 'Manage Contracts',
-      'onboardingContractsDescription': 'View rental contract details, room information, terms, and download attached documents.',
+      'onboardingContractsDescription':
+          'View rental contract details, room information, terms, and download attached documents.',
       'onboardingInvoicesTitle': 'Track Invoices',
-      'onboardingInvoicesDescription': 'View monthly invoices, make payments online, and track your payment history.',
+      'onboardingInvoicesDescription':
+          'View monthly invoices, make payments online, and track your payment history.',
       'onboardingReportsTitle': 'Report Issues',
-      'onboardingReportsDescription': 'Report maintenance issues with photos and track resolution progress from your landlord.',
+      'onboardingReportsDescription':
+          'Report maintenance issues with photos and track resolution progress from your landlord.',
       'onboardingChatTitle': 'Chat with Landlord',
-      'onboardingChatDescription': 'Communicate directly with your landlord, send messages, images, and attachments quickly.',
+      'onboardingChatDescription':
+          'Communicate directly with your landlord, send messages, images, and attachments quickly.',
       'onboardingConnectTitle': 'Connect with Landlord',
-      'onboardingConnectDescription': 'Scan QR code or enter code to link your account with your landlord and start using features.',
-      
+      'onboardingConnectDescription':
+          'Scan QR code or enter code to link your account with your landlord and start using features.',
+
       // Feedback
       'sendFeedback': 'Send Feedback',
       'feedbackSubject': 'Subject',
       'feedbackSubjectHint': 'Enter your feedback subject',
       'feedbackMessage': 'Message',
-      'feedbackMessageHint': 'Describe your feedback, suggestions, or bug reports in detail...',
-      'feedbackInfo': 'Your feedback will be sent via email. We will review and respond as soon as possible.',
+      'feedbackMessageHint':
+          'Describe your feedback, suggestions, or bug reports in detail...',
+      'feedbackInfo':
+          'Your feedback will be sent via email. We will review and respond as soon as possible.',
       'feedbackSent': 'Thank you for your feedback!',
-      
+
       // Contract Status Values
       'contractStatusDraft': 'Draft',
       'contractStatusActive': 'Active',
       'contractStatusExpired': 'Expired',
       'contractStatusTerminated': 'Terminated',
-      
+
       // Contract Type Values
       'contractTypeRental': 'Rental Contract',
       'contractTypeUnknown': 'Unknown',
-      
+
       // Payment Cycle Values
       'paymentCycleMonthly': 'Monthly',
       'paymentCycleQuarterly': 'Quarterly',
       'paymentCycleYearly': 'Yearly',
       'paymentCycleUnknown': 'Unknown',
-      
+
       // Payment Day Type Values
       'paymentDayTypeFixedDays': 'Fixed Days',
       'paymentDayTypeCustomDays': 'Custom Days',
       'paymentDayTypeUnknown': 'Unknown',
-      
+
       // Termination Reason Values
       'terminationReasonExpired': 'Expired',
       'terminationReasonViolation': 'Violation',
@@ -991,9 +1122,9 @@ class AppLocalizationsHelper {
 
   /// Get translation by key
   static String translate(String key, String languageCode) {
-    return _translations[languageCode]?[key] ?? 
-           _translations['vi']?[key] ?? 
-           key; // Fallback to key if not found
+    return _translations[languageCode]?[key] ??
+        _translations['vi']?[key] ??
+        key; // Fallback to key if not found
   }
 
   /// Get translation với placeholder
@@ -1003,12 +1134,12 @@ class AppLocalizationsHelper {
     Map<String, String> params,
   ) {
     String translation = translate(key, languageCode);
-    
+
     // Replace placeholders
     params.forEach((paramKey, value) {
       translation = translation.replaceAll('{$paramKey}', value);
     });
-    
+
     return translation;
   }
 }
@@ -1060,11 +1191,15 @@ class LocalizedText extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
-    
+
     final text = params != null
-        ? AppLocalizationsHelper.translateWithParams(translationKey, languageCode, params!)
+        ? AppLocalizationsHelper.translateWithParams(
+            translationKey,
+            languageCode,
+            params!,
+          )
         : AppLocalizationsHelper.translate(translationKey, languageCode);
-    
+
     return Text(
       text,
       style: style,

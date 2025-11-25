@@ -13,11 +13,11 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
   Future<ThemeMode> build() async {
     final prefs = await SharedPreferences.getInstance();
     final themeModeString = prefs.getString(_themeModeKey);
-    
+
     if (themeModeString == null) {
-      return ThemeMode.system;
+      return ThemeMode.light;
     }
-    
+
     switch (themeModeString) {
       case 'light':
         return ThemeMode.light;
@@ -33,7 +33,7 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
   Future<void> setThemeMode(ThemeMode mode) async {
     final prefs = await SharedPreferences.getInstance();
     String modeString;
-    
+
     switch (mode) {
       case ThemeMode.light:
         modeString = 'light';
@@ -45,9 +45,8 @@ class ThemeModeNotifier extends _$ThemeModeNotifier {
         modeString = 'system';
         break;
     }
-    
+
     await prefs.setString(_themeModeKey, modeString);
     state = AsyncValue.data(mode);
   }
 }
-

@@ -14,7 +14,6 @@ import '../widgets/widgets.dart';
 import '../../../../shared/widgets/skeleton_loader.dart';
 import '../../../../shared/providers/app_bar_provider.dart';
 
-
 class ContractPage extends ConsumerStatefulWidget {
   const ContractPage({super.key});
 
@@ -32,10 +31,7 @@ class _ContractPageState extends ConsumerState<ContractPage> {
   void initState() {
     super.initState();
     print('🚀🚀🚀 [ContractPage] initState called 🚀🚀🚀');
-    developer.log(
-      '🚀 [ContractPage] initState called',
-      name: 'ContractPage',
-    );
+    developer.log('🚀 [ContractPage] initState called', name: 'ContractPage');
     _authService = AuthService();
 
     // Initialize cubit
@@ -80,7 +76,9 @@ class _ContractPageState extends ConsumerState<ContractPage> {
       name: 'ContractPage',
     );
     if (user != null) {
-      print('✅✅✅ [ContractPage] User found, loading contracts for: ${user.id} ✅✅✅');
+      print(
+        '✅✅✅ [ContractPage] User found, loading contracts for: ${user.id} ✅✅✅',
+      );
       developer.log(
         '✅ [ContractPage] User found, loading contracts for: ${user.id}',
         name: 'ContractPage',
@@ -108,7 +106,7 @@ class _ContractPageState extends ConsumerState<ContractPage> {
     // Update title if locale changes (but only if we've already set it)
     final locale = ref.watch(appLocaleProvider);
     final languageCode = locale.languageCode;
-    
+
     if (_hasSetTitle && _appBarNotifier != null && mounted) {
       // Update title when locale changes, but use a small delay to avoid race conditions
       Future.microtask(() {
@@ -119,16 +117,14 @@ class _ContractPageState extends ConsumerState<ContractPage> {
         }
       });
     }
-    
+
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark 
-            ? AppColors.surfaceDark 
-            : Colors.white,
+        color: isDark ? AppColors.surfaceDark : Colors.white,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
@@ -219,7 +215,7 @@ class _ContractPageState extends ConsumerState<ContractPage> {
                       // Contract Status Card - chỉ hiển thị khi không có hợp đồng
                       ContractStatusCard(state: state),
                       const SizedBox(height: 20),
-                      Expanded(child: ContractEmptyState(onRefresh: _loadContracts)),
+                      const Expanded(child: ContractEmptyState()),
                     ],
                   ],
                 ),

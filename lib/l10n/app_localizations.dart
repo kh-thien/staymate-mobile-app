@@ -458,11 +458,35 @@ abstract class AppLocalizations {
   /// **'Refresh'**
   String get refresh;
 
+  /// Hint text for pull-to-refresh functionality
+  ///
+  /// In en, this message translates to:
+  /// **'Pull down to refresh'**
+  String get pullDownToRefresh;
+
   /// Subtitle for empty chat list
   ///
   /// In en, this message translates to:
   /// **'Start a conversation to see it here.'**
   String get startAConversationToSeeItHere;
+
+  /// Title for empty chat list
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get noConversationsYet;
+
+  /// Message explaining that chat appears when user has a contract with landlord
+  ///
+  /// In en, this message translates to:
+  /// **'Chat will appear when you have a contract connected with your landlord. This will create a conversation between you and your landlord.'**
+  String get chatWillAppearWhenYouHaveContract;
+
+  /// Instruction to contact landlord
+  ///
+  /// In en, this message translates to:
+  /// **'Please contact your landlord'**
+  String get pleaseContactLandlord;
 
   /// Title for empty invoice list
   ///
@@ -559,6 +583,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login with {provider}'**
   String loginProviderLabel(String provider);
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will permanently delete your account and data. It cannot be undone.'**
+  String get deleteAccountDescription;
+
+  /// No description provided for @deleteAccountReasonPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason (optional)'**
+  String get deleteAccountReasonPlaceholder;
+
+  /// No description provided for @deleteAccountReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Share a short reason to help us improve (optional)'**
+  String get deleteAccountReasonHint;
+
+  /// No description provided for @deleteAccountAcknowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'I understand that my account and data will be permanently deleted.'**
+  String get deleteAccountAcknowledge;
+
+  /// No description provided for @deleteAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccountConfirm;
+
+  /// No description provided for @deleteAccountSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account has been deleted.'**
+  String get deleteAccountSuccess;
+
+  /// No description provided for @deleteAccountFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to delete your account. Please try again.'**
+  String get deleteAccountFailed;
+
+  /// No description provided for @deleteAccountInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting your account…'**
+  String get deleteAccountInProgress;
+
+  /// No description provided for @deleteAccountDeletingData.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleting data, please do not operate'**
+  String get deleteAccountDeletingData;
+
+  /// No description provided for @deleteAccountLongDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Once you confirm, we will permanently erase your profile, rental data, chat history, and notifications. This follows Apple\'s account-deletion policy.'**
+  String get deleteAccountLongDescription;
+
+  /// No description provided for @deleteAccountDataWipe.
+  ///
+  /// In en, this message translates to:
+  /// **'All personal data and preferences will be removed immediately.'**
+  String get deleteAccountDataWipe;
+
+  /// No description provided for @deleteAccountIrreversible.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone and you will lose access right away.'**
+  String get deleteAccountIrreversible;
+
+  /// No description provided for @deleteReasonPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy concerns'**
+  String get deleteReasonPrivacy;
+
+  /// No description provided for @deleteReasonNoLongerRenting.
+  ///
+  /// In en, this message translates to:
+  /// **'I am no longer renting with StayMate'**
+  String get deleteReasonNoLongerRenting;
+
+  /// No description provided for @deleteReasonBuggy.
+  ///
+  /// In en, this message translates to:
+  /// **'The app has issues/bugs'**
+  String get deleteReasonBuggy;
+
+  /// No description provided for @deleteReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other reasons'**
+  String get deleteReasonOther;
 
   /// Secure login label
   ///

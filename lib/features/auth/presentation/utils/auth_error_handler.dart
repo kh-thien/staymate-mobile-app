@@ -46,6 +46,9 @@ class AuthErrorHandler {
       case 'user_already_registered':
         return _translate('authEmailAlreadyRegistered', languageCode);
 
+      case '522':
+        return _translate('authServerError', languageCode);
+
       default:
         // Xử lý message thông thường
         if (message.contains('invalid login credentials')) {
@@ -60,6 +63,9 @@ class AuthErrorHandler {
         } else if (message.contains('weak password') ||
             message.contains('password')) {
           return _translate('authInvalidPassword', languageCode);
+        } else if (message.contains('server error') ||
+            message.contains('service unavailable')) {
+          return _translate('authServerError', languageCode);
         } else if (message.contains('network') ||
             message.contains('connection') ||
             message.contains('timeout')) {
@@ -152,6 +158,12 @@ class AuthErrorHandler {
 
         case 'google_signin_network_error':
           return _translate('networkErrorCheckConnection', languageCode);
+
+        case 'delete_account_failed':
+          return _translate('deleteAccountFailed', languageCode);
+
+        case '522':
+          return _translate('authServerError', languageCode);
       }
     }
 
@@ -175,9 +187,12 @@ class AuthErrorHandler {
         errorMessage.contains('user already registered')) {
       return _translate('authEmailAlreadyRegistered', languageCode);
     } else if (errorMessage.contains('weak password') ||
-        (errorMessage.contains('password') &&
-            errorMessage.contains('weak'))) {
+        (errorMessage.contains('password') && errorMessage.contains('weak'))) {
       return _translate('authWeakPassword', languageCode);
+    } else if (errorMessage.contains('server error') ||
+        errorMessage.contains('service unavailable') ||
+        errorMessage.contains('cloudflare')) {
+      return _translate('authServerError', languageCode);
     } else if (errorMessage.contains('network') ||
         errorMessage.contains('connection') ||
         errorMessage.contains('timeout') ||
@@ -214,7 +229,7 @@ class AuthErrorHandler {
         errorMessage.contains('identity token')) {
       // Nếu không rõ là Google hay Apple, kiểm tra thêm
       if (errorMessage.contains('google')) {
-      return _translate('authGoogleIdTokenError', languageCode);
+        return _translate('authGoogleIdTokenError', languageCode);
       } else if (errorMessage.contains('apple')) {
         return _translate('authAppleIdTokenError', languageCode);
       }
@@ -226,7 +241,9 @@ class AuthErrorHandler {
     }
 
     // Trả về message gốc nếu không match
-    return message.isNotEmpty ? message : _translate('authUnknownError', languageCode);
+    return message.isNotEmpty
+        ? message
+        : _translate('authUnknownError', languageCode);
   }
 
   /// Chuyển đổi generic error thành message tiếng Việt
@@ -253,4 +270,3 @@ class AuthErrorHandler {
     return _translate('authUnknownError', languageCode);
   }
 }
-

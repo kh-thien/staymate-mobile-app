@@ -3,15 +3,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LocaleService {
   static const String _localeKey = 'app_locale';
-  static const Locale defaultLocale = Locale('vi', 'VN');
   static const Locale englishLocale = Locale('en', 'US');
+  static const Locale vietnameseLocale = Locale('vi', 'VN');
+  static const Locale defaultLocale = englishLocale;
 
   /// Get saved locale from SharedPreferences
   static Future<Locale> getSavedLocale() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final localeCode = prefs.getString(_localeKey);
-      
+
       if (localeCode == null) {
         return defaultLocale;
       }
@@ -36,7 +37,8 @@ class LocaleService {
       final prefs = await SharedPreferences.getInstance();
       // Save locale code with format: languageCode_countryCode
       // If countryCode is null, only save languageCode
-      final localeCode = locale.countryCode != null && locale.countryCode!.isNotEmpty
+      final localeCode =
+          locale.countryCode != null && locale.countryCode!.isNotEmpty
           ? '${locale.languageCode}_${locale.countryCode}'
           : locale.languageCode;
       await prefs.setString(_localeKey, localeCode);
@@ -50,19 +52,16 @@ class LocaleService {
 
   /// Get supported locales
   static List<Locale> getSupportedLocales() {
-    return [
-      defaultLocale, // Vietnamese
-      englishLocale, // English
-    ];
+    return [englishLocale, vietnameseLocale];
   }
 
   /// Check if locale is Vietnamese
   static bool isVietnamese(Locale locale) {
-    return locale.languageCode == 'vi';
+    return locale.languageCode == vietnameseLocale.languageCode;
   }
 
   /// Check if locale is English
   static bool isEnglish(Locale locale) {
-    return locale.languageCode == 'en';
+    return locale.languageCode == englishLocale.languageCode;
   }
 }

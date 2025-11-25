@@ -36,7 +36,7 @@ final class ThemeModeNotifierProvider
   ThemeModeNotifier create() => ThemeModeNotifier();
 }
 
-String _$themeModeNotifierHash() => r'75ac84d6801e935714baf03ee8f72205f74c3b19';
+String _$themeModeNotifierHash() => r'62df0f131f73a65626382c6abbf27fea46c3a53b';
 
 /// Provider để quản lý theme mode của app
 

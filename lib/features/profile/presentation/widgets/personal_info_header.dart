@@ -48,23 +48,31 @@ class PersonalInfoHeader extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
+          Builder(
+            builder: (_) {
+              final avatarValue = avatarUrl;
+              final normalizedAvatar =
+                  avatarValue != null && avatarValue.isNotEmpty ? avatarValue : null;
+              final hasAvatar = normalizedAvatar != null;
+              ImageProvider? imageProvider;
+              if (normalizedAvatar != null) {
+                imageProvider = NetworkImage(normalizedAvatar);
+              }
+              return CircleAvatar(
             radius: 30,
             backgroundColor:
                 isDark ? AppColors.surfaceDark : Colors.white.withOpacity(0.9),
-            backgroundImage: avatarUrl != null && avatarUrl!.isNotEmpty
-                ? NetworkImage(avatarUrl!)
-                : null,
-            child: avatarUrl == null || avatarUrl!.isEmpty
-                ? Icon(
+                backgroundImage: imageProvider,
+                child: hasAvatar
+                    ? null
+                    : Icon(
                     Icons.person_rounded,
                     size: 32,
-                    color:
-                        isDark ? AppColors.textSecondaryDark : const Color(0xFF4F46E5),
-                  )
-                : null,
-            onBackgroundImageError: (exception, stackTrace) {
-              // Handle image loading error silently
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : const Color(0xFF4F46E5),
+                      ),
+              );
             },
           ),
           const SizedBox(width: 16),

@@ -195,8 +195,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get refresh => 'Refresh';
 
   @override
+  String get pullDownToRefresh => 'Pull down to refresh';
+
+  @override
   String get startAConversationToSeeItHere =>
       'Start a conversation to see it here.';
+
+  @override
+  String get noConversationsYet => 'No conversations yet';
+
+  @override
+  String get chatWillAppearWhenYouHaveContract =>
+      'Chat will appear when you have a contract connected with your landlord. This will create a conversation between you and your landlord.';
+
+  @override
+  String get pleaseContactLandlord => 'Please contact your landlord';
 
   @override
   String get noInvoicesFound => 'No Invoices Found';
@@ -253,6 +266,66 @@ class AppLocalizationsEn extends AppLocalizations {
   String loginProviderLabel(String provider) {
     return 'Login with $provider';
   }
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountDescription =>
+      'This action will permanently delete your account and data. It cannot be undone.';
+
+  @override
+  String get deleteAccountReasonPlaceholder => 'Reason (optional)';
+
+  @override
+  String get deleteAccountReasonHint =>
+      'Share a short reason to help us improve (optional)';
+
+  @override
+  String get deleteAccountAcknowledge =>
+      'I understand that my account and data will be permanently deleted.';
+
+  @override
+  String get deleteAccountConfirm => 'Delete account';
+
+  @override
+  String get deleteAccountSuccess => 'Your account has been deleted.';
+
+  @override
+  String get deleteAccountFailed =>
+      'Unable to delete your account. Please try again.';
+
+  @override
+  String get deleteAccountInProgress => 'Deleting your account…';
+
+  @override
+  String get deleteAccountDeletingData =>
+      'Deleting data, please do not operate';
+
+  @override
+  String get deleteAccountLongDescription =>
+      'Once you confirm, we will permanently erase your profile, rental data, chat history, and notifications. This follows Apple\'s account-deletion policy.';
+
+  @override
+  String get deleteAccountDataWipe =>
+      'All personal data and preferences will be removed immediately.';
+
+  @override
+  String get deleteAccountIrreversible =>
+      'This action cannot be undone and you will lose access right away.';
+
+  @override
+  String get deleteReasonPrivacy => 'Privacy concerns';
+
+  @override
+  String get deleteReasonNoLongerRenting =>
+      'I am no longer renting with StayMate';
+
+  @override
+  String get deleteReasonBuggy => 'The app has issues/bugs';
+
+  @override
+  String get deleteReasonOther => 'Other reasons';
 
   @override
   String get secureLogin => 'Secure Login';

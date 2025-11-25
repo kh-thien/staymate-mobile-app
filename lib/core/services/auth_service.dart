@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -5,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:stay_mate/core/services/fcm_token_service.dart';
+import 'package:http/http.dart' as http;
 
 class AuthService {
   final SupabaseClient _supabase = Supabase.instance.client;
@@ -449,6 +451,88 @@ class AuthService {
         statusCode: 'apple_signin_failed',
       );
     }
+  }
+
+  /// Xóa tài khoản người dùng hiện tại
+  Future<void> deleteAccount({
+    String? reason,
+    bool signOutAfter = true,
+  }) async {
+    final session = _supabase.auth.currentSession;
+
+    if (session == null) {
+      throw AuthException(
+        'auth.not_logged_in',
+        statusCode: 'not_logged_in',
+      );
+    }
+
+    final accessToken = session.accessToken;
+    if (accessToken.isEmpty) {
+      throw AuthException(
+        'auth.not_logged_in',
+        statusCode: 'not_logged_in',
+      );
+    }
+
+    // Debug log để hỗ trợ kiểm tra API (chỉ nên bật trong quá trình QA/dev)
+    // debugPrint(
+    //   '🧾 [DeleteAccount] Using access token: $accessToken',
+    // );
+
+    final userId = session.user.id;
+    final uri = Uri.parse('https://staymateserver.vercel.app/api/delete-account');
+
+    http.Response response;
+    try {
+      response = await http.delete(
+        uri,
+        headers: {
+          'Authorization': 'Bearer $accessToken',
+          'Content-Type': 'application/json',
+        },
+        body: reason != null && reason.trim().isNotEmpty
+            ? jsonEncode({'reason': reason.trim()})
+            : null,
+      );
+    } on SocketException catch (e) {
+      throw AuthException(
+        e.message,
+        statusCode: 'network_error',
+      );
+    }
+
+    final statusCode = response.statusCode;
+    if (statusCode < 200 || statusCode >= 300) {
+      final serverMessage = _parseServerError(response.body);
+      throw AuthException(
+        serverMessage ?? 'delete_account_failed',
+        statusCode: statusCode.toString(),
+      );
+    }
+
+    try {
+      await _fcmTokenService.deleteToken(userId);
+    } catch (_) {
+      // ignore cleanup error
+    }
+
+    if (signOutAfter) {
+      await signOut(skipFCMTokenDeletion: true);
+    }
+  }
+
+  String? _parseServerError(String body) {
+    if (body.isEmpty) return null;
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map && decoded['message'] is String) {
+        return decoded['message'] as String;
+      }
+    } catch (_) {
+      // ignore parsing errors
+    }
+    return null;
   }
 
   // Đăng xuất

@@ -87,9 +87,25 @@
   "@refresh": {
     "description": "Refresh button text"
   },
+  "pullDownToRefresh": "Kéo xuống để làm mới",
+  "@pullDownToRefresh": {
+    "description": "Hint text for pull-to-refresh functionality"
+  },
   "startAConversationToSeeItHere": "Bắt đầu một cuộc trò chuyện để xem nó ở đây.",
   "@startAConversationToSeeItHere": {
     "description": "Subtitle for empty chat list"
+  },
+  "noConversationsYet": "Chưa có cuộc trò chuyện nào",
+  "@noConversationsYet": {
+    "description": "Title for empty chat list"
+  },
+  "chatWillAppearWhenYouHaveContract": "Chat sẽ xuất hiện khi bạn có hợp đồng kết nối với chủ nhà. Điều này sẽ tạo cuộc trò chuyện giữa bạn và chủ nhà.",
+  "@chatWillAppearWhenYouHaveContract": {
+    "description": "Message explaining that chat appears when user has a contract with landlord"
+  },
+  "pleaseContactLandlord": "Vui lòng liên hệ chủ nhà",
+  "@pleaseContactLandlord": {
+    "description": "Instruction to contact landlord"
   },
   "noInvoicesFound": "Không tìm thấy hoá đơn",
   "@noInvoicesFound": {
@@ -143,6 +159,23 @@
       }
     }
   },
+  "deleteAccount": "Xóa tài khoản",
+  "deleteAccountDescription": "Hành động này sẽ xóa vĩnh viễn toàn bộ dữ liệu của bạn và không thể khôi phục.",
+  "deleteAccountReasonPlaceholder": "Lý do (không bắt buộc)",
+  "deleteAccountReasonHint": "Hãy chia sẻ nhanh lý do để chúng tôi cải thiện (không bắt buộc)",
+  "deleteAccountAcknowledge": "Tôi hiểu rằng tài khoản và dữ liệu của mình sẽ bị xóa vĩnh viễn.",
+  "deleteAccountConfirm": "Xóa tài khoản",
+  "deleteAccountSuccess": "Tài khoản đã được xóa.",
+  "deleteAccountFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
+  "deleteAccountInProgress": "Đang xóa tài khoản...",
+  "deleteAccountDeletingData": "Đang xóa dữ liệu, vui lòng không thao tác",
+  "deleteAccountLongDescription": "Sau khi xác nhận, chúng tôi sẽ xóa vĩnh viễn hồ sơ, hợp đồng, hóa đơn và lịch sử trò chuyện của bạn theo yêu cầu của Apple.",
+  "deleteAccountDataWipe": "Tất cả dữ liệu cá nhân và tùy chỉnh sẽ bị xóa ngay lập tức.",
+  "deleteAccountIrreversible": "Hành động này không thể hoàn tác và bạn sẽ mất quyền truy cập ngay.",
+  "deleteReasonPrivacy": "Lo ngại quyền riêng tư",
+  "deleteReasonNoLongerRenting": "Không còn thuê nhà với StayMate",
+  "deleteReasonBuggy": "Ứng dụng lỗi hoặc không ổn định",
+  "deleteReasonOther": "Lý do khác",
   "secureLogin": "Đăng nhập an toàn",
   "changePassword": "Đổi mật khẩu",
   "currentPassword": "Mật khẩu hiện tại",
