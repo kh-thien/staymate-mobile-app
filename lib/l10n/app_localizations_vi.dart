@@ -78,6 +78,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get noContracts => 'Không có hợp đồng nào';
 
   @override
+  String get noContractsFound => 'Không tìm thấy hợp đồng nào';
+
+  @override
   String get noInvoices => 'Không có hoá đơn nào';
 
   @override
@@ -87,13 +90,92 @@ class AppLocalizationsVi extends AppLocalizations {
   String get noChats => 'Không có cuộc trò chuyện nào';
 
   @override
+  String get chatStatusFailed => 'Gửi thất bại';
+
+  @override
+  String get chatStatusRetry => 'Gửi lại';
+
+  @override
+  String get chatStatusSending => 'Đang gửi';
+
+  @override
+  String get chatStatusDelivered => 'Đã nhận';
+
+  @override
   String get createReport => 'Tạo báo cáo sự cố';
 
   @override
   String get reportIssue => 'Báo cáo sự cố';
 
   @override
+  String get reportHeaderSubtitle => 'Vui lòng điền đầy đủ thông tin';
+
+  @override
+  String get issueDescription => 'Mô tả sự cố';
+
+  @override
+  String get issueDescriptionHint => 'Nhập chi tiết sự cố cần báo cáo...';
+
+  @override
+  String get issueImagesOptional => 'Ảnh minh họa (tùy chọn)';
+
+  @override
   String get maintenanceWork => 'Công việc bảo trì';
+
+  @override
+  String get selectPropertyAndRoom => 'Vui lòng chọn bất động sản và phòng';
+
+  @override
+  String get selectPropertyPlaceholder => 'Chọn bất động sản';
+
+  @override
+  String get selectPropertyFirst => 'Chọn bất động sản trước';
+
+  @override
+  String get selectRoomPlaceholder => 'Chọn phòng';
+
+  @override
+  String get pleaseSelectProperty => 'Vui lòng chọn bất động sản';
+
+  @override
+  String get pleaseSelectRoom => 'Vui lòng chọn phòng';
+
+  @override
+  String get pleaseEnterIssueDescription => 'Vui lòng nhập mô tả sự cố';
+
+  @override
+  String descriptionMinCharacters(Object count) {
+    return 'Mô tả phải có ít nhất $count ký tự';
+  }
+
+  @override
+  String get unnamedRoom => 'Phòng không tên';
+
+  @override
+  String maxImagesHint(Object count) {
+    return 'Tối đa $count ảnh';
+  }
+
+  @override
+  String imagePickerError(Object error) {
+    return 'Lỗi chọn ảnh: $error';
+  }
+
+  @override
+  String get addPhoto => 'Thêm ảnh';
+
+  @override
+  String get add => 'Thêm';
+
+  @override
+  String get reportSubmitSuccess =>
+      'Gửi báo cáo thành công, vui lòng chờ duyệt';
+
+  @override
+  String get submitting => 'Đang gửi...';
+
+  @override
+  String get submitReport => 'Gửi báo cáo';
 
   @override
   String get pending => 'Đang chờ';
@@ -139,6 +221,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get pay => 'Thanh toán';
+
+  @override
+  String get paymentMethodBankTransfer => 'Chuyển khoản ngân hàng';
+
+  @override
+  String get paymentMethodQrCode => 'Quét mã QR';
+
+  @override
+  String get paymentMethodMomo => 'Ví MoMo';
+
+  @override
+  String get paymentMethodZaloPay => 'ZaloPay';
+
+  @override
+  String get paymentMethodCard => 'Thẻ tín dụng/Ghi nợ';
+
+  @override
+  String get paymentMethodComingSoon => 'Sắp ra mắt';
 
   @override
   String get paid => 'Đã thanh toán';

@@ -119,6 +119,7 @@ class AppLocalizationsHelper {
 
       // Empty states
       'noContracts': 'Không có hợp đồng nào',
+      'noContractsFound': 'Không tìm thấy hợp đồng nào',
       'noInvoices': 'Không có hoá đơn nào',
       'noInvoicesFound': 'Chưa có hoá đơn nào',
       'invoicesOfThisCategoryWillAppearHere':
@@ -128,6 +129,10 @@ class AppLocalizationsHelper {
       'yourReportedIssuesWillAppearHere':
           'Các sự cố bạn báo cáo sẽ hiển thị ở đây khi được tạo.',
       'noChats': 'Không có cuộc trò chuyện nào',
+      'chatStatusFailed': 'Gửi thất bại',
+      'chatStatusRetry': 'Gửi lại',
+      'chatStatusSending': 'Đang gửi',
+      'chatStatusDelivered': 'Đã nhận',
       'chatWillAppearWhenYouHaveContract':
           'Chat sẽ xuất hiện khi bạn có hợp đồng kết nối với chủ nhà. Điều này sẽ tạo cuộc trò chuyện giữa bạn và chủ nhà.',
       'pleaseContactLandlord': 'Vui lòng liên hệ chủ nhà',
@@ -141,14 +146,34 @@ class AppLocalizationsHelper {
       // Reports
       'createReport': 'Tạo báo cáo sự cố',
       'reportIssue': 'Báo cáo sự cố',
+      'reportHeaderSubtitle': 'Vui lòng điền đầy đủ thông tin',
       'maintenanceWork': 'Công việc bảo trì',
       'issue': 'Sự cố',
+      'issueDescription': 'Mô tả sự cố',
+      'issueDescriptionHint': 'Nhập chi tiết sự cố cần báo cáo...',
+      'issueImagesOptional': 'Ảnh minh họa (tùy chọn)',
       'allGood': 'Yên ổn',
       'maintenanceWorkWillShowHere': 'Các công việc bảo trì sẽ hiển thị ở đây',
       'fromYourReport': 'Từ báo cáo của bạn',
       'viewOnlyCannotEdit':
           'Chỉ xem - Bạn không thể chỉnh sửa công việc bảo trì',
       'hasImage': 'Có ảnh',
+      'selectPropertyAndRoom': 'Vui lòng chọn bất động sản và phòng',
+      'selectPropertyPlaceholder': 'Chọn bất động sản',
+      'selectPropertyFirst': 'Chọn bất động sản trước',
+      'selectRoomPlaceholder': 'Chọn phòng',
+      'pleaseSelectProperty': 'Vui lòng chọn bất động sản',
+      'pleaseSelectRoom': 'Vui lòng chọn phòng',
+      'pleaseEnterIssueDescription': 'Vui lòng nhập mô tả sự cố',
+      'descriptionMinCharacters': 'Mô tả phải có ít nhất {count} ký tự',
+      'unnamedRoom': 'Phòng không tên',
+      'maxImagesHint': 'Tối đa {count} ảnh',
+      'imagePickerError': 'Lỗi chọn ảnh: {error}',
+      'addPhoto': 'Thêm ảnh',
+      'add': 'Thêm',
+      'reportSubmitSuccess': 'Gửi báo cáo thành công, vui lòng chờ duyệt',
+      'submitting': 'Đang gửi...',
+      'submitReport': 'Gửi báo cáo',
 
       // Status
       'pending': 'Đang chờ',
@@ -180,6 +205,12 @@ class AppLocalizationsHelper {
       'view': 'Xem',
       'send': 'Gửi',
       'pay': 'Thanh toán',
+      'paymentMethodBankTransfer': 'Chuyển khoản ngân hàng',
+      'paymentMethodQrCode': 'Quét mã QR',
+      'paymentMethodMomo': 'Ví MoMo',
+      'paymentMethodZaloPay': 'ZaloPay',
+      'paymentMethodCard': 'Thẻ tín dụng/Ghi nợ',
+      'paymentMethodComingSoon': 'Sắp ra mắt',
 
       // Connectivity
       'online': 'Trực tuyến',
@@ -308,7 +339,6 @@ class AppLocalizationsHelper {
       'locationInfo': 'Thông tin vị trí',
       'property': 'Bất động sản',
       'room': 'Phòng',
-      'issueDescription': 'Mô tả sự cố',
       'illustrationImage': 'Ảnh minh họa',
       'cannotLoadImage': 'Không thể tải ảnh',
       'timeInfo': 'Thông tin thời gian',
@@ -677,6 +707,7 @@ class AppLocalizationsHelper {
 
       // Empty states
       'noContracts': 'No contracts',
+      'noContractsFound': 'No contracts found',
       'noInvoices': 'No invoices',
       'noInvoicesFound': 'No invoices yet',
       'invoicesOfThisCategoryWillAppearHere':
@@ -686,6 +717,10 @@ class AppLocalizationsHelper {
       'yourReportedIssuesWillAppearHere':
           'Your reported issues will show up here once submitted.',
       'noChats': 'No chats',
+      'chatStatusFailed': 'Failed to send',
+      'chatStatusRetry': 'Resend',
+      'chatStatusSending': 'Sending',
+      'chatStatusDelivered': 'Delivered',
       'chatWillAppearWhenYouHaveContract':
           'Chat will appear when you have a contract connected with your landlord. This will create a conversation between you and your landlord.',
       'pleaseContactLandlord': 'Please contact your landlord',
@@ -698,13 +733,33 @@ class AppLocalizationsHelper {
       // Reports
       'createReport': 'Create Report',
       'reportIssue': 'Report Issue',
+      'reportHeaderSubtitle': 'Please fill in all required information',
       'maintenanceWork': 'Maintenance Work',
       'issue': 'Issue',
+      'issueDescription': 'Issue Description',
+      'issueDescriptionHint': 'Describe the issue you need help with...',
+      'issueImagesOptional': 'Illustration photos (optional)',
       'allGood': 'All good',
       'maintenanceWorkWillShowHere': 'Maintenance work will appear here',
       'fromYourReport': 'From your report',
       'viewOnlyCannotEdit': 'View only - You cannot edit maintenance work',
       'hasImage': 'Has image',
+      'selectPropertyAndRoom': 'Please select a property and room',
+      'selectPropertyPlaceholder': 'Select property',
+      'selectPropertyFirst': 'Select a property first',
+      'selectRoomPlaceholder': 'Select room',
+      'pleaseSelectProperty': 'Please select a property',
+      'pleaseSelectRoom': 'Please select a room',
+      'pleaseEnterIssueDescription': 'Please enter an issue description',
+      'descriptionMinCharacters': 'Description must have at least {count} characters',
+      'unnamedRoom': 'Unnamed room',
+      'maxImagesHint': 'Up to {count} photos',
+      'imagePickerError': 'Image selection error: {error}',
+      'addPhoto': 'Add photo',
+      'add': 'Add',
+      'reportSubmitSuccess': 'Report sent successfully, please wait for approval',
+      'submitting': 'Submitting...',
+      'submitReport': 'Submit report',
 
       // Status
       'pending': 'Pending',
@@ -736,6 +791,12 @@ class AppLocalizationsHelper {
       'view': 'View',
       'send': 'Send',
       'pay': 'Pay',
+      'paymentMethodBankTransfer': 'Bank transfer',
+      'paymentMethodQrCode': 'Scan QR code',
+      'paymentMethodMomo': 'MoMo e-wallet',
+      'paymentMethodZaloPay': 'ZaloPay',
+      'paymentMethodCard': 'Credit/Debit card',
+      'paymentMethodComingSoon': 'Coming soon',
 
       // Connectivity
       'online': 'Online',
@@ -865,7 +926,6 @@ class AppLocalizationsHelper {
       'locationInfo': 'Location Information',
       'property': 'Property',
       'room': 'Room',
-      'issueDescription': 'Issue Description',
       'illustrationImage': 'Illustration Image',
       'cannotLoadImage': 'Cannot load image',
       'timeInfo': 'Time Information',

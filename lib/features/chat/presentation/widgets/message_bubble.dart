@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../domain/entities/chat_message.dart';
 import '../pages/image_viewer.dart';
 
@@ -8,12 +9,14 @@ class MessageBubble extends StatefulWidget {
   final ChatMessage message;
   final bool isMe;
   final VoidCallback? onRetry;
+  final String languageCode;
 
   const MessageBubble({
     super.key,
     required this.message,
     required this.isMe,
     this.onRetry,
+    required this.languageCode,
   });
 
   @override
@@ -460,6 +463,9 @@ class _MessageBubbleState extends State<MessageBubble>
   Widget _buildMessageStatus() {
     final isTempMessage = widget.message.id.startsWith('temp-');
     final messageAge = DateTime.now().difference(widget.message.createdAt);
+    final languageCode = widget.languageCode;
+    String tr(String key) =>
+        AppLocalizationsHelper.translate(key, languageCode);
 
     // Failed: temp message older than 1 minute
     if (isTempMessage && messageAge.inSeconds > 60) {
@@ -467,7 +473,7 @@ class _MessageBubbleState extends State<MessageBubble>
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            'Gửi thất bại',
+            tr('chatStatusFailed'),
             style: TextStyle(
               fontSize: 10,
               color: Colors.red[300],
@@ -483,9 +489,9 @@ class _MessageBubbleState extends State<MessageBubble>
                 color: Colors.red[400],
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text(
-                'Gửi lại',
-                style: TextStyle(
+              child: Text(
+                tr('chatStatusRetry'),
+                style: const TextStyle(
                   fontSize: 10,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -514,7 +520,7 @@ class _MessageBubbleState extends State<MessageBubble>
           ),
           const SizedBox(width: 4),
           Text(
-            'Đang gửi',
+            tr('chatStatusSending'),
             style: TextStyle(
               fontSize: 10,
               color: widget.isMe ? Colors.white60 : Colors.black54,
@@ -527,7 +533,7 @@ class _MessageBubbleState extends State<MessageBubble>
 
     // Delivered: real message
     return Text(
-      'Đã nhận',
+      tr('chatStatusDelivered'),
       style: TextStyle(
         fontSize: 10,
         color: widget.isMe ? Colors.white60 : Colors.black54,

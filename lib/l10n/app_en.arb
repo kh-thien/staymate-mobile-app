@@ -92,6 +92,10 @@
   "@noContracts": {
     "description": "Empty state message for contracts"
   },
+  "noContractsFound": "No contracts found",
+  "@noContractsFound": {
+    "description": "Message displayed when no contracts match filters"
+  },
   "noInvoices": "No invoices",
   "@noInvoices": {
     "description": "Empty state message for invoices"
@@ -104,6 +108,10 @@
   "@noChats": {
     "description": "Empty state message for chats"
   },
+  "chatStatusFailed": "Failed to send",
+  "chatStatusRetry": "Resend",
+  "chatStatusSending": "Sending",
+  "chatStatusDelivered": "Delivered",
   "createReport": "Create Report",
   "@createReport": {
     "description": "Create report button text"
@@ -112,7 +120,27 @@
   "@reportIssue": {
     "description": "Report issue label"
   },
+  "reportHeaderSubtitle": "Please fill in all required information",
+  "issueDescription": "Issue Description",
+  "issueDescriptionHint": "Describe the issue you need help with...",
+  "issueImagesOptional": "Illustration photos (optional)",
   "maintenanceWork": "Maintenance Work",
+  "selectPropertyAndRoom": "Please select a property and room",
+  "selectPropertyPlaceholder": "Select property",
+  "selectPropertyFirst": "Select a property first",
+  "selectRoomPlaceholder": "Select room",
+  "pleaseSelectProperty": "Please select a property",
+  "pleaseSelectRoom": "Please select a room",
+  "pleaseEnterIssueDescription": "Please enter an issue description",
+  "descriptionMinCharacters": "Description must have at least {count} characters",
+  "unnamedRoom": "Unnamed room",
+  "maxImagesHint": "Up to {count} photos",
+  "imagePickerError": "Image selection error: {error}",
+  "addPhoto": "Add photo",
+  "add": "Add",
+  "reportSubmitSuccess": "Report sent successfully, please wait for approval",
+  "submitting": "Submitting...",
+  "submitReport": "Submit report",
   "@maintenanceWork": {
     "description": "Maintenance work label"
   },
@@ -176,6 +204,12 @@
   "@pay": {
     "description": "Pay button text"
   },
+  "paymentMethodBankTransfer": "Bank transfer",
+  "paymentMethodQrCode": "Scan QR code",
+  "paymentMethodMomo": "MoMo e-wallet",
+  "paymentMethodZaloPay": "ZaloPay",
+  "paymentMethodCard": "Credit/Debit card",
+  "paymentMethodComingSoon": "Coming soon",
   "paid": "Paid",
   "@paid": {
     "description": "Paid status"

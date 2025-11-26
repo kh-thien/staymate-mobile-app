@@ -26,12 +26,8 @@ class InvoiceDetailPage extends ConsumerWidget {
       // extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark 
-            ? AppColors.surfaceDarkElevated 
-            : Colors.white,
-        foregroundColor: isDark 
-            ? AppColors.textPrimaryDark 
-            : Colors.black,
+        backgroundColor: isDark ? AppColors.surfaceDarkElevated : Colors.white,
+        foregroundColor: isDark ? AppColors.textPrimaryDark : Colors.black,
         centerTitle: false,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -41,9 +37,7 @@ class InvoiceDetailPage extends ConsumerWidget {
         ),
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new_rounded, size: 24),
-          color: isDark 
-              ? AppColors.textPrimaryDark 
-              : Colors.black,
+          color: isDark ? AppColors.textPrimaryDark : Colors.black,
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: Builder(
@@ -55,9 +49,7 @@ class InvoiceDetailPage extends ConsumerWidget {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 22,
-                color: isDark 
-                    ? AppColors.textPrimaryDark 
-                    : Colors.black,
+                color: isDark ? AppColors.textPrimaryDark : Colors.black,
               ),
             );
           },
@@ -66,9 +58,7 @@ class InvoiceDetailPage extends ConsumerWidget {
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(
-          color: isDark 
-              ? AppColors.surfaceDark 
-              : Colors.white,
+          color: isDark ? AppColors.surfaceDark : Colors.white,
           // borderRadius: const BorderRadius.only(
           //   topLeft: Radius.circular(30),
           //   topRight: Radius.circular(30),
@@ -97,7 +87,8 @@ class InvoiceDetailPage extends ConsumerWidget {
                         TextSpan(
                           children: [
                             TextSpan(
-                              text: '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                              text:
+                                  '${AppLocalizationsHelper.translate('error', languageCode)}: ',
                               style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.red,
@@ -160,10 +151,8 @@ class _InvoiceDetailContent extends ConsumerWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => _PaymentMethodModal(
-        invoice: invoice,
-        languageCode: languageCode,
-      ),
+      builder: (context) =>
+          _PaymentMethodModal(invoice: invoice, languageCode: languageCode),
     );
 
     // Handle result from modal
@@ -241,16 +230,18 @@ class _InvoiceDetailContent extends ConsumerWidget {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              if (invoice.name != null && invoice.name!.isNotEmpty)
-                              Text(
+                              if (invoice.name != null &&
+                                  invoice.name!.isNotEmpty)
+                                Text(
                                   invoice.name!,
-                                style: theme.textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
                                   ),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
                                 ),
-                              if (invoice.name != null && invoice.name!.isNotEmpty)
+                              if (invoice.name != null &&
+                                  invoice.name!.isNotEmpty)
                                 const SizedBox(height: 6),
                               Text(
                                 invoice.billNumber ?? 'N/A',
@@ -506,7 +497,8 @@ class _InvoiceDetailContent extends ConsumerWidget {
                                 'lateFee',
                                 languageCode,
                               ),
-                              value: '+ ${currencyFormatter.format(invoice.lateFee)}',
+                              value:
+                                  '+ ${currencyFormatter.format(invoice.lateFee)}',
                               valueColor: theme.colorScheme.error,
                               languageCode: languageCode,
                             ),
@@ -637,10 +629,7 @@ class _StatusChip extends StatelessWidget {
   final BillStatus status;
   final String languageCode;
 
-  const _StatusChip({
-    required this.status,
-    required this.languageCode,
-  });
+  const _StatusChip({required this.status, required this.languageCode});
 
   @override
   Widget build(BuildContext context) {
@@ -916,9 +905,7 @@ class _PaymentMethodModal extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: isDark
-            ? AppColors.surfaceDarkElevated
-            : Colors.white,
+        color: isDark ? AppColors.surfaceDarkElevated : Colors.white,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: SafeArea(
@@ -932,9 +919,7 @@ class _PaymentMethodModal extends ConsumerWidget {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                color: isDark
-                    ? Colors.grey.shade600
-                    : Colors.grey.shade300,
+                color: isDark ? Colors.grey.shade600 : Colors.grey.shade300,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),
@@ -999,9 +984,7 @@ class _PaymentMethodModal extends ConsumerWidget {
 
             Divider(
               height: 1,
-              color: isDark
-                  ? AppColors.dividerDark
-                  : Colors.grey.shade200,
+              color: isDark ? AppColors.dividerDark : Colors.grey.shade200,
             ),
 
             // Payment methods
@@ -1013,9 +996,7 @@ class _PaymentMethodModal extends ConsumerWidget {
               separatorBuilder: (context, index) => Divider(
                 height: 1,
                 indent: 72,
-                color: isDark
-                    ? AppColors.dividerDark
-                    : Colors.grey.shade200,
+                color: isDark ? AppColors.dividerDark : Colors.grey.shade200,
               ),
               itemBuilder: (context, index) {
                 final method = PaymentMethod.values[index];
@@ -1050,10 +1031,16 @@ class _PaymentMethodTile extends ConsumerWidget {
   void _handlePayment(BuildContext context, WidgetRef ref) async {
     final locale = ref.read(appLocaleProvider);
     final languageCode = locale.languageCode;
+    final methodLabel = method.displayName(languageCode);
+    final comingSoonLabel = method.comingSoonText(languageCode);
     if (!method.isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('${method.displayName} ${method.comingSoonText}'),
+          content: Text(
+            comingSoonLabel != null
+                ? '$methodLabel $comingSoonLabel'
+                : methodLabel,
+          ),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -1102,6 +1089,8 @@ class _PaymentMethodTile extends ConsumerWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     final isAvailable = method.isAvailable;
+    final methodLabel = method.displayName(languageCode);
+    final comingSoonLabel = method.comingSoonText(languageCode);
 
     return Material(
       color: Colors.transparent,
@@ -1119,8 +1108,8 @@ class _PaymentMethodTile extends ConsumerWidget {
                     color: isAvailable
                         ? theme.colorScheme.primaryContainer
                         : (isDark
-                            ? AppColors.surfaceDark
-                            : Colors.grey.shade200),
+                              ? AppColors.surfaceDark
+                              : Colors.grey.shade200),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -1128,8 +1117,8 @@ class _PaymentMethodTile extends ConsumerWidget {
                     color: isAvailable
                         ? theme.colorScheme.primary
                         : (isDark
-                            ? AppColors.textSecondaryDark
-                            : Colors.grey.shade500),
+                              ? AppColors.textSecondaryDark
+                              : Colors.grey.shade500),
                     size: 24,
                   ),
                 ),
@@ -1139,20 +1128,20 @@ class _PaymentMethodTile extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        method.displayName,
+                        methodLabel,
                         style: theme.textTheme.bodyLarge?.copyWith(
                           fontWeight: FontWeight.w600,
                           color: isAvailable
                               ? null
                               : (isDark
-                                  ? AppColors.textSecondaryDark
-                                  : Colors.grey.shade600),
+                                    ? AppColors.textSecondaryDark
+                                    : Colors.grey.shade600),
                         ),
                       ),
-                      if (!isAvailable && method.comingSoonText != null) ...[
+                      if (!isAvailable && comingSoonLabel != null) ...[
                         const SizedBox(height: 2),
                         Text(
-                          method.comingSoonText!,
+                          comingSoonLabel,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: Colors.orange.shade700,
                             fontStyle: FontStyle.italic,
@@ -1229,10 +1218,7 @@ class _ReceivingAccountCard extends ConsumerWidget {
             decoration: BoxDecoration(
               color: Colors.blue.shade50,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(
-                color: Colors.blue.shade200,
-                width: 1.5,
-              ),
+              border: Border.all(color: Colors.blue.shade200, width: 1.5),
               boxShadow: [
                 BoxShadow(
                   color: Colors.blue.withOpacity(0.1),
@@ -1482,7 +1468,8 @@ class _AccountInfoRow extends ConsumerWidget {
               const SizedBox(height: 2),
               Text(
                 value,
-                style: valueStyle ??
+                style:
+                    valueStyle ??
                     theme.textTheme.bodyMedium?.copyWith(
                       fontWeight: FontWeight.w600,
                       color: Colors.blue.shade900,

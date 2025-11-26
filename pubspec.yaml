@@ -1,7 +1,7 @@
 name: stay_mate
 description: "Stay Mate – An mobile app for tenants to monitor and manage their rental rooms."
 publish_to: "none"
-version: 1.0.15+15
+version: 1.0.16+16
 
 environment:
   sdk: ^3.8.1

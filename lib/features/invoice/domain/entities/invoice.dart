@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import 'bill_item.dart';
 
 enum BillStatus {
@@ -108,10 +109,7 @@ class Invoice {
 
   // Tổng tiền từ các bill items (tổng tiền gốc trước khi giảm và cộng phí)
   double get itemsTotalAmount {
-    return items.fold<double>(
-      0.0,
-      (sum, item) => sum + (item.amount),
-    );
+    return items.fold<double>(0.0, (sum, item) => sum + (item.amount));
   }
 
   String get statusText {
@@ -134,19 +132,16 @@ class Invoice {
 
 // Helper extension for PaymentMethod
 extension PaymentMethodExtension on PaymentMethod {
-  String get displayName {
-    switch (this) {
-      case PaymentMethod.bankTransfer:
-        return 'Chuyển khoản ngân hàng';
-      case PaymentMethod.qrCode:
-        return 'Quét mã QR';
-      case PaymentMethod.momo:
-        return 'Ví MoMo';
-      case PaymentMethod.zaloPay:
-        return 'ZaloPay';
-      case PaymentMethod.card:
-        return 'Thẻ tín dụng/Ghi nợ';
-    }
+  String displayName(String languageCode) {
+    final key = switch (this) {
+      PaymentMethod.bankTransfer => 'paymentMethodBankTransfer',
+      PaymentMethod.qrCode => 'paymentMethodQrCode',
+      PaymentMethod.momo => 'paymentMethodMomo',
+      PaymentMethod.zaloPay => 'paymentMethodZaloPay',
+      PaymentMethod.card => 'paymentMethodCard',
+    };
+
+    return AppLocalizationsHelper.translate(key, languageCode);
   }
 
   IconData get icon {
@@ -176,8 +171,11 @@ extension PaymentMethodExtension on PaymentMethod {
     }
   }
 
-  String? get comingSoonText {
+  String? comingSoonText(String languageCode) {
     if (isAvailable) return null;
-    return 'Sắp ra mắt';
+    return AppLocalizationsHelper.translate(
+      'paymentMethodComingSoon',
+      languageCode,
+    );
   }
 }

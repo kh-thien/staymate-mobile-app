@@ -78,6 +78,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noContracts => 'No contracts';
 
   @override
+  String get noContractsFound => 'No contracts found';
+
+  @override
   String get noInvoices => 'No invoices';
 
   @override
@@ -87,13 +90,92 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noChats => 'No chats';
 
   @override
+  String get chatStatusFailed => 'Failed to send';
+
+  @override
+  String get chatStatusRetry => 'Resend';
+
+  @override
+  String get chatStatusSending => 'Sending';
+
+  @override
+  String get chatStatusDelivered => 'Delivered';
+
+  @override
   String get createReport => 'Create Report';
 
   @override
   String get reportIssue => 'Report Issue';
 
   @override
+  String get reportHeaderSubtitle => 'Please fill in all required information';
+
+  @override
+  String get issueDescription => 'Issue Description';
+
+  @override
+  String get issueDescriptionHint => 'Describe the issue you need help with...';
+
+  @override
+  String get issueImagesOptional => 'Illustration photos (optional)';
+
+  @override
   String get maintenanceWork => 'Maintenance Work';
+
+  @override
+  String get selectPropertyAndRoom => 'Please select a property and room';
+
+  @override
+  String get selectPropertyPlaceholder => 'Select property';
+
+  @override
+  String get selectPropertyFirst => 'Select a property first';
+
+  @override
+  String get selectRoomPlaceholder => 'Select room';
+
+  @override
+  String get pleaseSelectProperty => 'Please select a property';
+
+  @override
+  String get pleaseSelectRoom => 'Please select a room';
+
+  @override
+  String get pleaseEnterIssueDescription => 'Please enter an issue description';
+
+  @override
+  String descriptionMinCharacters(Object count) {
+    return 'Description must have at least $count characters';
+  }
+
+  @override
+  String get unnamedRoom => 'Unnamed room';
+
+  @override
+  String maxImagesHint(Object count) {
+    return 'Up to $count photos';
+  }
+
+  @override
+  String imagePickerError(Object error) {
+    return 'Image selection error: $error';
+  }
+
+  @override
+  String get addPhoto => 'Add photo';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get reportSubmitSuccess =>
+      'Report sent successfully, please wait for approval';
+
+  @override
+  String get submitting => 'Submitting...';
+
+  @override
+  String get submitReport => 'Submit report';
 
   @override
   String get pending => 'Pending';
@@ -139,6 +221,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pay => 'Pay';
+
+  @override
+  String get paymentMethodBankTransfer => 'Bank transfer';
+
+  @override
+  String get paymentMethodQrCode => 'Scan QR code';
+
+  @override
+  String get paymentMethodMomo => 'MoMo e-wallet';
+
+  @override
+  String get paymentMethodZaloPay => 'ZaloPay';
+
+  @override
+  String get paymentMethodCard => 'Credit/Debit card';
+
+  @override
+  String get paymentMethodComingSoon => 'Coming soon';
 
   @override
   String get paid => 'Paid';

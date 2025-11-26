@@ -236,6 +236,12 @@ abstract class AppLocalizations {
   /// **'No contracts'**
   String get noContracts;
 
+  /// Message displayed when no contracts match filters
+  ///
+  /// In en, this message translates to:
+  /// **'No contracts found'**
+  String get noContractsFound;
+
   /// Empty state message for invoices
   ///
   /// In en, this message translates to:
@@ -254,6 +260,30 @@ abstract class AppLocalizations {
   /// **'No chats'**
   String get noChats;
 
+  /// No description provided for @chatStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send'**
+  String get chatStatusFailed;
+
+  /// No description provided for @chatStatusRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend'**
+  String get chatStatusRetry;
+
+  /// No description provided for @chatStatusSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending'**
+  String get chatStatusSending;
+
+  /// No description provided for @chatStatusDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get chatStatusDelivered;
+
   /// Create report button text
   ///
   /// In en, this message translates to:
@@ -266,11 +296,131 @@ abstract class AppLocalizations {
   /// **'Report Issue'**
   String get reportIssue;
 
+  /// No description provided for @reportHeaderSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all required information'**
+  String get reportHeaderSubtitle;
+
+  /// No description provided for @issueDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue Description'**
+  String get issueDescription;
+
+  /// No description provided for @issueDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the issue you need help with...'**
+  String get issueDescriptionHint;
+
+  /// No description provided for @issueImagesOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Illustration photos (optional)'**
+  String get issueImagesOptional;
+
   /// Maintenance work label
   ///
   /// In en, this message translates to:
   /// **'Maintenance Work'**
   String get maintenanceWork;
+
+  /// No description provided for @selectPropertyAndRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a property and room'**
+  String get selectPropertyAndRoom;
+
+  /// No description provided for @selectPropertyPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Select property'**
+  String get selectPropertyPlaceholder;
+
+  /// No description provided for @selectPropertyFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a property first'**
+  String get selectPropertyFirst;
+
+  /// No description provided for @selectRoomPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Select room'**
+  String get selectRoomPlaceholder;
+
+  /// No description provided for @pleaseSelectProperty.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a property'**
+  String get pleaseSelectProperty;
+
+  /// No description provided for @pleaseSelectRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a room'**
+  String get pleaseSelectRoom;
+
+  /// No description provided for @pleaseEnterIssueDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an issue description'**
+  String get pleaseEnterIssueDescription;
+
+  /// No description provided for @descriptionMinCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Description must have at least {count} characters'**
+  String descriptionMinCharacters(Object count);
+
+  /// No description provided for @unnamedRoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Unnamed room'**
+  String get unnamedRoom;
+
+  /// No description provided for @maxImagesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {count} photos'**
+  String maxImagesHint(Object count);
+
+  /// No description provided for @imagePickerError.
+  ///
+  /// In en, this message translates to:
+  /// **'Image selection error: {error}'**
+  String imagePickerError(Object error);
+
+  /// No description provided for @addPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get addPhoto;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @reportSubmitSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report sent successfully, please wait for approval'**
+  String get reportSubmitSuccess;
+
+  /// No description provided for @submitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get submitting;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get submitReport;
 
   /// Pending status
   ///
@@ -361,6 +511,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pay'**
   String get pay;
+
+  /// No description provided for @paymentMethodBankTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank transfer'**
+  String get paymentMethodBankTransfer;
+
+  /// No description provided for @paymentMethodQrCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get paymentMethodQrCode;
+
+  /// No description provided for @paymentMethodMomo.
+  ///
+  /// In en, this message translates to:
+  /// **'MoMo e-wallet'**
+  String get paymentMethodMomo;
+
+  /// No description provided for @paymentMethodZaloPay.
+  ///
+  /// In en, this message translates to:
+  /// **'ZaloPay'**
+  String get paymentMethodZaloPay;
+
+  /// No description provided for @paymentMethodCard.
+  ///
+  /// In en, this message translates to:
+  /// **'Credit/Debit card'**
+  String get paymentMethodCard;
+
+  /// No description provided for @paymentMethodComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get paymentMethodComingSoon;
 
   /// Paid status
   ///

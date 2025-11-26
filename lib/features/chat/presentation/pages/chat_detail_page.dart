@@ -194,6 +194,7 @@ class ChatDetailPage extends HookConsumerWidget {
                                     }
                                   }
                                 : null,
+                            languageCode: languageCode,
                           );
                         },
                       ),

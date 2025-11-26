@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
+import '../../../../core/services/locale_provider.dart';
 import '../../../../core/permission/permission.dart';
 import '../../domain/entities/contract.dart';
 import '../providers/maintenance_request_provider.dart';
@@ -24,6 +26,13 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
   List<File> _selectedImages = [];
   bool _isSubmitting = false;
   static const int _maxImages = 3;
+  String get _languageCode => ref.read(appLocaleProvider).languageCode;
+
+  String _tr(String key) =>
+      AppLocalizationsHelper.translate(key, _languageCode);
+
+  String _trParams(String key, Map<String, String> params) =>
+      AppLocalizationsHelper.translateWithParams(key, _languageCode, params);
 
   @override
   void dispose() {
@@ -36,7 +45,7 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Tối đa $_maxImages ảnh'),
+            content: Text(_trParams('maxImagesHint', {'count': '$_maxImages'})),
             backgroundColor: Colors.orange,
           ),
         );
@@ -70,7 +79,7 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Lỗi chọn ảnh: $e'),
+            content: Text(_trParams('imagePickerError', {'error': '$e'})),
             backgroundColor: Colors.red,
           ),
         );
@@ -90,8 +99,8 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
       print('❌ [SUBMIT] Property or Room not selected');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Vui lòng chọn bất động sản và phòng'),
+          SnackBar(
+            content: Text(_tr('selectPropertyAndRoom')),
             backgroundColor: Colors.orange,
           ),
         );
@@ -144,10 +153,10 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
           print('📢 [SUBMIT] Showing snackbar, mounted: $mounted');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Gửi báo cáo thành công, vui lòng chờ duyệt'),
+              SnackBar(
+                content: Text(_tr('reportSubmitSuccess')),
                 backgroundColor: Colors.green,
-                duration: Duration(seconds: 3),
+                duration: const Duration(seconds: 3),
               ),
             );
           } else {
@@ -165,7 +174,10 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
           _isSubmitting = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Lỗi: $e'), backgroundColor: Colors.red),
+          SnackBar(
+            content: Text('${_tr('error')}: $e'),
+            backgroundColor: Colors.red,
+          ),
         );
       }
     }
@@ -174,6 +186,7 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final languageCode = ref.watch(appLocaleProvider).languageCode;
     final contractsAsync = ref.watch(activeContractsProvider);
 
     return Scaffold(
@@ -194,9 +207,9 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
           ),
           onPressed: () => context.pop(),
         ),
-        title: const Text(
-          'Tạo báo cáo sự cố',
-          style: TextStyle(
+        title: Text(
+          AppLocalizationsHelper.translate('createReport', languageCode),
+          style: const TextStyle(
             color: Colors.black87,
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -207,245 +220,250 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
       body: Container(
         width: double.infinity,
         decoration: BoxDecoration(color: Colors.white),
-        child: Column(
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(30),
-                topRight: Radius.circular(30),
-              ),
-              child: contractsAsync.when(
-                data: (contracts) {
-                  if (contracts.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.info_outline_rounded,
-                            size: 80,
-                            color: Colors.grey.shade400,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Không tìm thấy hợp đồng nào',
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: Colors.grey.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  // Debug log: Contracts loaded
-                  print(
-                    '📊 [DEBUG] Contracts loaded: ${contracts.length} items',
-                  );
-                  for (var contract in contracts) {
-                    print(
-                      '  - Property: ${contract.propertyId} (${contract.propertyName}), Room: ${contract.roomId} (${contract.roomCode})',
-                    );
-                  }
-
-                  return SingleChildScrollView(
-                    padding: EdgeInsets.only(
-                      left: 20,
-                      right: 20,
-                      top: 24,
-                      bottom: MediaQuery.of(context).padding.bottom + 100,
+        child: contractsAsync.when(
+          data: (contracts) {
+            if (contracts.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 80,
+                      color: Colors.grey.shade400,
                     ),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizationsHelper.translate(
+                        'noContractsFound',
+                        languageCode,
+                      ),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            // Debug log: Contracts loaded
+            print('📊 [DEBUG] Contracts loaded: ${contracts.length} items');
+            for (var contract in contracts) {
+              print(
+                '  - Property: ${contract.propertyId} (${contract.propertyName}), Room: ${contract.roomId} (${contract.roomCode})',
+              );
+            }
+
+            return SingleChildScrollView(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top: 24,
+                bottom: MediaQuery.of(context).padding.bottom + 100,
+              ),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Header info
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            const Color(0xFF6C63FF).withOpacity(0.1),
+                            const Color(0xFF6C63FF).withOpacity(0.05),
+                          ],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: const Color(0xFF6C63FF).withOpacity(0.2),
+                        ),
+                      ),
+                      child: Row(
                         children: [
-                          // Header info
                           Container(
-                            padding: const EdgeInsets.all(16),
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: [
-                                  const Color(0xFF6C63FF).withOpacity(0.1),
-                                  const Color(0xFF6C63FF).withOpacity(0.05),
-                                ],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                              border: Border.all(
-                                color: const Color(0xFF6C63FF).withOpacity(0.2),
-                              ),
+                              color: const Color(0xFF6C63FF),
+                              borderRadius: BorderRadius.circular(12),
                             ),
-                            child: Row(
+                            child: const Icon(
+                              Icons.report_problem_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF6C63FF),
-                                    borderRadius: BorderRadius.circular(12),
+                                Text(
+                                  AppLocalizationsHelper.translate(
+                                    'reportIssue',
+                                    languageCode,
                                   ),
-                                  child: const Icon(
-                                    Icons.report_problem_rounded,
-                                    color: Colors.white,
-                                    size: 24,
+                                  style: theme.textTheme.titleMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: const Color(0xFF6C63FF),
                                   ),
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Báo cáo sự cố',
-                                        style: theme.textTheme.titleMedium
-                                            ?.copyWith(
-                                              fontWeight: FontWeight.bold,
-                                              color: const Color(0xFF6C63FF),
-                                            ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        'Vui lòng điền đầy đủ thông tin',
-                                        style: theme.textTheme.bodySmall
-                                            ?.copyWith(
-                                              color: Colors.grey.shade600,
-                                            ),
-                                      ),
-                                    ],
+                                const SizedBox(height: 4),
+                                Text(
+                                  AppLocalizationsHelper.translate(
+                                    'reportHeaderSubtitle',
+                                    languageCode,
+                                  ),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: Colors.grey.shade600,
                                   ),
                                 ),
                               ],
                             ),
                           ),
-                          const SizedBox(height: 24),
-
-                          // Property Dropdown
-                          _PropertyDropdown(
-                            contracts: contracts,
-                            selectedPropertyId: _selectedPropertyId,
-                            onChanged: (propertyId) {
-                              print('✅ [DEBUG] Property selected: $propertyId');
-                              setState(() {
-                                _selectedPropertyId = propertyId;
-                                _selectedRoomId = null; // Reset room selection
-                                print(
-                                  '🔄 [DEBUG] State updated - Property: $_selectedPropertyId, Room: $_selectedRoomId',
-                                );
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Room Dropdown
-                          _RoomDropdown(
-                            contracts: contracts,
-                            selectedPropertyId: _selectedPropertyId,
-                            selectedRoomId: _selectedRoomId,
-                            onChanged: (roomId) {
-                              print('✅ [DEBUG] Room selected: $roomId');
-                              setState(() {
-                                _selectedRoomId = roomId;
-                                print(
-                                  '🔄 [DEBUG] State updated - Property: $_selectedPropertyId, Room: $_selectedRoomId',
-                                );
-                              });
-                            },
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Description Field
-                          TextFormField(
-                            controller: _descriptionController,
-                            decoration: InputDecoration(
-                              labelText: 'Mô tả sự cố *',
-                              hintText: 'Nhập chi tiết sự cố cần báo cáo...',
-                              alignLabelWithHint: true,
-                              filled: true,
-                              fillColor: Colors.grey.shade50,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: BorderSide(
-                                  color: Colors.grey.shade300,
-                                ),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF6C63FF),
-                                  width: 2,
-                                ),
-                              ),
-                              prefixIcon: const Padding(
-                                padding: EdgeInsets.only(bottom: 80),
-                                child: Icon(
-                                  Icons.description_outlined,
-                                  color: Color(0xFF6C63FF),
-                                ),
-                              ),
-                            ),
-                            maxLines: 5,
-                            textCapitalization: TextCapitalization.sentences,
-                            keyboardType: TextInputType.multiline,
-                            textInputAction: TextInputAction.newline,
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Vui lòng nhập mô tả sự cố';
-                              }
-                              if (value.trim().length < 10) {
-                                return 'Mô tả phải có ít nhất 10 ký tự';
-                              }
-                              return null;
-                            },
-                          ),
-                          const SizedBox(height: 16),
-
-                          // Image Picker
-                          _ImagePicker(
-                            selectedImages: _selectedImages,
-                            maxImages: _maxImages,
-                            onPickImage: _pickImage,
-                            onRemoveImage: (index) {
-                              setState(() {
-                                _selectedImages.removeAt(index);
-                              });
-                            },
-                          ),
                         ],
                       ),
                     ),
-                  );
-                },
-                loading: () => const Center(child: CircularProgressIndicator()),
-                error: (error, stack) => Center(
-                  child: SelectableText.rich(
-                    TextSpan(
-                      children: [
-                        const TextSpan(
-                          text: 'Lỗi: ',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.red,
+                    const SizedBox(height: 24),
+
+                    // Property Dropdown
+                    _PropertyDropdown(
+                      contracts: contracts,
+                      selectedPropertyId: _selectedPropertyId,
+                      onChanged: (propertyId) {
+                        print('✅ [DEBUG] Property selected: $propertyId');
+                        setState(() {
+                          _selectedPropertyId = propertyId;
+                          _selectedRoomId = null; // Reset room selection
+                          print(
+                            '🔄 [DEBUG] State updated - Property: $_selectedPropertyId, Room: $_selectedRoomId',
+                          );
+                        });
+                      },
+                      languageCode: languageCode,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Room Dropdown
+                    _RoomDropdown(
+                      contracts: contracts,
+                      selectedPropertyId: _selectedPropertyId,
+                      selectedRoomId: _selectedRoomId,
+                      onChanged: (roomId) {
+                        print('✅ [DEBUG] Room selected: $roomId');
+                        setState(() {
+                          _selectedRoomId = roomId;
+                          print(
+                            '🔄 [DEBUG] State updated - Property: $_selectedPropertyId, Room: $_selectedRoomId',
+                          );
+                        });
+                      },
+                      languageCode: languageCode,
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Description Field
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: InputDecoration(
+                        labelText:
+                            '${AppLocalizationsHelper.translate('issueDescription', languageCode)} *',
+                        hintText: AppLocalizationsHelper.translate(
+                          'issueDescriptionHint',
+                          languageCode,
+                        ),
+                        alignLabelWithHint: true,
+                        filled: true,
+                        fillColor: Colors.grey.shade50,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          borderSide: const BorderSide(
+                            color: Color(0xFF6C63FF),
+                            width: 2,
                           ),
                         ),
-                        TextSpan(
-                          text: error.toString(),
-                          style: const TextStyle(color: Colors.red),
+                        prefixIcon: const Padding(
+                          padding: EdgeInsets.only(bottom: 80),
+                          child: Icon(
+                            Icons.description_outlined,
+                            color: Color(0xFF6C63FF),
+                          ),
                         ),
-                      ],
+                      ),
+                      maxLines: 5,
+                      textCapitalization: TextCapitalization.sentences,
+                      keyboardType: TextInputType.multiline,
+                      textInputAction: TextInputAction.newline,
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return AppLocalizationsHelper.translate(
+                            'pleaseEnterIssueDescription',
+                            languageCode,
+                          );
+                        }
+                        if (value.trim().length < 10) {
+                          return AppLocalizationsHelper.translateWithParams(
+                            'descriptionMinCharacters',
+                            languageCode,
+                            {'count': '10'},
+                          );
+                        }
+                        return null;
+                      },
                     ),
-                  ),
+                    const SizedBox(height: 16),
+
+                    // Image Picker
+                    _ImagePicker(
+                      selectedImages: _selectedImages,
+                      maxImages: _maxImages,
+                      onPickImage: _pickImage,
+                      onRemoveImage: (index) {
+                        setState(() {
+                          _selectedImages.removeAt(index);
+                        });
+                      },
+                      languageCode: languageCode,
+                    ),
+                  ],
                 ),
               ),
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Center(
+            child: SelectableText.rich(
+              TextSpan(
+                children: [
+                  TextSpan(
+                    text:
+                        '${AppLocalizationsHelper.translate('error', languageCode)}: ',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                  TextSpan(
+                    text: error.toString(),
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                ],
+              ),
             ),
-          ],
+          ),
         ),
       ),
       floatingActionButton: Padding(
@@ -467,7 +485,10 @@ class _CreateReportPageState extends ConsumerState<CreateReportPage> {
                 )
               : const Icon(Icons.send_rounded, size: 22),
           label: Text(
-            _isSubmitting ? 'Đang gửi...' : 'Gửi báo cáo',
+            AppLocalizationsHelper.translate(
+              _isSubmitting ? 'submitting' : 'submitReport',
+              languageCode,
+            ),
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
           ),
         ),
@@ -480,11 +501,13 @@ class _PropertyDropdown extends StatelessWidget {
   final List<Contract> contracts;
   final String? selectedPropertyId;
   final ValueChanged<String?> onChanged;
+  final String languageCode;
 
   const _PropertyDropdown({
     required this.contracts,
     required this.selectedPropertyId,
     required this.onChanged,
+    required this.languageCode,
   });
 
   @override
@@ -504,7 +527,8 @@ class _PropertyDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       value: selectedPropertyId,
       decoration: InputDecoration(
-        labelText: 'Bất động sản *',
+        labelText:
+            '${AppLocalizationsHelper.translate('property', languageCode)} *',
         prefixIcon: const Icon(
           Icons.apartment_rounded,
           color: Color(0xFF6C63FF),
@@ -525,7 +549,13 @@ class _PropertyDropdown extends StatelessWidget {
         ),
       ),
       style: const TextStyle(fontSize: 14, color: Colors.black87),
-      hint: const Text('Chọn bất động sản', style: TextStyle(fontSize: 14)),
+      hint: Text(
+        AppLocalizationsHelper.translate(
+          'selectPropertyPlaceholder',
+          languageCode,
+        ),
+        style: const TextStyle(fontSize: 14),
+      ),
       menuMaxHeight: 300,
       items: propertiesMap.entries.map((entry) {
         return DropdownMenuItem<String>(
@@ -536,7 +566,10 @@ class _PropertyDropdown extends StatelessWidget {
       onChanged: onChanged,
       validator: (value) {
         if (value == null) {
-          return 'Vui lòng chọn bất động sản';
+          return AppLocalizationsHelper.translate(
+            'pleaseSelectProperty',
+            languageCode,
+          );
         }
         return null;
       },
@@ -549,12 +582,14 @@ class _RoomDropdown extends StatelessWidget {
   final String? selectedPropertyId;
   final String? selectedRoomId;
   final ValueChanged<String?> onChanged;
+  final String languageCode;
 
   const _RoomDropdown({
     required this.contracts,
     required this.selectedPropertyId,
     required this.selectedRoomId,
     required this.onChanged,
+    required this.languageCode,
   });
 
   @override
@@ -566,7 +601,9 @@ class _RoomDropdown extends StatelessWidget {
         if (contract.propertyId == selectedPropertyId &&
             contract.roomId != null) {
           final roomLabel =
-              contract.roomCode ?? contract.roomName ?? 'Phòng không tên';
+              contract.roomCode ??
+              contract.roomName ??
+              AppLocalizationsHelper.translate('unnamedRoom', languageCode);
           availableRooms[contract.roomId!] = roomLabel;
         }
       }
@@ -581,7 +618,8 @@ class _RoomDropdown extends StatelessWidget {
     return DropdownButtonFormField<String>(
       value: selectedRoomId,
       decoration: InputDecoration(
-        labelText: 'Phòng *',
+        labelText:
+            '${AppLocalizationsHelper.translate('room', languageCode)} *',
         prefixIcon: const Icon(
           Icons.meeting_room_rounded,
           color: Color(0xFF6C63FF),
@@ -607,7 +645,15 @@ class _RoomDropdown extends StatelessWidget {
       ),
       style: const TextStyle(fontSize: 14, color: Colors.black87),
       hint: Text(
-        selectedPropertyId == null ? 'Chọn bất động sản trước' : 'Chọn phòng',
+        selectedPropertyId == null
+            ? AppLocalizationsHelper.translate(
+                'selectPropertyFirst',
+                languageCode,
+              )
+            : AppLocalizationsHelper.translate(
+                'selectRoomPlaceholder',
+                languageCode,
+              ),
         style: const TextStyle(fontSize: 14),
       ),
       menuMaxHeight: 300,
@@ -620,7 +666,10 @@ class _RoomDropdown extends StatelessWidget {
       onChanged: selectedPropertyId == null ? null : onChanged,
       validator: (value) {
         if (value == null) {
-          return 'Vui lòng chọn phòng';
+          return AppLocalizationsHelper.translate(
+            'pleaseSelectRoom',
+            languageCode,
+          );
         }
         return null;
       },
@@ -633,17 +682,25 @@ class _ImagePicker extends StatelessWidget {
   final VoidCallback onPickImage;
   final Function(int) onRemoveImage;
   final int maxImages;
+  final String languageCode;
 
   const _ImagePicker({
     required this.selectedImages,
     required this.onPickImage,
     required this.onRemoveImage,
     this.maxImages = 3,
+    required this.languageCode,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final maxImagesText = AppLocalizationsHelper.translateWithParams(
+      'maxImagesHint',
+      languageCode,
+      {'count': '$maxImages'},
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -651,7 +708,10 @@ class _ImagePicker extends StatelessWidget {
         Row(
           children: [
             Text(
-              'Ảnh minh họa (tùy chọn)',
+              AppLocalizationsHelper.translate(
+                'issueImagesOptional',
+                languageCode,
+              ),
               style: theme.textTheme.titleSmall?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -664,7 +724,7 @@ class _ImagePicker extends StatelessWidget {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
-                'Tối đa $maxImages ảnh',
+                maxImagesText,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: const Color(0xFF6C63FF),
                   fontWeight: FontWeight.w600,
@@ -701,7 +761,10 @@ class _ImagePicker extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Thêm ảnh',
+                      AppLocalizationsHelper.translate(
+                        'addPhoto',
+                        languageCode,
+                      ),
                       style: TextStyle(
                         color: Colors.grey.shade600,
                         fontWeight: FontWeight.w500,
@@ -709,7 +772,7 @@ class _ImagePicker extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Tối đa $maxImages ảnh',
+                      maxImagesText,
                       style: TextStyle(
                         color: Colors.grey.shade400,
                         fontSize: 12,
@@ -792,7 +855,7 @@ class _ImagePicker extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'Thêm',
+                          AppLocalizationsHelper.translate('add', languageCode),
                           style: TextStyle(
                             color: Colors.grey.shade600,
                             fontSize: 12,
