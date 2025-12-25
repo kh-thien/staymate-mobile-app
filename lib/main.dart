@@ -1,14 +1,33 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 import 'core/router/app_router.dart';
+import 'core/router/auth_state_notifier.dart';
 import 'core/theme/app_theme.dart';
 import 'core/services/auth_service.dart';
+import 'core/services/firebase_messaging_service.dart';
+import 'core/services/locale_service.dart';
+import 'core/services/locale_provider.dart';
+import 'core/services/theme_provider.dart';
 import 'features/auth/presentation/bloc/auth_bloc_exports.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize date formatting for Vietnamese and English locales
+  await initializeDateFormatting('vi', null);
+  await initializeDateFormatting('vi_VN', null);
+  await initializeDateFormatting('en', null);
+  await initializeDateFormatting('en_US', null);
+
   await dotenv.load(fileName: ".env");
 
   // Suppress app_links plugin errors
@@ -19,6 +38,7 @@ void main() async {
     FlutterError.presentError(details);
   };
 
+  // Initialize Supabase
   await Supabase.initialize(
     url: dotenv.env['SUPABASE_URL']!,
     anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
@@ -27,11 +47,63 @@ void main() async {
     ),
   );
 
-  runApp(const StayMateApp());
+  // Initialize Firebase và Firebase Messaging
+  String? fcmToken;
+  try {
+    print('🔄 Initializing Firebase Core...');
+    // Khởi tạo Firebase với options từ firebase_options.dart
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+    print('✅ Firebase Core initialized successfully');
+    
+    print('🔄 Initializing Firebase Messaging...');
+    final firebaseMessagingService = FirebaseMessagingService();
+    fcmToken = await firebaseMessagingService.initialize();
+    
+    if (fcmToken != null) {
+      print('✅ Firebase Messaging initialized successfully');
+      print('📱 FCM Token ID: $fcmToken');
+    } else {
+      print('⚠️ Firebase Messaging initialized but token is null');
+      print('💡 This might be due to:');
+      print('   1. Notification permission not granted');
+      print('   2. Firebase not properly configured');
+      print('   3. Google Services plugin not applied correctly');
+    }
+  } catch (e, stackTrace) {
+    print('❌ Firebase initialization failed: $e');
+    debugPrint('Stack trace: $stackTrace');
+    print('💡 App will continue to run, but push notifications may not work');
+    // App vẫn có thể chạy được, chỉ không có push notifications
+  }
+
+  runApp(const ProviderScope(child: StayMateApp()));
 }
 
-class StayMateApp extends StatelessWidget {
+class StayMateApp extends StatefulWidget {
   const StayMateApp({super.key});
+
+  @override
+  State<StayMateApp> createState() => _StayMateAppState();
+}
+
+class _StayMateAppState extends State<StayMateApp> {
+  late final AuthStateNotifier _authStateNotifier;
+  late final GoRouter _router;
+
+  @override
+  void initState() {
+    super.initState();
+    _authStateNotifier = AuthStateNotifier();
+    _router = AppRouter.createRouter(_authStateNotifier);
+  }
+
+  @override
+  void dispose() {
+    _authStateNotifier.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,18 +111,55 @@ class StayMateApp extends StatelessWidget {
       providers: [
         // Provide AuthBloc to the entire app
         BlocProvider<AuthBloc>(
-          create: (context) =>
-              AuthBloc(authService: AuthService())
-                ..add(CheckAuthStatus()), // Check initial auth status
+          create: (context) {
+            final bloc = AuthBloc(authService: AuthService())
+              ..add(CheckAuthStatus()); // Check initial auth status
+            
+            // Update notifier với state ban đầu
+            // AuthStateListener sẽ tiếp tục update khi state thay đổi
+            _authStateNotifier.updateState(bloc.state);
+            
+            return bloc;
+          },
         ),
       ],
-      child: MaterialApp.router(
-        title: 'StayMate',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system,
-        routerConfig: AppRouter.router,
+      child: AuthStateListener(
+        notifier: _authStateNotifier,
+        child: Consumer(
+          builder: (context, ref, child) {
+            // Watch locale provider để MaterialApp rebuild khi locale thay đổi
+            final locale = ref.watch(appLocaleProvider);
+            // Watch theme mode provider
+            final themeModeAsync = ref.watch(themeModeProvider);
+            
+            // Key để force rebuild MaterialApp khi locale thay đổi
+            final localeKey = ValueKey(locale.toString());
+            
+            // Get theme mode, default to system if loading or error
+            final themeMode = themeModeAsync.when(
+              data: (mode) => mode,
+              loading: () => ThemeMode.system,
+              error: (_, __) => ThemeMode.system,
+            );
+            
+            return MaterialApp.router(
+              key: localeKey,
+              title: 'StayMate',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              locale: locale,
+              localizationsDelegates: const [
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: LocaleService.getSupportedLocales(),
+              routerConfig: _router,
+            );
+          },
+        ),
       ),
     );
   }

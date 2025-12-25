@@ -18,6 +18,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     on<SignInWithEmail>(_onSignInWithEmail);
     on<SignInWithGoogle>(_onSignInWithGoogle);
     on<SignUpWithGoogle>(_onSignUpWithGoogle);
+    on<SignInWithApple>(_onSignInWithApple);
+    on<SignUpWithApple>(_onSignUpWithApple);
     on<SignUpWithEmail>(_onSignUpWithEmail);
     on<SignOut>(_onSignOut);
     on<ClearError>(_onClearError);
@@ -38,6 +40,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     try {
       if (_authService.isLoggedIn) {
         final user = _authService.currentUser!;
+        
+        // Kiểm tra role và block admin khi check auth status
+        try {
+          await _authService.checkAndBlockAdmin(user.id);
+        } on AuthException catch (e) {
+          // Nếu là admin, emit error và return
+          emit(AuthError(message: e.message, code: e.statusCode));
+          return;
+        }
+        
         final displayName =
             user.userMetadata?['full_name'] as String? ??
             user.email?.split('@').first ??
@@ -48,7 +60,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
-      emit(AuthError(message: 'Failed to check auth status: $e'));
+      if (e is AuthException) {
+        emit(AuthError(message: e.message, code: e.statusCode));
+      } else {
+        emit(AuthError(message: 'Failed to check auth status: $e'));
+      }
     }
   }
 
@@ -59,6 +75,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     try {
       if (_authService.isLoggedIn) {
         final user = _authService.currentUser!;
+        
+        // Kiểm tra role và block admin khi auth state changed
+        try {
+          await _authService.checkAndBlockAdmin(user.id);
+        } on AuthException catch (e) {
+          // Nếu là admin, emit error và return
+          emit(AuthError(message: e.message, code: e.statusCode));
+          return;
+        }
+        
         final displayName =
             user.userMetadata?['full_name'] as String? ??
             user.email?.split('@').first ??
@@ -69,7 +95,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
         emit(AuthUnauthenticated());
       }
     } catch (e) {
-      emit(AuthError(message: 'Auth state change error: $e'));
+      if (e is AuthException) {
+        emit(AuthError(message: e.message, code: e.statusCode));
+      } else {
+        emit(AuthError(message: 'Auth state change error: $e'));
+      }
     }
   }
 
@@ -107,7 +137,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     Emitter<AuthBlocState> emit,
   ) async {
     try {
-      emit(AuthSigningIn());
+      emit(AuthSigningInWithGoogle());
 
       final response = await _authService.signInWithGoogle();
 
@@ -133,7 +163,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
     Emitter<AuthBlocState> emit,
   ) async {
     try {
-      emit(AuthSigningUp());
+      emit(AuthSigningUpWithGoogle());
 
       final response = await _authService.signInWithGoogle();
 
@@ -143,7 +173,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
             response.user!.email?.split('@').first ??
             'User';
 
-        emit(AuthSignUpSuccess(user: response.user!, displayName: displayName));
+        // Emit AuthAuthenticated thay vì AuthSignUpSuccess để tránh navigation issue
+        emit(AuthAuthenticated(user: response.user!, displayName: displayName));
       } else {
         emit(AuthUnauthenticated());
       }
@@ -151,6 +182,59 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
       emit(AuthError(message: e.message, code: e.statusCode));
     } catch (e) {
       emit(AuthError(message: 'Google sign up failed: $e'));
+    }
+  }
+
+  Future<void> _onSignInWithApple(
+    SignInWithApple event,
+    Emitter<AuthBlocState> emit,
+  ) async {
+    try {
+      emit(AuthSigningInWithApple());
+
+      final response = await _authService.signInWithApple();
+
+      if (response.user != null) {
+        final displayName =
+            response.user!.userMetadata?['full_name'] as String? ??
+            response.user!.email?.split('@').first ??
+            'User';
+
+        emit(AuthAuthenticated(user: response.user!, displayName: displayName));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } on AuthException catch (e) {
+      emit(AuthError(message: e.message, code: e.statusCode));
+    } catch (e) {
+      emit(AuthError(message: 'Apple sign in failed: $e'));
+    }
+  }
+
+  Future<void> _onSignUpWithApple(
+    SignUpWithApple event,
+    Emitter<AuthBlocState> emit,
+  ) async {
+    try {
+      emit(AuthSigningUpWithApple());
+
+      final response = await _authService.signInWithApple();
+
+      if (response.user != null) {
+        final displayName =
+            response.user!.userMetadata?['full_name'] as String? ??
+            response.user!.email?.split('@').first ??
+            'User';
+
+        // Emit AuthAuthenticated thay vì AuthSignUpSuccess để tránh navigation issue
+        emit(AuthAuthenticated(user: response.user!, displayName: displayName));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+    } on AuthException catch (e) {
+      emit(AuthError(message: e.message, code: e.statusCode));
+    } catch (e) {
+      emit(AuthError(message: 'Apple sign up failed: $e'));
     }
   }
 
@@ -168,9 +252,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
       );
 
       if (response.user != null) {
-        emit(
-          AuthSignUpSuccess(user: response.user!, displayName: event.fullName),
-        );
+        // Kiểm tra xem email đã được xác nhận chưa
+        // Nếu session == null, có nghĩa là cần xác nhận email
+        if (response.session == null) {
+          // Email confirmation required
+          emit(
+            AuthEmailConfirmationRequired(
+              email: event.email,
+              message:
+                  'Đăng ký thành công! Vui lòng kiểm tra email và xác nhận tài khoản trước khi đăng nhập.',
+            ),
+          );
+        } else {
+          // Email đã được xác nhận (hoặc không cần confirmation)
+          emit(
+            AuthSignUpSuccess(user: response.user!, displayName: event.fullName),
+          );
+        }
       } else {
         emit(AuthUnauthenticated());
       }
@@ -189,7 +287,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthBlocState> {
 
       emit(AuthUnauthenticated());
     } on AuthException catch (e) {
+      if (e is AuthRetryableFetchException) {
+        // Emit with a key that UI layer will translate
+        emit(AuthError(message: 'NETWORK_ERROR_TRY_AGAIN', code: e.statusCode));
+      } else {
       emit(AuthError(message: e.message, code: e.statusCode));
+      }
     } catch (e) {
       emit(AuthError(message: 'Sign out failed: $e'));
     }

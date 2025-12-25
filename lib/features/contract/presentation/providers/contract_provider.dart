@@ -1,3 +1,4 @@
+import 'dart:developer' as developer;
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/contract_entity.dart';
 import '../../domain/usecases/get_user_contracts_usecase.dart';
@@ -34,6 +35,7 @@ class ContractLoading extends ContractState {
 class ContractLoaded extends ContractState {
   const ContractLoaded(this.contracts);
 
+  @override
   final List<ContractEntity> contracts;
 }
 
@@ -52,12 +54,26 @@ class ContractCubit extends Cubit<ContractState> {
 
   /// Load contracts của user hiện tại
   Future<void> loadUserContracts(String userId) async {
+    developer.log(
+      '🔄 [ContractCubit] Loading contracts for user: $userId',
+      name: 'ContractCubit',
+    );
     emit(const ContractLoading());
 
     try {
       final contracts = await getUserContractsUseCase(userId);
+      developer.log(
+        '✅ [ContractCubit] Loaded ${contracts.length} contracts',
+        name: 'ContractCubit',
+      );
       emit(ContractLoaded(contracts));
-    } catch (e) {
+    } catch (e, stackTrace) {
+      developer.log(
+        '❌ [ContractCubit] Error loading contracts: $e',
+        name: 'ContractCubit',
+        error: e,
+        stackTrace: stackTrace,
+      );
       emit(ContractError(e.toString()));
     }
   }

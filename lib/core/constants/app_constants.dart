@@ -21,4 +21,10 @@ class AppConstants {
   // Pagination
   static const int defaultPageSize = 20;
   static const int maxPageSize = 100;
+
+  // Legal & Policy Links
+  static const String privacyPolicyUrl =
+      'https://kh-thien.github.io/privacy-policy-staymate-mobile-app/';
+  static const String termsOfServiceUrl =
+      'https://kh-thien.github.io/terms-of-service-staymate/';
 }

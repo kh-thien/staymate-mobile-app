@@ -12,14 +12,13 @@ abstract class AppException implements Exception {
 
 // Network Exceptions
 class NetworkException extends AppException {
-  NetworkException(String message, {String? code}) : super(message, code: code);
+  NetworkException(super.message, {super.code});
 }
 
 class ServerException extends AppException {
   final int? statusCode;
 
-  ServerException(String message, {this.statusCode, String? code})
-    : super(message, code: code);
+  ServerException(super.message, {this.statusCode, super.code});
 
   @override
   String toString() =>
@@ -27,39 +26,34 @@ class ServerException extends AppException {
 }
 
 class CacheException extends AppException {
-  CacheException(String message, {String? code}) : super(message, code: code);
+  CacheException(super.message, {super.code});
 }
 
 // Auth Exceptions
 class AuthException extends AppException {
-  AuthException(String message, {String? code}) : super(message, code: code);
+  AuthException(super.message, {super.code});
 }
 
 class UnauthorizedException extends AuthException {
-  UnauthorizedException([String message = 'Unauthorized access'])
-    : super(message);
+  UnauthorizedException([super.message = 'Unauthorized access']);
 }
 
 class TokenExpiredException extends AuthException {
-  TokenExpiredException([String message = 'Token has expired'])
-    : super(message);
+  TokenExpiredException([super.message = 'Token has expired']);
 }
 
 // Validation Exceptions
 class ValidationException extends AppException {
   final Map<String, List<String>>? errors;
 
-  ValidationException(String message, {this.errors, String? code})
-    : super(message, code: code);
+  ValidationException(super.message, {this.errors, super.code});
 }
 
 // Data Exceptions
 class DataParsingException extends AppException {
-  DataParsingException(String message, {String? code})
-    : super(message, code: code);
+  DataParsingException(super.message, {super.code});
 }
 
 class DatabaseException extends AppException {
-  DatabaseException(String message, {String? code})
-    : super(message, code: code);
+  DatabaseException(super.message, {super.code});
 }

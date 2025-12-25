@@ -1,0 +1,228 @@
+{
+  "@@locale": "vi",
+  "appName": "StayMate",
+  "signIn": "Đăng nhập",
+  "signUp": "Đăng ký",
+  "signInWithGoogle": "Đăng nhập bằng Google",
+  "signUpWithGoogle": "Đăng ký bằng Google",
+  "signInWithApple": "Đăng nhập bằng Apple",
+  "signUpWithApple": "Đăng ký bằng Apple",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "home": "Trang chủ",
+  "contracts": "Hợp đồng",
+  "chat": "Chat",
+  "invoices": "Hóa đơn",
+  "reports": "Báo cáo và theo dõi sự cố",
+  "profile": "Hồ sơ",
+  "notifications": "Thông báo",
+  "settings": "Cài đặt",
+  "language": "Ngôn ngữ",
+  "vietnamese": "Tiếng Việt",
+  "english": "Tiếng Anh",
+  "logout": "Đăng xuất",
+  "noContracts": "Không có hợp đồng nào",
+  "noContractsFound": "Không tìm thấy hợp đồng nào",
+  "noInvoices": "Không có hoá đơn nào",
+  "noReports": "Không có báo cáo nào",
+  "noChats": "Không có cuộc trò chuyện nào",
+  "chatStatusFailed": "Gửi thất bại",
+  "chatStatusRetry": "Gửi lại",
+  "chatStatusSending": "Đang gửi",
+  "chatStatusDelivered": "Đã nhận",
+  "createReport": "Tạo báo cáo sự cố",
+  "reportIssue": "Báo cáo sự cố",
+  "reportHeaderSubtitle": "Vui lòng điền đầy đủ thông tin",
+  "issueDescription": "Mô tả sự cố",
+  "issueDescriptionHint": "Nhập chi tiết sự cố cần báo cáo...",
+  "issueImagesOptional": "Ảnh minh họa (tùy chọn)",
+  "maintenanceWork": "Công việc bảo trì",
+  "selectPropertyAndRoom": "Vui lòng chọn bất động sản và phòng",
+  "selectPropertyPlaceholder": "Chọn bất động sản",
+  "selectPropertyFirst": "Chọn bất động sản trước",
+  "selectRoomPlaceholder": "Chọn phòng",
+  "pleaseSelectProperty": "Vui lòng chọn bất động sản",
+  "pleaseSelectRoom": "Vui lòng chọn phòng",
+  "pleaseEnterIssueDescription": "Vui lòng nhập mô tả sự cố",
+  "descriptionMinCharacters": "Mô tả phải có ít nhất {count} ký tự",
+  "unnamedRoom": "Phòng không tên",
+  "maxImagesHint": "Tối đa {count} ảnh",
+  "imagePickerError": "Lỗi chọn ảnh: {error}",
+  "addPhoto": "Thêm ảnh",
+  "add": "Thêm",
+  "reportSubmitSuccess": "Gửi báo cáo thành công, vui lòng chờ duyệt",
+  "submitting": "Đang gửi...",
+  "submitReport": "Gửi báo cáo",
+  "pending": "Đang chờ",
+  "approved": "Đã duyệt",
+  "rejected": "Đã từ chối",
+  "cancelled": "Đã hủy",
+  "error": "Lỗi",
+  "tryAgain": "Thử lại",
+  "anErrorOccurred": "Có lỗi xảy ra",
+  "loading": "Đang tải...",
+  "save": "Lưu",
+  "cancel": "Hủy",
+  "delete": "Xóa",
+  "edit": "Chỉnh sửa",
+  "view": "Xem",
+  "send": "Gửi",
+  "pay": "Thanh toán",
+  "paymentMethodBankTransfer": "Chuyển khoản ngân hàng",
+  "paymentMethodQrCode": "Quét mã QR",
+  "paymentMethodMomo": "Ví MoMo",
+  "paymentMethodZaloPay": "ZaloPay",
+  "paymentMethodCard": "Thẻ tín dụng/Ghi nợ",
+  "paymentMethodComingSoon": "Sắp ra mắt",
+  "paid": "Đã thanh toán",
+  "unpaid": "Chưa thanh toán",
+  "online": "Trực tuyến",
+  "offline": "Ngoại tuyến",
+  "noInternetConnection": "Không có kết nối internet",
+  "reconnected": "Đã kết nối lại",
+  "camera": "Camera",
+  "gallery": "Thư viện",
+  "file": "Tệp",
+  "justNow": "Vừa xong",
+  "minutesAgo": "{count} phút trước",
+  "@minutesAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} giờ trước",
+  "@hoursAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Hôm qua",
+  "daysAgo": "{count} ngày trước",
+  "@daysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "Tính năng sắp ra mắt",
+  "@featureComingSoon": {
+    "description": "Tooltip for features that are not yet implemented"
+  },
+  "refresh": "Làm mới",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "pullDownToRefresh": "Kéo xuống để làm mới",
+  "@pullDownToRefresh": {
+    "description": "Hint text for pull-to-refresh functionality"
+  },
+  "startAConversationToSeeItHere": "Bắt đầu một cuộc trò chuyện để xem nó ở đây.",
+  "@startAConversationToSeeItHere": {
+    "description": "Subtitle for empty chat list"
+  },
+  "noConversationsYet": "Chưa có cuộc trò chuyện nào",
+  "@noConversationsYet": {
+    "description": "Title for empty chat list"
+  },
+  "chatWillAppearWhenYouHaveContract": "Chat sẽ xuất hiện khi bạn có hợp đồng kết nối với chủ nhà. Điều này sẽ tạo cuộc trò chuyện giữa bạn và chủ nhà.",
+  "@chatWillAppearWhenYouHaveContract": {
+    "description": "Message explaining that chat appears when user has a contract with landlord"
+  },
+  "pleaseContactLandlord": "Vui lòng liên hệ chủ nhà",
+  "@pleaseContactLandlord": {
+    "description": "Instruction to contact landlord"
+  },
+  "noInvoicesFound": "Không tìm thấy hoá đơn",
+  "@noInvoicesFound": {
+    "description": "Title for empty invoice list"
+  },
+  "invoicesOfThisCategoryWillAppearHere": "Các hoá đơn trong danh mục này sẽ xuất hiện ở đây.",
+  "@invoicesOfThisCategoryWillAppearHere": {
+    "description": "Subtitle for empty invoice list"
+  },
+  "noIssuesToReport": "Không có sự cố nào",
+  "@noIssuesToReport": {
+    "description": "Title for empty maintenance request list"
+  },
+  "yourReportedIssuesWillAppearHere": "Các sự cố bạn báo cáo sẽ xuất hiện ở đây.",
+  "@yourReportedIssuesWillAppearHere": {
+    "description": "Subtitle for empty maintenance request list"
+  },
+  "reconnecting": "Sự cố kết nối. Đang kết nối lại...",
+  "@reconnecting": {
+    "description": "Message shown when the app is trying to reconnect"
+  },
+  "personalInfo": "Thông tin cá nhân",
+  "account": "Tài khoản",
+  "user": "Người dùng",
+  "fullName": "Họ và tên",
+  "phoneNumber": "Số điện thoại",
+  "userId": "ID người dùng",
+  "created": "Ngày tạo",
+  "loginProvider": "Nhà cung cấp đăng nhập",
+  "memberSince": "Thành viên từ {date}",
+  "@memberSince": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "userIdLabel": "ID: {userId}",
+  "@userIdLabel": {
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "loginProviderLabel": "Đăng nhập bằng {provider}",
+  "@loginProviderLabel": {
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccount": "Xóa tài khoản",
+  "deleteAccountDescription": "Hành động này sẽ xóa vĩnh viễn toàn bộ dữ liệu của bạn và không thể khôi phục.",
+  "deleteAccountReasonPlaceholder": "Lý do (không bắt buộc)",
+  "deleteAccountReasonHint": "Hãy chia sẻ nhanh lý do để chúng tôi cải thiện (không bắt buộc)",
+  "deleteAccountAcknowledge": "Tôi hiểu rằng tài khoản và dữ liệu của mình sẽ bị xóa vĩnh viễn.",
+  "deleteAccountConfirm": "Xóa tài khoản",
+  "deleteAccountSuccess": "Tài khoản đã được xóa.",
+  "deleteAccountFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
+  "deleteAccountInProgress": "Đang xóa tài khoản...",
+  "deleteAccountDeletingData": "Đang xóa dữ liệu, vui lòng không thao tác",
+  "deleteAccountLongDescription": "Sau khi xác nhận, chúng tôi sẽ xóa vĩnh viễn hồ sơ, hợp đồng, hóa đơn và lịch sử trò chuyện của bạn theo yêu cầu của Apple.",
+  "deleteAccountDataWipe": "Tất cả dữ liệu cá nhân và tùy chỉnh sẽ bị xóa ngay lập tức.",
+  "deleteAccountIrreversible": "Hành động này không thể hoàn tác và bạn sẽ mất quyền truy cập ngay.",
+  "deleteReasonPrivacy": "Lo ngại quyền riêng tư",
+  "deleteReasonNoLongerRenting": "Không còn thuê nhà với StayMate",
+  "deleteReasonBuggy": "Ứng dụng lỗi hoặc không ổn định",
+  "deleteReasonOther": "Lý do khác",
+  "secureLogin": "Đăng nhập an toàn",
+  "changePassword": "Đổi mật khẩu",
+  "currentPassword": "Mật khẩu hiện tại",
+  "newPassword": "Mật khẩu mới",
+  "confirmNewPassword": "Xác nhận mật khẩu mới",
+  "passwordUpdated": "Mật khẩu đã được cập nhật",
+  "passwordsDoNotMatch": "Mật khẩu không khớp",
+  "passwordTooShort": "Mật khẩu phải có ít nhất 8 ký tự",
+  "passwordChangeNotAvailableForSocialLogin": "Bạn đang đăng nhập bằng tài khoản xã hội (Google/Apple). Để đổi mật khẩu, vui lòng sử dụng tài khoản email.",
+  "loggedOutSuccessfully": "Đã đăng xuất thành công",
+  "selectTheme": "Chọn giao diện",
+  "themeLight": "Sáng",
+  "themeDark": "Tối",
+  "themeSystem": "Theo hệ thống",
+  "theme": "Giao diện",
+  "sendFeedback": "Gửi phản hồi",
+  "appInfo": "Thông tin ứng dụng",
+  "anErrorOccurredMessage": "Đã xảy ra lỗi"
+}

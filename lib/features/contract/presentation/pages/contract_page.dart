@@ -1,24 +1,37 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../core/constants/ui_constants.dart';
+import '../../../../core/constants/app_styles.dart';
 import '../../../../core/services/auth_service.dart';
+import '../../../../core/services/locale_provider.dart';
+import '../../../../core/localization/app_localizations_helper.dart';
 import '../../data/repositories/contract_repository_impl.dart';
 import '../../domain/usecases/get_user_contracts_usecase.dart';
 import '../providers/contract_provider.dart';
+import '../widgets/widgets.dart';
+import '../../../../shared/widgets/skeleton_loader.dart';
+import '../../../../shared/providers/app_bar_provider.dart';
 
-class ContractPage extends StatefulWidget {
+class ContractPage extends ConsumerStatefulWidget {
   const ContractPage({super.key});
 
   @override
-  State<ContractPage> createState() => _ContractPageState();
+  ConsumerState<ContractPage> createState() => _ContractPageState();
 }
 
-class _ContractPageState extends State<ContractPage> {
+class _ContractPageState extends ConsumerState<ContractPage> {
   late ContractCubit _contractCubit;
   late AuthService _authService;
+  AppBarNotifier? _appBarNotifier;
+  bool _hasSetTitle = false;
 
   @override
   void initState() {
     super.initState();
+    print('🚀🚀🚀 [ContractPage] initState called 🚀🚀🚀');
+    developer.log('🚀 [ContractPage] initState called', name: 'ContractPage');
     _authService = AuthService();
 
     // Initialize cubit
@@ -30,26 +43,89 @@ class _ContractPageState extends State<ContractPage> {
     _loadContracts();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Set AppBar title only once when page is first mounted
+    if (!_hasSetTitle) {
+      _appBarNotifier ??= ref.read(appBarProvider.notifier);
+      final locale = ref.read(appLocaleProvider);
+      final languageCode = locale.languageCode;
+      // Use a small delay to ensure this runs after any cleanup from previous page
+      Future.microtask(() {
+        if (mounted) {
+          _appBarNotifier?.updateTitle(
+            AppLocalizationsHelper.translate('contracts', languageCode),
+          );
+        }
+      });
+      _hasSetTitle = true;
+    }
+  }
+
   Future<void> _loadContracts() async {
+    print('📞📞📞 [ContractPage] _loadContracts called 📞📞📞');
+    developer.log(
+      '📞 [ContractPage] _loadContracts called',
+      name: 'ContractPage',
+    );
     final user = _authService.currentUser;
+    print('👤👤👤 [ContractPage] Current user: ${user?.id ?? "NULL"} 👤👤👤');
+    developer.log(
+      '👤 [ContractPage] Current user: ${user?.id ?? "NULL"}',
+      name: 'ContractPage',
+    );
     if (user != null) {
+      print(
+        '✅✅✅ [ContractPage] User found, loading contracts for: ${user.id} ✅✅✅',
+      );
+      developer.log(
+        '✅ [ContractPage] User found, loading contracts for: ${user.id}',
+        name: 'ContractPage',
+      );
       await _contractCubit.loadUserContracts(user.id);
+    } else {
+      print('⚠️⚠️⚠️ [ContractPage] User is NULL, cannot load contracts ⚠️⚠️⚠️');
+      developer.log(
+        '⚠️ [ContractPage] User is NULL, cannot load contracts',
+        name: 'ContractPage',
+      );
     }
   }
 
   @override
   void dispose() {
     _contractCubit.close();
+    // Don't reset title here - let the next page set its own title
+    // Only HomePage should reset title to show logo
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Update title if locale changes (but only if we've already set it)
+    final locale = ref.watch(appLocaleProvider);
+    final languageCode = locale.languageCode;
+
+    if (_hasSetTitle && _appBarNotifier != null && mounted) {
+      // Update title when locale changes, but use a small delay to avoid race conditions
+      Future.microtask(() {
+        if (mounted) {
+          _appBarNotifier?.updateTitle(
+            AppLocalizationsHelper.translate('contracts', languageCode),
+          );
+        }
+      });
+    }
+
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.only(
+      decoration: BoxDecoration(
+        color: isDark ? AppColors.surfaceDark : Colors.white,
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
         ),
@@ -64,44 +140,50 @@ class _ContractPageState extends State<ContractPage> {
           child: BlocBuilder<ContractCubit, ContractState>(
             bloc: _contractCubit,
             builder: (context, state) {
+              developer.log(
+                '🔄 [ContractPage] State changed: ${state.runtimeType}',
+                name: 'ContractPage',
+              );
+              if (state is ContractLoaded) {
+                developer.log(
+                  '📋 [ContractPage] Contracts loaded: ${state.contracts.length}',
+                  name: 'ContractPage',
+                );
+              } else if (state is ContractError) {
+                developer.log(
+                  '❌ [ContractPage] Error: ${state.message}',
+                  name: 'ContractPage',
+                );
+              }
               return Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header
-                    const Text(
-                      'Theo dõi hợp đồng trọ',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF2D3748),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Quản lý và theo dõi tình trạng hợp đồng thuê trọ',
-                      style: TextStyle(fontSize: 16, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 30),
-
-                    // Contract Status Card
-                    _buildContractStatusCard(state),
-                    const SizedBox(height: 20),
-
                     // Contracts List
                     if (state is ContractLoading)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(20),
-                          child: CircularProgressIndicator(),
+                      Expanded(
+                        child: ListView.separated(
+                          padding: EdgeInsets.only(
+                            bottom: UIConstants.bottomNavTotalHeight,
+                          ),
+                          itemCount: 5,
+                          separatorBuilder: (context, index) =>
+                              const SizedBox(height: 12),
+                          itemBuilder: (context, index) {
+                            return const ContractCardSkeleton();
+                          },
                         ),
                       )
                     else if (state is ContractLoaded &&
                         state.contracts.isNotEmpty) ...[
-                      const Text(
-                        'Danh sách hợp đồng',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizationsHelper.translateWithParams(
+                          'contractListCount',
+                          ref.watch(appLocaleProvider).languageCode,
+                          {'count': state.contracts.length.toString()},
+                        ),
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           color: Color(0xFF2D3748),
@@ -110,19 +192,31 @@ class _ContractPageState extends State<ContractPage> {
                       const SizedBox(height: 16),
                       Expanded(
                         child: ListView.separated(
+                          padding: EdgeInsets.only(
+                            bottom: UIConstants.bottomNavTotalHeight,
+                          ),
                           itemCount: state.contracts.length,
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 12),
                           itemBuilder: (context, index) {
                             final contract = state.contracts[index];
-                            return _buildContractCard(contract);
+                            return ContractCard(contract: contract);
                           },
                         ),
                       ),
                     ] else if (state is ContractError)
-                      _buildErrorState(state.message)
-                    else
-                      _buildEmptyState(),
+                      Expanded(
+                        child: ContractErrorState(
+                          message: state.message,
+                          onRetry: _loadContracts,
+                        ),
+                      )
+                    else ...[
+                      // Contract Status Card - chỉ hiển thị khi không có hợp đồng
+                      ContractStatusCard(state: state),
+                      const SizedBox(height: 20),
+                      const Expanded(child: ContractEmptyState()),
+                    ],
                   ],
                 ),
               );
@@ -131,324 +225,5 @@ class _ContractPageState extends State<ContractPage> {
         ),
       ),
     );
-  }
-
-  Widget _buildContractStatusCard(ContractState state) {
-    final contractCount = state is ContractLoaded ? state.contractCount : 0;
-    final hasContracts = contractCount > 0;
-    final isLoading = state is ContractLoading;
-
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: hasContracts
-              ? [const Color(0xFF667eea), const Color(0xFF764ba2)]
-              : [Colors.grey.shade400, Colors.grey.shade600],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: (hasContracts ? const Color(0xFF667eea) : Colors.grey)
-                .withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.description_rounded, color: Colors.white, size: 24),
-              SizedBox(width: 12),
-              Text(
-                'Trạng thái hợp đồng',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (isLoading)
-            const Text(
-              'Đang tải...',
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            )
-          else if (hasContracts)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Số hợp đồng: $contractCount',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Bạn có $contractCount hợp đồng thuê trọ',
-                  style: const TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-              ],
-            )
-          else
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Chưa có hợp đồng',
-                  style: TextStyle(color: Colors.white70, fontSize: 16),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Liên hệ với chủ nhà để tạo hợp đồng thuê trọ',
-                  style: TextStyle(color: Colors.white70, fontSize: 14),
-                ),
-              ],
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContractCard(contract) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.grey.shade200),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(contract.status).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    Icons.assignment,
-                    color: _getStatusColor(contract.status),
-                    size: 24,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        contract.contractNumber ??
-                            'Hợp đồng #${contract.id.substring(0, 8)}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFF2D3748),
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getStatusColor(
-                            contract.status,
-                          ).withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Text(
-                          contract.statusInVietnamese,
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: _getStatusColor(contract.status),
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            const Divider(),
-            const SizedBox(height: 12),
-            _buildInfoRow(
-              Icons.calendar_today,
-              'Ngày bắt đầu',
-              contract.startDate != null
-                  ? _formatDate(contract.startDate!)
-                  : 'Chưa xác định',
-            ),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              Icons.event,
-              'Ngày kết thúc',
-              contract.endDate != null
-                  ? _formatDate(contract.endDate!)
-                  : 'Chưa xác định',
-            ),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              Icons.attach_money,
-              'Tiền thuê',
-              '${_formatCurrency(contract.monthlyRent)}/tháng',
-            ),
-            const SizedBox(height: 8),
-            _buildInfoRow(
-              Icons.account_balance_wallet,
-              'Tiền cọc',
-              _formatCurrency(contract.deposit),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String label, String value) {
-    return Row(
-      children: [
-        Icon(icon, size: 16, color: Colors.grey),
-        const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Color(0xFF2D3748),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEmptyState() {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.description_outlined,
-              size: 80,
-              color: Colors.grey.shade300,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Chưa có hợp đồng nào',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Liên hệ với chủ nhà để tạo hợp đồng',
-              style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String message) {
-    return Expanded(
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 80, color: Colors.red.shade300),
-            const SizedBox(height: 16),
-            Text(
-              'Có lỗi xảy ra',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.red.shade600,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 40),
-              child: Text(
-                message,
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade500),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              onPressed: _loadContracts,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Thử lại'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF4F46E5),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'ACTIVE':
-        return Colors.green;
-      case 'DRAFT':
-        return Colors.orange;
-      case 'EXPIRED':
-        return Colors.red;
-      case 'TERMINATED':
-        return Colors.grey;
-      default:
-        return Colors.blue;
-    }
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
-  }
-
-  String _formatCurrency(double amount) {
-    return '${amount.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},')} đ';
   }
 }

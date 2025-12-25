@@ -8,7 +8,7 @@ part of '../../../../../features/contract/data/models/tenant_model.dart';
 
 TenantModel _$TenantModelFromJson(Map<String, dynamic> json) => TenantModel(
   id: json['id'] as String,
-  roomId: json['room_id'] as String,
+  roomId: json['room_id'] as String?,
   fullname: json['fullname'] as String,
   userId: json['user_id'] as String?,
   phone: json['phone'] as String?,

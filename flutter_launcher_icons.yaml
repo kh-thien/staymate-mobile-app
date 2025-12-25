@@ -1,0 +1,10 @@
+# flutter pub run flutter_launcher_icons
+flutter_launcher_icons:
+  image_path: "lib/core/assets/images/logo_staymate.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  background_color_ios: "#ffffff"
+  theme_color_ios: "#ffffff"
+  background_color_android: "#ffffff"
+  theme_color_android: "#ffffff"

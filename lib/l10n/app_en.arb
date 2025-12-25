@@ -1,0 +1,477 @@
+{
+  "@@locale": "en",
+  "appName": "StayMate",
+  "@appName": {
+    "description": "The application name"
+  },
+  "signIn": "Sign In",
+  "@signIn": {
+    "description": "Sign in button text"
+  },
+  "signUp": "Sign Up",
+  "@signUp": {
+    "description": "Sign up button text"
+  },
+  "signInWithGoogle": "Sign in with Google",
+  "@signInWithGoogle": {
+    "description": "Sign in with Google button text"
+  },
+  "signUpWithGoogle": "Sign up with Google",
+  "@signUpWithGoogle": {
+    "description": "Sign up with Google button text"
+  },
+  "signInWithApple": "Sign in with Apple",
+  "@signInWithApple": {
+    "description": "Sign in with Apple button text"
+  },
+  "signUpWithApple": "Sign up with Apple",
+  "@signUpWithApple": {
+    "description": "Sign up with Apple button text"
+  },
+  "email": "Email",
+  "@email": {
+    "description": "Email label"
+  },
+  "password": "Password",
+  "@password": {
+    "description": "Password label"
+  },
+  "confirmPassword": "Confirm Password",
+  "@confirmPassword": {
+    "description": "Confirm password label"
+  },
+  "home": "Home",
+  "@home": {
+    "description": "Home tab label"
+  },
+  "contracts": "Contracts",
+  "@contracts": {
+    "description": "Contracts tab label"
+  },
+  "chat": "Chat",
+  "@chat": {
+    "description": "Chat tab label"
+  },
+  "invoices": "Invoices",
+  "@invoices": {
+    "description": "Invoices tab label"
+  },
+  "reports": "Reports",
+  "@reports": {
+    "description": "Reports tab label"
+  },
+  "profile": "Profile",
+  "@profile": {
+    "description": "Profile tab label"
+  },
+  "notifications": "Notifications",
+  "@notifications": {
+    "description": "Notifications label"
+  },
+  "settings": "Settings",
+  "@settings": {
+    "description": "Settings label"
+  },
+  "language": "Language",
+  "@language": {
+    "description": "Language label"
+  },
+  "vietnamese": "Vietnamese",
+  "@vietnamese": {
+    "description": "Vietnamese language option"
+  },
+  "english": "English",
+  "@english": {
+    "description": "English language option"
+  },
+  "logout": "Logout",
+  "@logout": {
+    "description": "Logout button text"
+  },
+  "noContracts": "No contracts",
+  "@noContracts": {
+    "description": "Empty state message for contracts"
+  },
+  "noContractsFound": "No contracts found",
+  "@noContractsFound": {
+    "description": "Message displayed when no contracts match filters"
+  },
+  "noInvoices": "No invoices",
+  "@noInvoices": {
+    "description": "Empty state message for invoices"
+  },
+  "noReports": "No reports",
+  "@noReports": {
+    "description": "Empty state message for reports"
+  },
+  "noChats": "No chats",
+  "@noChats": {
+    "description": "Empty state message for chats"
+  },
+  "chatStatusFailed": "Failed to send",
+  "chatStatusRetry": "Resend",
+  "chatStatusSending": "Sending",
+  "chatStatusDelivered": "Delivered",
+  "createReport": "Create Report",
+  "@createReport": {
+    "description": "Create report button text"
+  },
+  "reportIssue": "Report Issue",
+  "@reportIssue": {
+    "description": "Report issue label"
+  },
+  "reportHeaderSubtitle": "Please fill in all required information",
+  "issueDescription": "Issue Description",
+  "issueDescriptionHint": "Describe the issue you need help with...",
+  "issueImagesOptional": "Illustration photos (optional)",
+  "maintenanceWork": "Maintenance Work",
+  "selectPropertyAndRoom": "Please select a property and room",
+  "selectPropertyPlaceholder": "Select property",
+  "selectPropertyFirst": "Select a property first",
+  "selectRoomPlaceholder": "Select room",
+  "pleaseSelectProperty": "Please select a property",
+  "pleaseSelectRoom": "Please select a room",
+  "pleaseEnterIssueDescription": "Please enter an issue description",
+  "descriptionMinCharacters": "Description must have at least {count} characters",
+  "unnamedRoom": "Unnamed room",
+  "maxImagesHint": "Up to {count} photos",
+  "imagePickerError": "Image selection error: {error}",
+  "addPhoto": "Add photo",
+  "add": "Add",
+  "reportSubmitSuccess": "Report sent successfully, please wait for approval",
+  "submitting": "Submitting...",
+  "submitReport": "Submit report",
+  "@maintenanceWork": {
+    "description": "Maintenance work label"
+  },
+  "pending": "Pending",
+  "@pending": {
+    "description": "Pending status"
+  },
+  "approved": "Approved",
+  "@approved": {
+    "description": "Approved status"
+  },
+  "rejected": "Rejected",
+  "@rejected": {
+    "description": "Rejected status"
+  },
+  "cancelled": "Cancelled",
+  "@cancelled": {
+    "description": "Cancelled status"
+  },
+  "error": "Error",
+  "@error": {
+    "description": "Error label"
+  },
+  "tryAgain": "Try Again",
+  "@tryAgain": {
+    "description": "Try again button text"
+  },
+  "anErrorOccurred": "An error occurred",
+  "@anErrorOccurred": {
+    "description": "Error message"
+  },
+  "loading": "Loading...",
+  "@loading": {
+    "description": "Loading message"
+  },
+  "save": "Save",
+  "@save": {
+    "description": "Save button text"
+  },
+  "cancel": "Cancel",
+  "@cancel": {
+    "description": "Cancel button text"
+  },
+  "delete": "Delete",
+  "@delete": {
+    "description": "Delete button text"
+  },
+  "edit": "Edit",
+  "@edit": {
+    "description": "Edit button text"
+  },
+  "view": "View",
+  "@view": {
+    "description": "View button text"
+  },
+  "send": "Send",
+  "@send": {
+    "description": "Send button text"
+  },
+  "pay": "Pay",
+  "@pay": {
+    "description": "Pay button text"
+  },
+  "paymentMethodBankTransfer": "Bank transfer",
+  "paymentMethodQrCode": "Scan QR code",
+  "paymentMethodMomo": "MoMo e-wallet",
+  "paymentMethodZaloPay": "ZaloPay",
+  "paymentMethodCard": "Credit/Debit card",
+  "paymentMethodComingSoon": "Coming soon",
+  "paid": "Paid",
+  "@paid": {
+    "description": "Paid status"
+  },
+  "unpaid": "Unpaid",
+  "@unpaid": {
+    "description": "Unpaid status"
+  },
+  "online": "Online",
+  "@online": {
+    "description": "Online status"
+  },
+  "offline": "Offline",
+  "@offline": {
+    "description": "Offline status"
+  },
+  "noInternetConnection": "No internet connection",
+  "@noInternetConnection": {
+    "description": "No internet connection message"
+  },
+  "reconnected": "Reconnected",
+  "@reconnected": {
+    "description": "Reconnected message"
+  },
+  "camera": "Camera",
+  "@camera": {
+    "description": "Camera label"
+  },
+  "gallery": "Gallery",
+  "@gallery": {
+    "description": "Gallery label"
+  },
+  "file": "File",
+  "@file": {
+    "description": "File label"
+  },
+  "justNow": "Just now",
+  "@justNow": {
+    "description": "Just now time label"
+  },
+  "minutesAgo": "{count} minutes ago",
+  "@minutesAgo": {
+    "description": "Minutes ago time label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{count} hours ago",
+  "@hoursAgo": {
+    "description": "Hours ago time label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "yesterday": "Yesterday",
+  "@yesterday": {
+    "description": "Yesterday label"
+  },
+  "daysAgo": "{count} days ago",
+  "@daysAgo": {
+    "description": "Days ago time label",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "featureComingSoon": "Feature coming soon",
+  "@featureComingSoon": {
+    "description": "Tooltip for features that are not yet implemented"
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "description": "Refresh button text"
+  },
+  "pullDownToRefresh": "Pull down to refresh",
+  "@pullDownToRefresh": {
+    "description": "Hint text for pull-to-refresh functionality"
+  },
+  "startAConversationToSeeItHere": "Start a conversation to see it here.",
+  "@startAConversationToSeeItHere": {
+    "description": "Subtitle for empty chat list"
+  },
+  "noConversationsYet": "No conversations yet",
+  "@noConversationsYet": {
+    "description": "Title for empty chat list"
+  },
+  "chatWillAppearWhenYouHaveContract": "Chat will appear when you have a contract connected with your landlord. This will create a conversation between you and your landlord.",
+  "@chatWillAppearWhenYouHaveContract": {
+    "description": "Message explaining that chat appears when user has a contract with landlord"
+  },
+  "pleaseContactLandlord": "Please contact your landlord",
+  "@pleaseContactLandlord": {
+    "description": "Instruction to contact landlord"
+  },
+  "noInvoicesFound": "No Invoices Found",
+  "@noInvoicesFound": {
+    "description": "Title for empty invoice list"
+  },
+  "invoicesOfThisCategoryWillAppearHere": "Invoices in this category will appear here.",
+  "@invoicesOfThisCategoryWillAppearHere": {
+    "description": "Subtitle for empty invoice list"
+  },
+  "noIssuesToReport": "No Issues to Report",
+  "@noIssuesToReport": {
+    "description": "Title for empty maintenance request list"
+  },
+  "yourReportedIssuesWillAppearHere": "Your reported issues will appear here.",
+  "@yourReportedIssuesWillAppearHere": {
+    "description": "Subtitle for empty maintenance request list"
+  },
+  "reconnecting": "Connection issue. Reconnecting...",
+  "@reconnecting": {
+    "description": "Message shown when the app is trying to reconnect"
+  },
+  "personalInfo": "Personal Information",
+  "@personalInfo": {
+    "description": "Personal information label"
+  },
+  "account": "Account",
+  "@account": {
+    "description": "Account label"
+  },
+  "user": "User",
+  "@user": {
+    "description": "User label"
+  },
+  "fullName": "Full Name",
+  "@fullName": {
+    "description": "Full name label"
+  },
+  "phoneNumber": "Phone Number",
+  "@phoneNumber": {
+    "description": "Phone number label"
+  },
+  "userId": "User ID",
+  "@userId": {
+    "description": "User ID label"
+  },
+  "created": "Created",
+  "@created": {
+    "description": "Created date label"
+  },
+  "loginProvider": "Login Provider",
+  "@loginProvider": {
+    "description": "Login provider label"
+  },
+  "memberSince": "Member since {date}",
+  "@memberSince": {
+    "description": "Member since label",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "userIdLabel": "ID: {userId}",
+  "@userIdLabel": {
+    "description": "User ID label with value",
+    "placeholders": {
+      "userId": {
+        "type": "String"
+      }
+    }
+  },
+  "loginProviderLabel": "Login with {provider}",
+  "@loginProviderLabel": {
+    "description": "Login provider label with value",
+    "placeholders": {
+      "provider": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteAccount": "Delete account",
+  "deleteAccountDescription": "This action will permanently delete your account and data. It cannot be undone.",
+  "deleteAccountReasonPlaceholder": "Reason (optional)",
+  "deleteAccountReasonHint": "Share a short reason to help us improve (optional)",
+  "deleteAccountAcknowledge": "I understand that my account and data will be permanently deleted.",
+  "deleteAccountConfirm": "Delete account",
+  "deleteAccountSuccess": "Your account has been deleted.",
+  "deleteAccountFailed": "Unable to delete your account. Please try again.",
+  "deleteAccountInProgress": "Deleting your account…",
+  "deleteAccountDeletingData": "Deleting data, please do not operate",
+  "deleteAccountLongDescription": "Once you confirm, we will permanently erase your profile, rental data, chat history, and notifications. This follows Apple's account-deletion policy.",
+  "deleteAccountDataWipe": "All personal data and preferences will be removed immediately.",
+  "deleteAccountIrreversible": "This action cannot be undone and you will lose access right away.",
+  "deleteReasonPrivacy": "Privacy concerns",
+  "deleteReasonNoLongerRenting": "I am no longer renting with StayMate",
+  "deleteReasonBuggy": "The app has issues/bugs",
+  "deleteReasonOther": "Other reasons",
+  "secureLogin": "Secure Login",
+  "@secureLogin": {
+    "description": "Secure login label"
+  },
+  "changePassword": "Change Password",
+  "@changePassword": {
+    "description": "Change password label"
+  },
+  "currentPassword": "Current Password",
+  "@currentPassword": {
+    "description": "Current password label"
+  },
+  "newPassword": "New Password",
+  "@newPassword": {
+    "description": "New password label"
+  },
+  "confirmNewPassword": "Confirm New Password",
+  "@confirmNewPassword": {
+    "description": "Confirm new password label"
+  },
+  "passwordUpdated": "Password updated successfully",
+  "@passwordUpdated": {
+    "description": "Password updated message"
+  },
+  "passwordsDoNotMatch": "Passwords do not match",
+  "@passwordsDoNotMatch": {
+    "description": "Passwords do not match error"
+  },
+  "passwordTooShort": "Password must be at least 8 characters",
+  "@passwordTooShort": {
+    "description": "Password too short error"
+  },
+  "passwordChangeNotAvailableForSocialLogin": "You are signed in with a social account (Google/Apple). To change your password, please use an email account.",
+  "@passwordChangeNotAvailableForSocialLogin": {
+    "description": "Message shown when password change is not available for social login"
+  },
+  "loggedOutSuccessfully": "Logged out successfully",
+  "@loggedOutSuccessfully": {
+    "description": "Logged out success message"
+  },
+  "selectTheme": "Select Theme",
+  "@selectTheme": {
+    "description": "Select theme title"
+  },
+  "themeLight": "Light",
+  "@themeLight": {
+    "description": "Light theme option"
+  },
+  "themeDark": "Dark",
+  "@themeDark": {
+    "description": "Dark theme option"
+  },
+  "themeSystem": "System",
+  "@themeSystem": {
+    "description": "System theme option"
+  },
+  "theme": "Theme",
+  "@theme": {
+    "description": "Theme label"
+  },
+  "sendFeedback": "Send Feedback",
+  "@sendFeedback": {
+    "description": "Send feedback label"
+  },
+  "appInfo": "App Information",
+  "@appInfo": {
+    "description": "App information label"
+  },
+  "anErrorOccurredMessage": "An error occurred"
+}
